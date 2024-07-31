@@ -26,19 +26,30 @@ const CreateMasterFilter = () => {
     const navigate = useNavigate();
     const [activeIndex, setActiveIndex] = useState(parseInt(localStorage.getItem('activeIndex')) || 0);
 
+    // Flatten the items array to include both main items and subitems
+    const flattenItems = masterItems.flatMap(item => [item, ...(item.subItems || [])]);
+
     useEffect(() => {
         const handleKeyDown = event => {
             if (event.key === 'ArrowUp' && activeIndex > 0){
                 setActiveIndex(prev => prev - 1);
-            } else if (event.key === 'ArrowDown' && activeIndex < masterItems.length - 1){
+            } else if (event.key === 'ArrowDown' && activeIndex < flattenItems.length - 1){
                 setActiveIndex(prev => prev + 1);
-            } else if (event.key === 'Enter'){
-                navigate(masterItems[activeIndex].path);
+            } else if (event.key === 'Enter' && flattenItems[activeIndex].path){
+                navigate(flattenItems[activeIndex].path);
             }
         }
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    },[activeIndex]);
+    },[activeIndex, flattenItems, navigate]);
+
+    const handleItemClick = (index,path) => {
+        setActiveIndex(index);
+        localStorage.setItem('activeIndex', index);
+        if (path){
+            navigate(path);
+        }
+    }
 
   return (
     <>
@@ -68,16 +79,16 @@ const CreateMasterFilter = () => {
                     <Link><p className='text-[13px] font-semibold text-right mr-3 mt-5'>Change Company</p></Link>
                 </div>
                 <div>
-                   {masterItems.map((item,index) => (
-                    <div key={index} className=''>
+                   {masterItems.map((item) => (
+                    <div key={item.id} className=''>
                         <Link>
-                            <p className='text-[13px] font-semibold pl-3'>{item.name}</p>
+                            <p className={`text-[13px] font-semibold pl-3 ${flattenItems[activeIndex].id === item.id ? 'bg-yellow-500' : ''}`} onClick={() => handleItemClick(flattenItems.findIndex(flattenItem => flattenItem.id === item.id), item.path)}>{item.name}</p>
                         </Link>
                         {item.subItems && (
                             <div className=''>
-                                {item.subItems.map((subItem,subIndex) => (
-                                    <Link to={subItem.path}>
-                                        <p key={subIndex} className={`${activeIndex === subItem.id ? 'bg-yellow-500' : ''} text-[13px] font-semibold pl-5`}
+                                {item.subItems.map((subItem) => (
+                                    <Link>
+                                        <p key={subItem.id} className={`text-[13px] font-semibold pl-5 ${flattenItems[activeIndex].id === subItem.id ? 'bg-yellow-500' : ''}`} onClick={() => handleItemClick(flattenItems.findIndex(flatItem => flatItem.id === subItem.id), subItem.path)}
                                         >{subItem.name}</p>
                                     </Link>
                                 ))}

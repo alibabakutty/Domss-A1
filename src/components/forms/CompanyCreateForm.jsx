@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import RightSideButton from '../right-side-button/RightSideButton';
 
 const CreateForm = () => {
   const fields = [
@@ -76,7 +77,7 @@ const CreateForm = () => {
             ))}
           </div>
         </form>
-        <div className='w-[10%] h-[95.8vh] bg-[#def1fc] border border-blue-400 absolute left-[90%] top-[4.25%]'></div>
+        <RightSideButton />
       </div>
     </>
   );

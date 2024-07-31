@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import RightSideButton from './right-side-button/RightSideButton';
 
 const Home = () => {
 
@@ -132,7 +133,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            <div className='w-[10%] bg-[#def1fc] border border-blue-400 absolute left-[90%] top-[4.25%] h-[95.8vh]'></div>
+            <RightSideButton />
         </div>
     </>
   )

@@ -8,6 +8,8 @@ const HeaderText = () => {
 
     if (location.pathname === '/companyCreateForm'){
         headerText = "Company Creation";
+    } else if (location.pathname === '/create/createGroup'){
+      headerText = "Group Creation";
     }
   return (
     <>

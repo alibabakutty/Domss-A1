@@ -11,10 +11,10 @@ import NavPrint from './NavPrint'
 import About from './About'
 
 const NavbarDropDown = () => {
-    const {type} = useParams();
+    const {navbar} = useParams();
 
     const renderComp = () => {
-        switch (type) {
+        switch (navbar) {
             case 'company':
                 return <NavCompany />
             case 'data':

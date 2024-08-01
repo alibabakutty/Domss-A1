@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 
-const CreateMasterFilter = () => {
+const AlterMasterFilter = () => {
     const masterItems = [
         { id: 1, name: 'Company Voucher Type Master',
             subItems: [
@@ -11,8 +11,8 @@ const CreateMasterFilter = () => {
         },
         { id: 3, name: 'Accounting Info Master', 
             subItems: [
-                { id: 4, name: 'Account Group', path: '/create/createGroup' },
-                { id: 5, name: 'Account Ledger', path: '/create/createLedger' }
+                { id: 4, name: 'Account Group', path: '/alter/alterGroupFilter' },
+                { id: 5, name: 'Account Ledger', path: '/alter/createLedger' }
             ] 
         },
         { id: 6, name: 'Inventory Info Master',
@@ -170,7 +170,7 @@ const CreateMasterFilter = () => {
              <div className='w-1/2 bg-slate-100 border border-l-blue-400 flex justify-center flex-col items-center'>
                 <div className="w-[50%] h-16 flex flex-col justify-center items-center border border-black bg-white border-b-0 ">
                     <p className="text-[13px] font-semibold underline underline-offset-4 decoration-gray-400">
-                        Master Creation
+                        Master Alteration
                     </p>
                     <input
                         type="text"
@@ -209,4 +209,4 @@ const CreateMasterFilter = () => {
   )
 }
 
-export default CreateMasterFilter;
+export default AlterMasterFilter;

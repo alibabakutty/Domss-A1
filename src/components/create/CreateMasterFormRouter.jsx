@@ -1,6 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import GroupCreateForm from '../forms/GroupCreateForm'
+import LedgerCreateForm from '../forms/LedgerCreateForm'
 
 const CreateMasterFormRouter = () => {
   const { type } = useParams();
@@ -9,7 +10,8 @@ const CreateMasterFormRouter = () => {
     switch (type) {
       case 'createGroup':
         return <GroupCreateForm />
-        break;
+      case 'createLedger':
+        return <LedgerCreateForm />
     
       default:
         return <div>404 Not Found!</div>;

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton'
 import GroupMenu from '../../assets/GroupMenu'
 
-const GroupCreateForm = () => {
+const GroupCreate = () => {
   const [options, setOptions] = useState(GroupMenu);
   const [filteredOptions, setFilteredOptions] = useState(options);
   const [open, setOpen] = useState(false);
@@ -181,9 +181,9 @@ const GroupCreateForm = () => {
               <span className='w-1/12 text-right mr-0.5'>:</span>
               <input type="text" id='underGroup' name='underGroup' value={groupData.underGroup} ref={inputRefs.underGroup} onChange={handleInputChange} onKeyDown={(e) => handleInputKeyDown(e, "underGroup")} onFocus={handleFocus} onBlur={() => setOpen(false)} className='w-2/6 p-0.5 cursor-default border focus:border focus:bg-[#fee8af] focus:border-blue-500 text-sm font-semibold h-[18px] outline-none border-transparent' autoComplete='off' />
               {open && (
-                <div className='w-[310px] absolute max-h-[91vh] top-[6.5%] right-[10%] bg-[#def1fc] border'>
+                <div className='w-[310px] absolute h-[92vh] top-[6.5%] right-[10%] bg-[#def1fc] border'>
                   <h1 className='bg-[#2a47b1] p-0.5 text-white'>List of Groups</h1>
-                  <ul tabIndex={0} className='border' onMouseDown={(e) => e.preventDefault()}>
+                  <ul tabIndex={0} className='border overflow-y-scroll h-[88vh]' onMouseDown={(e) => e.preventDefault()}>
                     {filteredOptions.map((opt) => (
                       <li key={opt.value} onClick={() => handleSelect(opt)} className='hover:bg-yellow-500 cursor-pointer pl-2 text-[14px]'>
                         {opt.label === 'primary' && <>&diams;</>} {opt.label}
@@ -329,4 +329,4 @@ const GroupCreateForm = () => {
   )
 }
 
-export default GroupCreateForm
+export default GroupCreate

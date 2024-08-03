@@ -1,7 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 
-const AlterGroupFilter = () => {
+const DisplayFilter = () => {
+
+    const { type } = useParams();
+
+    const formatType = (str) => {
+        return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    };
 
   return (
     <>
@@ -11,7 +17,7 @@ const AlterGroupFilter = () => {
              <div className='w-1/2 bg-slate-100 border border-l-blue-400 flex justify-center flex-col items-center'>
                 <div className="w-[50%] h-16 flex flex-col justify-center items-center border border-black bg-white border-b-0 ">
                     <p className="text-[13px] font-semibold underline underline-offset-4 decoration-gray-400">
-                        Master Alteration
+                        {formatType(type)} Display
                     </p>
                     <input
                         type="text"
@@ -43,4 +49,4 @@ const AlterGroupFilter = () => {
   )
 }
 
-export default AlterGroupFilter;
+export default DisplayFilter;

@@ -1,142 +1,210 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import RightSideButton from './right-side-button/RightSideButton';
 
 const Home = () => {
-
-    const menuItem = [
-        {label : 'Create', path : 'create', highlightChar : 'c'},
-        {label : 'Alter', path : 'alter', highlightChar : 'a'},
-        {label : 'Display', path : 'display', highlightChar : 'd'},
-        {label : 'Vouchers', path : 'vouchers', highlightChar : 'v'},
-        {label : 'Day BooK', path : 'daybook', highlightChar : 'k'},
-        {label : 'Report for Domss', path : 'report', highlightChar : 'r'}
+    const masterItems = [
+        { id: 1, name: 'Voucher Type Master',
+            subItems: [
+                { id: 2, name: 'Voucher Type', path: 'menu/voucher'},
+            ]
+        },
+        { id: 3, name: 'Currency Master Info', 
+            subItems: [
+                { id: 4, name: 'Currency Master', path: 'menu/currency'},
+            ]
+        },
+        { id: 5, name: 'Accounting Info Master', 
+            subItems: [
+                { id: 6, name: 'Account Group', path: 'menu/group' },
+                { id: 7, name: 'Account Ledger', path: 'menu/ledger' }
+            ] 
+        },
+        { id: 8, name: 'Inventory Info Master',
+            subItems: [
+                { id: 9, name: 'Stock Group', path: 'menu/stockGroup'},
+                { id: 10, name: 'Stock Category', path: 'menu/stockCategory'},
+                { id: 11, name: 'Stock Item', path: 'menu/stockItem'},
+                { id: 12, name: 'UOM', path: 'menu/unit'},
+            ]
+         },
+        { id: 13, name: 'Supplier Master' ,
+            subItems: [
+                { id: 14, name: 'Sundry Creditors', path: 'menu/sundryCreditors'}
+            ]
+        },
+        { id: 15, name: 'Customer Master',
+            subItems: [
+                { id: 16, name: 'Sundry Debtors', path: 'menu/sundryDebtors'}
+            ]
+        },
+        { id: 17, name: 'Department Master', 
+            subItems: [
+                { id: 18, name: 'Department Name', path: 'menu/department'}
+            ]
+        },
+        { id: 19, name: 'Location Master',
+            subItems: [
+                { id: 20, name: 'Godown Name', path: 'menu/location'}
+            ]
+        },
+        { id: 21, name: 'Head Office Category', 
+            subItems: [
+                { id: 22, name: 'Head Office', path: 'menu/headOffice'}
+            ]
+        },
+        { id: 23, name: 'Branch Office Category',
+            subItems: [
+                { id: 24, name: 'Branch Office', path: 'menu/branchOffice'}
+            ]
+        },
+        { id: 25, name: 'Revenue Category Master', 
+            subItems: [
+                { id: 26, name: 'Revenue Category', path: 'menu/revenueCategory'},
+                { id: 27, name: 'Revenue Centre', path: 'menu/revenueCentre'},
+            ]
+        },
+        { id: 28, name: 'Cost Category Master', 
+            subItems: [
+                { id: 29, name: 'Cost Category', path: 'menu/costCategory'},
+                { id: 30, name: 'Cost Centre', path: 'menu/costCentre'},
+            ]
+        },
+        { id: 31, name: 'Batch Master', 
+            subItems: [
+                { id: 32, name: 'Batch Master - Category', path: 'menu/batchMasterCategory'},
+                { id: 33, name: 'Batch Master - Serial No', path: 'menu/batchMasterSerialNumber'},
+                { id: 34, name: 'Batch Master - Color', path: 'menu/batchMasterColor'},
+                { id: 35, name: 'Batch Master - Size', path: 'menu/batchMasterSize'},
+                
+            ]
+        },
+        { id: 36, name: 'Project Category', 
+            subItems: [
+                { id: 37, name: 'Project Master', path: 'menu/projectMaster'}
+            ]
+        }
     ];
 
     const navigate = useNavigate();
-    const [activeIndex, setActiveIndex] = useState(parseInt(localStorage.getItem('activeIndex')) || 0);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [filter, setFilter] = useState('');
+    const inputRef = useRef(null);
+    const itemRefs = useRef([]);
+
+    // Determine which items to show based on filter
+    const filteredItems = filter
+        ? masterItems.flatMap(item =>
+            item.subItems
+                .filter(subItem => subItem.name.toLowerCase().includes(filter.toLowerCase()))
+                .map(subItem => ({...subItem, isSubItem: true, parentItem: item.name}))
+          )
+        : masterItems.flatMap(item =>
+            [{...item, isMainItem: true}].concat(item.subItems ? item.subItems.map(subItem => ({...subItem, isSubItem: true, parentItem: item.name})) : [])
+          );
+
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+
+         // Set activeIndex to 1 by default and 0 when filter is applied
+        setActiveIndex(filter ? 0 : 1); // Reset to the first item when filter changes
+    }, [filter]);
 
     useEffect(() => {
         const handleKeyDown = event => {
-            if (event.key === 'ArrowUp' && activeIndex > 0){
-                setActiveIndex(prev => prev - 1);
-            } else if (event.key === 'ArrowDown' && activeIndex < menuItem.length - 1){
-                setActiveIndex(prev => prev + 1);
-            } else if (event.key === 'Enter'){
-                navigate(menuItem[activeIndex].path);
-            } else if (/^[cC]$/.test(event.key)){
-                navigate('create');
-            } else if (/^[aA]$/.test(event.key)){
-                navigate('alter');
-            } else if (/^[dD]$/.test(event.key)){
-                navigate('display')
-            } else if (/^[vV]$/.test(event.key)){
-                navigate('vouchers');
-            } else if (/^[kK]$/.test(event.key)){
-                navigate('daybook');
-            } else if (/^[rR]$/.test(event.key)){
-                navigate('report');
+            const projectMasterIndex = filteredItems.findIndex(item => item.name === 'Project Master');
+    
+            if (event.key === 'ArrowUp') {
+                setActiveIndex(prev => {
+                    let newIndex = prev - 1;
+                    while (newIndex >= 0 && !filteredItems[newIndex].isSubItem) {
+                        newIndex--;
+                    }
+                    if (itemRefs.current[newIndex]) {
+                        itemRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                    return Math.max(-1, newIndex); // Ensure activeIndex is at least -1
+                });
+            } else if (event.key === 'ArrowDown') {
+                setActiveIndex(prev => {
+                    let newIndex = prev + 1;
+                    while (newIndex < filteredItems.length && !filteredItems[newIndex].isSubItem) {
+                        newIndex++;
+                    }
+                    // Restrict focus to not go beyond "Project Master"
+                    if (projectMasterIndex >= 0 && newIndex > projectMasterIndex) {
+                        newIndex = projectMasterIndex; // Focus on "Project Master"
+                    }
+                    if (itemRefs.current[newIndex]) {
+                        itemRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                    return newIndex;
+                });
+            } else if (event.key === 'Enter') {
+                if (activeIndex === -1) {
+                    navigate('/changeCompany');
+                } else if (filteredItems[activeIndex]?.path) {
+                    navigate(`/${filteredItems[activeIndex].path}`);
+                }
             }
         };
-
+    
         window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        }
-    }, [activeIndex, navigate]);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [activeIndex, filteredItems, navigate]);
 
-    useEffect(() => {
-        window.addEventListener('beforeunload', () => {
-            localStorage.clear();
-        });
-    },[]);
-
-    useEffect(() => {
-        localStorage.setItem('activeIndex', activeIndex);
-    },[activeIndex]);
-  return (
-    <>
-        <div className='container flex'>
-            <div className='w-[96%] flex h-[93.3vh]'>
-                {/* left side */}
-                <div className='w-1/2 bg-gradient-to-t to-blue-500 from-[#ccc]'></div>
-                {/* right side */}
-                <div className='w-1/2 bg-slate-100 flex justify-center items-center border border-l-blue-400'>
-                    <div className='w-[300px] h-96 border border-blue-400 text-sm bg-[#def]'>
-                        <h2 className='text-left text-white bg-[#2a67b1] px-16'>Gateway of Domss</h2>
-                        <div>
-                            <h2 className='py-1 ml-16 mt-5 text-[11px] text-[#2a67b1]'>MASTERS</h2>
-                            <ul>
-                                {menuItem.slice(0,3).map((item,index) => (
-                                    <li key={item.path} className={`${activeIndex === index ? 'bg-yellow-500 text-black' : ''} cursor-pointer w-full text-[13px] font-semibold h-[18px]`}>
-                                        <Link to={item.path} className='pl-16'>
-                                            {item.label.split('').map((char,idx) => (
-                                                <React.Fragment key={idx}>
-                                                    {char !== ' ' ? (
-                                                        <span className={`${char.toLowerCase() === item.highlightChar ? activeIndex === index ? 'text-black font-medium' : 'font-medium text-[#2a67b1]' : 'text-black'}`}>{char}</span>
-                                                    ) : (
-                                                        <span>&nbsp;</span>
-                                                    )}
-                                                </React.Fragment>
-                                            ))}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
+    return (
+        <>
+        <div className="container flex">
+            <div className='w-[96%] h-[93.3vh] flex'>
+                 <div className='w-1/2 bg-gradient-to-t to-blue-500 from-[#ccc]'></div>
+                 <div className='w-1/2 bg-slate-100 border border-l-blue-400 flex justify-center flex-col items-center'>
+                    <div className="w-[50%] h-16 flex flex-col justify-center items-center border border-black bg-white border-b-0 ">
+                        <p className="text-[13px] font-semibold underline underline-offset-4 decoration-gray-400">
+                            All Masters
+                        </p>
+                        <input
+                            type="text"
+                            id="masterName"
+                            name="masterName"
+                            ref={inputRef}
+                            value={filter}
+                            onChange={e => setFilter(e.target.value)}
+                            className="w-[250px] ml-2 mt-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200  focus:border focus:border-blue-500 focus:outline-none"
+                            autoComplete="off"
+                        />
+                    </div>
+                    <div className='w-[350px] h-[85vh] border border-gray-600 bg-[#def1fc]'>
+                        <h2 className="p-1 bg-[#2a67b1] text-white text-left text-[13px] pl-3">
+                            List of Masters
+                        </h2>
+                        <div className='border border-b-slate-400'>
+                            <Link to={'/changeCompany'}>
+                                <p className={`text-[13px] font-semibold text-right pr-3 mt-5 ${activeIndex === -1 ? 'bg-yellow-500' : ''}`}>
+                                    Change Company
+                                </p>
+                            </Link>
                         </div>
-                        <div>
-                            <h2 className='py-1 ml-16 mt-4 text-[11px] text-[#2a67b1]'>TRANSACTIONS</h2>
-                            <ul>
-                                {menuItem.slice(3,5).map((item,index) => (
-                                    <li key={item.path} className={`${activeIndex === index + 3 ? 'bg-yellow-500' : ''} cursor-pointer w-full text-[13px] font-semibold h-[18px]`}>
-                                        <Link to={item.path} className='pl-16'>
-                                            {item.label.split('').map((char,idx) => (
-                                                <React.Fragment key={idx}>
-                                                    {char !== ' ' ? (
-                                                        <span className={`${char.toLowerCase() === item.highlightChar ? activeIndex === index + 3 ? 'text-black font-medium' : 'text-[#2a67b1] font-medium' : 'text-black'}`}>
-                                                            {char}
-                                                        </span>
-                                                    ) : (
-                                                        <span>
-                                                            &nbsp;
-                                                        </span>
-                                                    )}
-                                                </React.Fragment>
-                                            ))}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div>
-                            <h2 className='text-[11px] ml-16 py-1 mt-4 text-[#2a67b1]'>DOMSS REPORT</h2>
-                            <ul>
-                                {menuItem.slice(5).map((item,index) => (
-                                    <li key={item.path} className={`${activeIndex === index + 5 ? 'bg-yellow-500' : ''} cursor-pointer w-full text-[13px] font-semibold h-[18px]`}>
-                                        <Link to={item.path} className='pl-16'>
-                                            {item.label.split('').map((char,idx) => (
-                                                <React.Fragment key={idx}>
-                                                    {char !== ' ' ? (
-                                                        <span className={`${char.toLowerCase() === item.highlightChar ? activeIndex === index + 5 ? 'text-black font-medium' : 'text-[#2a67b1] font-medium' : 'text-black'}`}>
-                                                            {char}
-                                                        </span>
-                                                    ) : (
-                                                        <span>&nbsp;</span>
-                                                    )}
-                                                </React.Fragment>
-                                            ))}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
+                        <div className='overflow-y-scroll h-[73vh]'>
+                            {filteredItems.map((item, index) => (
+                                <div key={item.id} ref={el => itemRefs.current[index] = el}>
+                                    <Link to={`/${item.path}`}>
+                                        <p className={`text-[13px] font-bold pl-3 ${item.isSubItem ? 'pl-8 font-semibold cursor-pointer' : ''} ${filteredItems[activeIndex]?.id === item.id ? 'bg-yellow-500' : ''}`}>
+                                            {item.name}
+                                        </p>
+                                    </Link>
+                                </div>
+                            ))}
                         </div>
                     </div>
-                </div>
+                 </div>
             </div>
             <RightSideButton />
         </div>
-    </>
-  )
+        </>
+    );
 }
 
-export default Home
+export default Home;

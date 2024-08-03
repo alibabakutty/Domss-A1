@@ -1,16 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Navbar from "./components/nav-items/Navbar"
 import NavbarDropDown from "./components/nav-items/NavbarDropDown"
-import CreateForm from "./components/forms/CompanyCreateForm"
+import CreateForm from "./components/forms/CompanyCreate"
 import HeaderText from "./components/header-text/HeaderText"
 import Home from "./components/Home"
-import CreateMasterFilter from "./components/create/CreateMasterFilter"
+import CDAMaster from './components/cda-menu/CDAMaster'
 import CreateMasterFormRouter from "./components/create/CreateMasterFormRouter"
-import MasterRouter from "./components/MasterRouter"
-import AlterGroupRouter from "./components/alter/AlterGroupRouter"
-import DisplayGroupRouter from "./components/display/DisplayGroupRouter"
-
-
+import DisplayFilter from "./components/display/DisplayFilter"
+import AlterFilter from "./components/alter/AlterFilter"
 
 function App() {
   
@@ -21,13 +18,13 @@ function App() {
         <Navbar />
         <HeaderText />
         <Routes>
-          <Route path="/" element={<Home headerText = "Gateway of Domss" />} />
+          <Route path='/' element={<Home />} />
           <Route path="nav/:navbar" element={<NavbarDropDown headerText = "Gateway of Domss" />} />
           <Route path="/companyCreateForm" element={<CreateForm headerText = "Company Creation" />} />
-          <Route path=":type" element={<MasterRouter />} />
-          <Route path="/create/:type" element={<CreateMasterFormRouter />} />
-          <Route path="/alter/:type" element={<AlterGroupRouter />} />
-          <Route path="/display/:type" element={<DisplayGroupRouter />} />
+          <Route path="menu/:type" element={<CDAMaster />} />
+          <Route path="/:type/create" element={<CreateMasterFormRouter />} />
+          <Route path="/:type/display" element={<DisplayFilter />} />
+          <Route path="/:type/alter" element={<AlterFilter />} />
         </Routes>
       </BrowserRouter>
     </>

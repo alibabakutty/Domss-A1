@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 
-const DisplayGroupFilter = () => {
-
+const AlterFilter = () => {
+    const { type } = useParams();
   return (
     <>
     <div className="container flex">
@@ -11,7 +11,7 @@ const DisplayGroupFilter = () => {
              <div className='w-1/2 bg-slate-100 border border-l-blue-400 flex justify-center flex-col items-center'>
                 <div className="w-[50%] h-16 flex flex-col justify-center items-center border border-black bg-white border-b-0 ">
                     <p className="text-[13px] font-semibold underline underline-offset-4 decoration-gray-400">
-                        Master Display
+                        {type.toUpperCase()} Alteration
                     </p>
                     <input
                         type="text"
@@ -43,4 +43,4 @@ const DisplayGroupFilter = () => {
   )
 }
 
-export default DisplayGroupFilter;
+export default AlterFilter;

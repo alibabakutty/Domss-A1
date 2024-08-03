@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import RightSideButton from '../right-side-button/RightSideButton';
 
-const CreateForm = () => {
+const CompanyCreate = () => {
   const fields = [
     {label: 'Company Name', name: 'companyName'},
     {label: 'Mailing Name', name: 'mailingName'},
@@ -83,4 +83,4 @@ const CreateForm = () => {
   );
 }
 
-export default CreateForm;
+export default CompanyCreate;

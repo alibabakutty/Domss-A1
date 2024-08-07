@@ -1,5 +1,6 @@
 export default [
 	{
+		id: 1,
 		value: "Primary",
 		label: "Primary",
 		alias: "",
@@ -8,6 +9,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 2,
 		value: "Administrative Expenses",
 		label: "Administrative Expenses",
 		alias: "",
@@ -16,6 +18,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 3,
 		value: "Bank Accounts",
 		label: "Bank Accounts",
 		alias: "(Current Assets)",
@@ -24,6 +27,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 4,
 		value: "Bank OCC A/c",
 		label: "Bank OCC A/c",
 		alias: "",
@@ -32,6 +36,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 5,
 		value: "Bank OD A/c",
 		label: "Bank OD A/c",
 		alias: "(Loans(Liability))",
@@ -40,6 +45,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 6,
 		value: "Branch / Divisions",
 		label: "Branch / Divisions",
 		alias: "",
@@ -48,6 +54,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 7,
 		value: "Capital Account",
 		label: "Capital Account",
 		alias: "",
@@ -56,6 +63,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 8,
 		value: "Cash-in-Hand",
 		label: "Cash-in-Hand",
 		alias: "(Current Assets)",
@@ -64,6 +72,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 9,
 		value: "Current Assets",
 		label: "Current Assets",
 		alias: "",
@@ -72,6 +81,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 10,
 		value: "Current Liabilities",
 		label: "Current Liabilities",
 		alias: "",
@@ -80,6 +90,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 11,
 		value: "Deposits (Asset)",
 		label: "Deposits (Asset)",
 		alias: "(Current Assets)",
@@ -88,6 +99,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 12,
 		value: "Direct Expenses",
 		label: "Direct Expenses",
 		alias: "",
@@ -96,6 +108,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 13,
 		value: "Direct Incomes",
 		label: "Direct Incomes",
 		alias: "",
@@ -104,6 +117,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 14,
 		value: "Duties & Taxes",
 		label: "Duties & Taxes",
 		alias: "(Current Liabilities)",
@@ -112,6 +126,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 15,
 		value: "Expenses (Direct)",
 		label: "Expenses (Direct)",
 		alias: "",
@@ -120,6 +135,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 16,
 		value: "Expenses (Indirect)",
 		label: "Expenses (Indirect)",
 		alias: "",
@@ -128,6 +144,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 17,
 		value: "Export Sales",
 		label: "Export Sales",
 		alias: "",
@@ -136,6 +153,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 18,
 		value: "Fixed Assets",
 		label: "Fixed Assets",
 		alias: "",
@@ -144,6 +162,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 19,
 		value: "Finance and Other Charges",
 		label: "Finance and Other Charges",
 		alias: "",
@@ -152,6 +171,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 20,
 		value: "Import Purchase",
 		label: "Import Purchase",
 		alias: "",
@@ -160,6 +180,7 @@ export default [
 		thirdDiv: true
 	},
 	{
+		id: 21,
 		value: "Income (Direct)",
 		label: "Income (Direct)",
 		alias: "",
@@ -168,6 +189,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 22,
 		value: "Income (Indirect)",
 		label: "Income (Indirect)",
 		alias: "",
@@ -176,6 +198,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 23,
 		value: "Indirect Expenses",
 		label: "Indirect Expenses",
 		alias: "",
@@ -184,6 +207,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 24,
 		value: "Indirect Incomes",
 		label: "Indirect Incomes",
 		alias: "",
@@ -192,6 +216,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 25,
 		value: "Investments",
 		label: "Investments",
 		alias: "",
@@ -200,6 +225,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 26,
 		value: "Loans & Advances (Asset)",
 		label: "Loans & Advances (Asset)",
 		alias: "(Current Assets)",
@@ -208,6 +234,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 27,
 		value: "Loans(Liability)",
 		label: "Loans (Liability)",
 		alias: "",
@@ -216,6 +243,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 28,
 		value: "Misc. Expenses (ASSET)",
 		label: "Misc. Expenses (ASSET)",
 		alias: "",
@@ -224,6 +252,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 29,
 		value: "Production Expenses",
 		label: "Production Expenses",
 		alias: "",
@@ -232,6 +261,7 @@ export default [
 		thirdDiv: true
 	},
 	{
+		id: 30,
 		value: "Provisions",
 		label: "Provisions",
 		alias: "(Current Liabilities)",
@@ -240,6 +270,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 31,
 		value: "Purchase Accounts",
 		label: "Purchase Accounts",
 		alias: "",
@@ -248,6 +279,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 32,
 		value: "Reserves & Surplus",
 		label: "Reserves & Surplus",
 		alias: "(Capital Account)",
@@ -256,6 +288,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 33,
 		value: "Retained Earnings",
 		label: "Retained Earnings",
 		alias: "",
@@ -264,6 +297,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 34,
 		value: "Sales Accounts",
 		label: "Sales Accounts",
 		alias: "",
@@ -272,6 +306,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 35,
 		value: "Secured Loans",
 		label: "Secured Loans",
 		alias: "(Loans(Liability))",
@@ -280,6 +315,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 36,
 		value: "Selling and Distribution Cost",
 		label: "Selling and Distribution Cost",
 		alias: "",
@@ -288,6 +324,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 37,
 		value: "Staff Salary and Welfare Cost",
 		label: "Staff Salary and Welfare Cost",
 		alias: "",
@@ -296,6 +333,7 @@ export default [
 		thirdDiv: true,
 	},
 	{
+		id: 38,
 		value: "Stock-in-Hand",
 		label: "Stock-in-Hand",
 		alias: "",
@@ -304,6 +342,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 39,
 		value: "Sundry Creditors",
 		label: "Sundry Creditors",
 		alias: "",
@@ -312,6 +351,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 40,
 		value: "Sundry Debtors",
 		label: "Sundry Debtors",
 		alias: "(Current Assets)",
@@ -320,6 +360,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 41,
 		value: "Suspense A/c",
 		label: "Suspense A/c",
 		alias: "",
@@ -328,6 +369,7 @@ export default [
 		thirdDiv: false,
 	},
 	{
+		id: 42,
 		value: "Unsecured Loans",
 		label: "Unsecured Loans",
 		alias: "",
@@ -336,4 +378,3 @@ export default [
 		thirdDiv: true,
 	},
 ];
-

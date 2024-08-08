@@ -61,15 +61,16 @@ const AlterFilter = () => {
                     <div className='overflow-y-scroll h-[73vh]'>
                         <div>
                             <ul className='pl-2'>
-                                <p className='text-sm font-medium'>{`Customized ${type}`}</p>
+                                <p className='text-sm font-medium capitalize'>{`Customized ${type}`}</p>
                                 {voucherTypeSuggestions.map((voucher,index) => (
                                     <li key={index} className='text-sm capitalize'>
                                         {voucher.voucherTypeName}
+                                        <p className='text-[11px] text-slate-400'>{voucher.voucherType}</p>
                                     </li>
                                 ))}
                             </ul>
                              {/* Conditionally render pre-defined items */}
-                             <p className='text-sm font-medium pl-2'>{`Pre-Defined ${type}`}</p>
+                             <p className='text-sm font-medium pl-2 capitalize'>{`Pre-Defined ${type}`}</p>
                             {type === 'voucher' && (
                                 <ul className='pl-2'>
                                     {preDefinedVoucherTypeSuggestions.map((voucher,index) => (

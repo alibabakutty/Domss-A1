@@ -1,16 +1,19 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
 import VoucherMenu from '../../assets/VoucherMenu';
 import { listOfVouchers } from '../services/MasterService';
+import NameValues from '../../assets/NameValues';
 
 const DisplayFilter = () => {
 
     const { type } = useParams();
-    const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0);
     const [voucherTypeSuggestion, setVoucherTypeSuggestions] = useState([]);
     const [preDefinedVoucherTypeSuggestions, setPreDefinedVoucherTypeSuggestions] = useState(VoucherMenu);
+    const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const inputRef = useRef(null);
+    const navigate = useNavigate();
 
     const formatType = (str) => {
         return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
@@ -31,6 +34,29 @@ const DisplayFilter = () => {
        }
     },[type]);
 
+    // Filter NameValues based on the type
+    const filteredNameValues = NameValues.filter(item => item.value.toLowerCase().includes(type.toLowerCase()));
+
+    useEffect(() => {
+        const handleKeyDown = e => {
+            if (e.key === 'ArrowDown'){
+                setHighlightedSuggestionVoucherType(highlightedSuggestionVoucherType + 1);
+            } else if (e.key === 'ArrowUp'){
+                setHighlightedSuggestionVoucherType(highlightedSuggestionVoucherType - 1);
+            } else if (e.key === "Enter"){
+                if (selectedIndex === 0){
+                    navigate('/voucher/create');
+                    e.preventDefault();
+                } else if (selectedIndex === 1){
+                    navigate('/menu/voucher');
+                } else if (voucherTypeSuggestion[selectedIndex - 2]){
+                    navigate(``);
+                }
+                const selectedVoucherType = voucherTypeSuggestion[highlightedSuggestionVoucherType];
+            }
+        }
+    })
+
   return (
     <>
     <div className="container flex">
@@ -41,14 +67,17 @@ const DisplayFilter = () => {
                     <p className="text-[13px] font-semibold underline underline-offset-4 decoration-gray-400">
                         {formatType(type)} Display
                     </p>
-                    <input
+                    {filteredNameValues.map(({id, value}) => (
+                        <input
+                        key={id}
                         type="text"
-                        id="voucherTypeName"
-                        name="voucherTypeName"
+                        id={value}
+                        name={value}
                         ref={inputRef}
                         className="w-[250px] ml-2 mt-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200  focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off"
                     />
+                    ))}
                 </div>
                 <div className='w-[350px] h-[85vh] border border-gray-600 bg-[#def1fc]'>
                     <h2 className="p-1 bg-[#2a67b1] text-white text-left text-[13px] pl-3">
@@ -61,20 +90,21 @@ const DisplayFilter = () => {
                     <div className='overflow-y-scroll h-[73vh]'>
                         <div>
                             <ul className='pl-2'>
-                                <p className='text-sm font-medium'>{`Customized ${type}`}</p>
+                                <p className='text-sm font-medium capitalize'>{`Customized ${type}`}</p>
                                 {voucherTypeSuggestion.map((voucher,index) => (
                                     <li key={index} className='text-sm capitalize'>
-                                        {voucher.voucherTypeName}
+                                        <Link>{voucher.voucherTypeName}</Link>
+                                        <p className='text-[11px] text-slate-400 capitalize pl-2 font-medium'>{voucher.voucherType}</p>
                                     </li>
                                 ))}
                             </ul>
                              {/* Conditionally render pre-defined items */}
-                             <p className='text-sm font-medium pl-2'>{`Pre-Defined ${type}`}</p>
+                             <p className='text-sm font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p>
                             {type === 'voucher' && (
                                 <ul className='pl-2'>
                                     {preDefinedVoucherTypeSuggestions.map((voucher,index) => (
                                         <li key={index} className='text-sm capitalize'>
-                                            {voucher.value}
+                                            <Link>{voucher.value}</Link>
                                         </li>
                                     ))}
                                 </ul>

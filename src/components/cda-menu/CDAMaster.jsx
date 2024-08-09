@@ -25,11 +25,11 @@ const CDAMaster = () => {
                 navigate(menuItem[activeIndex].path);
             } else if (/^[cC]$/.test(event.key)){
                 navigate('create');
-            } else if (/^[aA]$/.test(event.key)){
-                navigate('alter');
             } else if (/^[dD]$/.test(event.key)){
                 navigate('display')
-            } 
+            }  else if (/^[aA]$/.test(event.key)){
+                navigate('alter');
+            }
         };
 
         window.addEventListener('keydown', handleKeyDown);

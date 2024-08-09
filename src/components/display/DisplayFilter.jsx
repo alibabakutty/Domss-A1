@@ -9,10 +9,11 @@ const DisplayFilter = () => {
 
     const { type } = useParams();
     const [voucherTypeSuggestion, setVoucherTypeSuggestions] = useState([]);
-    const [preDefinedVoucherTypeSuggestions, setPreDefinedVoucherTypeSuggestions] = useState(VoucherMenu);
+    const [preDefinedVoucherTypeSuggestions] = useState(VoucherMenu);
     const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0);
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState(2);
     const inputRef = useRef(null);
+    const listItemRefs = useRef([]); // Ref array for list items
     const navigate = useNavigate();
 
     const formatType = (str) => {
@@ -25,13 +26,13 @@ const DisplayFilter = () => {
         }
 
         // Only fetch data if the current path is '/voucher/display'
-       if (type === 'voucher'){
-        listOfVouchers().then(response =>{
-            setVoucherTypeSuggestions(response.data);
-        }).catch(error => {
-            console.log(error);
-        })
-       }
+        if (type === 'voucher'){
+            listOfVouchers().then(response =>{
+                setVoucherTypeSuggestions(response.data);
+            }).catch(error => {
+                console.log(error);
+            })
+        }
     },[type]);
 
     // Filter NameValues based on the type
@@ -40,9 +41,27 @@ const DisplayFilter = () => {
     useEffect(() => {
         const handleKeyDown = e => {
             if (e.key === 'ArrowDown'){
-                setHighlightedSuggestionVoucherType(highlightedSuggestionVoucherType + 1);
+                setSelectedIndex(prev => {
+                    const newIndex = Math.min(prev + 1, voucherTypeSuggestion.length + preDefinedVoucherTypeSuggestions.length + 1);
+                    setHighlightedSuggestionVoucherType(
+                        newIndex > 1 ? newIndex - 2 : highlightedSuggestionVoucherType
+                    );
+                    if (listItemRefs.current[newIndex]) {
+                        listItemRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                    return newIndex;
+                });
             } else if (e.key === 'ArrowUp'){
-                setHighlightedSuggestionVoucherType(highlightedSuggestionVoucherType - 1);
+                setSelectedIndex(prev => {
+                    const newIndex = Math.max(prev - 1, 0);
+                    setHighlightedSuggestionVoucherType(
+                        newIndex > 1 ? newIndex - 2 : highlightedSuggestionVoucherType
+                    );
+                    if (listItemRefs.current[newIndex]) {
+                        listItemRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                    return newIndex;
+                });
             } else if (e.key === "Enter"){
                 if (selectedIndex === 0){
                     navigate('/voucher/create');
@@ -50,12 +69,18 @@ const DisplayFilter = () => {
                 } else if (selectedIndex === 1){
                     navigate('/menu/voucher');
                 } else if (voucherTypeSuggestion[selectedIndex - 2]){
-                    navigate(``);
+                    // Navigate to the selected voucher type
+                    navigate(`/display/${voucherTypeSuggestion[selectedIndex - 2].voucherTypeName}`);
+                } else if (preDefinedVoucherTypeSuggestions[selectedIndex - voucherTypeSuggestion.length - 2]){
+                    navigate(`/display/${preDefinedVoucherTypeSuggestions[selectedIndex - voucherTypeSuggestion.length - 2].value}`);
                 }
-                const selectedVoucherType = voucherTypeSuggestion[highlightedSuggestionVoucherType];
-            }
+            } else if (e.key === 'Escape'){
+                navigate('/menu/voucher');
+            };
         }
-    })
+        window.addEventListener('keydown',handleKeyDown);
+        return () => window.removeEventListener('keydown',handleKeyDown);
+    },[selectedIndex, highlightedSuggestionVoucherType, voucherTypeSuggestion, preDefinedVoucherTypeSuggestions, navigate]);
 
   return (
     <>
@@ -84,16 +109,28 @@ const DisplayFilter = () => {
                         List of Groups
                     </h2>
                     <div className='border border-b-slate-400'>
-                        <Link><p className='ml-[295px] text-sm'>Create</p></Link>
-                        <Link><p className='ml-[303px] text-sm'>Back</p></Link>
+                        <div className={`w-full ${selectedIndex === 0 ? 'bg-yellow-200' : ''}`}>
+                            <Link to={`/voucher/create`} className=''>
+                                <p className={`ml-[295px] text-sm`}>Create</p>
+                            </Link>
+                        </div>
+                        <div className={`w-full ${selectedIndex === 1 ? 'bg-yellow-200' : ''}`}>
+                            <Link to={`/menu/voucher`} className=''>
+                                <p className={`ml-[303px] text-sm `}>Back</p>
+                            </Link>
+                        </div>
                     </div>
                     <div className='overflow-y-scroll h-[73vh]'>
                         <div>
-                            <ul className='pl-2'>
-                                <p className='text-sm font-medium capitalize'>{`Customized ${type}`}</p>
+                            <ul className=''>
+                                <p className='text-sm font-medium capitalize pl-2'>{`Customized ${type}`}</p>
                                 {voucherTypeSuggestion.map((voucher,index) => (
-                                    <li key={index} className='text-sm capitalize'>
-                                        <Link>{voucher.voucherTypeName}</Link>
+                                    <li 
+                                        key={index} 
+                                        className={`text-sm capitalize`}
+                                        ref={el => listItemRefs.current[index + 2] = el} // Offset by 2 for Create and Back
+                                    >
+                                        <Link to={`/display/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-2' : 'pl-2'}`}>{voucher.voucherTypeName}</Link>
                                         <p className='text-[11px] text-slate-400 capitalize pl-2 font-medium'>{voucher.voucherType}</p>
                                     </li>
                                 ))}
@@ -101,10 +138,14 @@ const DisplayFilter = () => {
                              {/* Conditionally render pre-defined items */}
                              <p className='text-sm font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p>
                             {type === 'voucher' && (
-                                <ul className='pl-2'>
+                                <ul className=''>
                                     {preDefinedVoucherTypeSuggestions.map((voucher,index) => (
-                                        <li key={index} className='text-sm capitalize'>
-                                            <Link>{voucher.value}</Link>
+                                        <li 
+                                            key={index} 
+                                            className={`text-sm capitalize pl-2 ${highlightedSuggestionVoucherType === voucherTypeSuggestion.length + index ? 'bg-yellow-200' : ''}`}
+                                            ref={el => listItemRefs.current[voucherTypeSuggestion.length + index + 2] = el} // Offset by 2 for Create and Back
+                                        >
+                                            <Link to={`/display/${voucher.value}`}>{voucher.value}</Link>
                                         </li>
                                     ))}
                                 </ul>

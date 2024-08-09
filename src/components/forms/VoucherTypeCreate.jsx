@@ -7,15 +7,15 @@ const VoucherTypeCreate = () => {
   const [voucher, setVoucher] = useState({
     voucherTypeName: '',
     voucherType: '',
-    startingNumber: '',
-    widthOfNumericalPart: '',
-    prefillWithZero: '',
-    restartNumberingApplicationForm: '',
-    restartNumberingStartingNumber: '',
-    restartNumberingPeriodicity: '',
-    prefixDetailsApplicationForm: '',
+    startingNumber: 1,
+    widthOfNumericalPart: 0,
+    prefillWithZero: 'No',
+    restartNumberingApplicationForm: '1-Apr-2024',
+    restartNumberingStartingNumber: 1,
+    restartNumberingPeriodicity: 'Yearly',
+    prefixDetailsApplicationForm: '1-Apr-2024',
     prefixDetailsParticulars: '',
-    suffixDetailsApplicationForm: '',
+    suffixDetailsApplicationForm: '1-Apr-2024',
     suffixDetailsParticulars: '',
   });
 

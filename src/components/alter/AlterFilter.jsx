@@ -1,15 +1,14 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import VoucherMenu from '../../assets/VoucherMenu';
-import { listOfVouchers } from '../services/MasterService';
+import { listOfPreDefinedVouchers, listOfVouchers } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const AlterFilter = () => {
 
     const { type } = useParams();
     const [voucherTypeSuggestion, setVoucherTypeSuggestions] = useState([]);
-    const [preDefinedVoucherTypeSuggestions] = useState(VoucherMenu);
+    const [preDefinedVoucherTypeSuggestions, setPreDefinedVoucherTypeSuggestions] = useState([]);
     const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0);
     const [selectedIndex, setSelectedIndex] = useState(2);
     const inputRef = useRef(null);
@@ -27,10 +26,14 @@ const AlterFilter = () => {
 
         // Only fetch data if the current path is '/voucher/display'
         if (type === 'voucher'){
-            listOfVouchers().then(response =>{
-                setVoucherTypeSuggestions(response.data);
-            }).catch(error => {
-                console.log(error);
+            // Fetch both custom and predefined vouchers
+            Promise.all([listOfVouchers(), listOfPreDefinedVouchers()])
+            .then(([customResponse, predefinedResponse]) => {
+                setVoucherTypeSuggestions(customResponse.data);
+                setPreDefinedVoucherTypeSuggestions(predefinedResponse.data);
+            })
+            .catch(error => {
+                console.error(error);
             })
         }
     },[type]);
@@ -44,7 +47,7 @@ const AlterFilter = () => {
                 setSelectedIndex(prev => {
                     const newIndex = Math.min(prev + 1, voucherTypeSuggestion.length + preDefinedVoucherTypeSuggestions.length + 1);
                     setHighlightedSuggestionVoucherType(
-                        newIndex > 1 ? newIndex - 2 : highlightedSuggestionVoucherType
+                        newIndex - 2 >= 0 ? newIndex - 2 : - 1
                     );
                     if (listItemRefs.current[newIndex]) {
                         listItemRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -55,7 +58,7 @@ const AlterFilter = () => {
                 setSelectedIndex(prev => {
                     const newIndex = Math.max(prev - 1, 0);
                     setHighlightedSuggestionVoucherType(
-                        newIndex > 1 ? newIndex - 2 : highlightedSuggestionVoucherType
+                        newIndex - 2 >= 0 ? newIndex - 2 : -1
                     );
                     if (listItemRefs.current[newIndex]) {
                         listItemRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -70,9 +73,9 @@ const AlterFilter = () => {
                     navigate('/menu/voucher');
                 } else if (voucherTypeSuggestion[selectedIndex - 2]){
                     // Navigate to the selected voucher type
-                    navigate(`/alter/${voucherTypeSuggestion[selectedIndex - 2].voucherTypeName}`);
+                    navigate(`/voucherTypeMasterApi/alterVoucherTypeMaster/${voucherTypeSuggestion[selectedIndex - 2].voucherTypeName}`);
                 } else if (preDefinedVoucherTypeSuggestions[selectedIndex - voucherTypeSuggestion.length - 2]){
-                    navigate(`/alter/${preDefinedVoucherTypeSuggestions[selectedIndex - voucherTypeSuggestion.length - 2].value}`);
+                    navigate(`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${preDefinedVoucherTypeSuggestions[selectedIndex - voucherTypeSuggestion.length - 2].voucherType}`);
                 }
             } else if (e.key === 'Escape'){
                 navigate('/menu/voucher');
@@ -85,7 +88,7 @@ const AlterFilter = () => {
   return (
     <>
     <div className="container flex">
-        <div className='w-[96%] h-[93.3vh] flex'>
+        <div className='w-[96%] h-[92.9vh] flex'>
              <div className='w-1/2 bg-gradient-to-t to-blue-500 from-[#ccc]'></div>
              <div className='w-1/2 bg-slate-100 border border-l-blue-400 flex justify-center flex-col items-center'>
                 <div className="w-[50%] h-16 flex flex-col justify-center items-center border border-black bg-white border-b-0 ">
@@ -130,8 +133,9 @@ const AlterFilter = () => {
                                         className={`text-sm capitalize`}
                                         ref={el => listItemRefs.current[index + 2] = el} // Offset by 2 for Create and Back
                                     >
-                                        <Link to={`/alter/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-2' : 'pl-2'}`}>{voucher.voucherTypeName}</Link>
-                                        <p className='text-[11px] text-slate-400 capitalize pl-2 font-medium'>{voucher.voucherType}</p>
+                                        <p className='text-[11px] text-[#2a67b1] capitalize pl-2 font-medium'>{voucher.voucherType}</p>
+                                        <Link to={`/voucherTypeMasterApi/alterVoucherTypeMaster/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-2' : 'pl-2'}`}>{voucher.voucherTypeName}</Link>
+                                        
                                     </li>
                                 ))}
                             </ul>
@@ -145,7 +149,7 @@ const AlterFilter = () => {
                                             className={`text-sm capitalize pl-2 ${highlightedSuggestionVoucherType === voucherTypeSuggestion.length + index ? 'bg-yellow-200' : ''}`}
                                             ref={el => listItemRefs.current[voucherTypeSuggestion.length + index + 2] = el} // Offset by 2 for Create and Back
                                         >
-                                            <Link to={`/alter/${voucher.value}`}>{voucher.value}</Link>
+                                            <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`}>{voucher.voucherType}</Link>
                                         </li>
                                     ))}
                                 </ul>

@@ -158,7 +158,7 @@ const Home = () => {
     return (
         <>
         <div className="container flex">
-            <div className='w-[96%] h-[93.3vh] flex'>
+            <div className='w-[96%] h-[92.9vh] flex'>
                  <div className='w-1/2 bg-gradient-to-t to-blue-500 from-[#ccc]'></div>
                  <div className='w-1/2 bg-slate-100 border border-l-blue-400 flex justify-center flex-col items-center'>
                     <div className="w-[50%] h-16 flex flex-col justify-center items-center border border-black bg-white border-b-0 ">
@@ -187,7 +187,7 @@ const Home = () => {
                                 </p>
                             </Link>
                         </div>
-                        <div className='overflow-y-scroll h-[73vh]'>
+                        <div className='overflow-y-scroll h-[70vh]'>
                             {filteredItems.map((item, index) => (
                                 <div key={item.id} ref={el => itemRefs.current[index] = el}>
                                     <Link to={`/${item.path}`}>

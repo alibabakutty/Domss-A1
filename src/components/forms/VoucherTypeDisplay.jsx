@@ -1,42 +1,36 @@
 import React, { useEffect, useRef, useState } from 'react';
 import RightSideButton from '../right-side-button/RightSideButton';
-import { createVoucherTypeMaster, getSpecificVoucher } from '../services/MasterService';
-import VoucherMenu from '../../assets/VoucherMenu';
 import { useParams } from 'react-router-dom';
+import { getSpecificPreDefinedVoucher, getSpecificVoucher } from '../services/MasterService';
+const VoucherTypeDisplay = () => {
+    const { type } = useParams();
+    const [voucher, setVoucher] = useState({
+        voucherTypeName: '',
+        voucherType: '',
+        startingNumber: '',
+        widthOfNumericalPart: '',
+        prefillWithZero: '',
+        restartNumberingApplicationForm: '',
+        restartNumberingStartingNumber: '',
+        restartNumberingPeriodicity: '',
+        prefixDetailsApplicationForm: '',
+        prefixDetailsParticulars: '',
+        suffixDetailsApplicationForm: '',
+        suffixDetailsParticulars: '',
+    });
 
-const VoucherTypeCreate = () => {
-  const [voucher, setVoucher] = useState({
-    voucherTypeName: '',
-    voucherType: '',
-    startingNumber: 1,
-    widthOfNumericalPart: 0,
-    prefillWithZero: 'No',
-    restartNumberingApplicationForm: '1-Apr-2024',
-    restartNumberingStartingNumber: 1,
-    restartNumberingPeriodicity: 'Yearly',
-    prefixDetailsApplicationForm: '1-Apr-2024',
-    prefixDetailsParticulars: '',
-    suffixDetailsApplicationForm: '1-Apr-2024',
-    suffixDetailsParticulars: '',
-  });
-
-  const [voucherTypeFocused, setVoucherTypeFocused] = useState(false);
-  const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0);
-  const [voucherTypeSuggestions, setVoucherTypeSuggestions] = useState(VoucherMenu);
-  const [periodicityFocused, setPeriodicityFocused] = useState(false);
-  const [highlightedSuggestionPeriodicity, setHighlightedSuggestionPeriodicity] = useState(0);
-  const [periodicitySuggestions] = useState(['Daily', 'Monthly', 'Never', 'Weekly', 'Yearly']);
   const inputRefs = useRef([]);
-  const optionsRef = useRef(null);
-  const periodicityRef = useRef(null);
 
   useEffect(() => {
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
       pulseCursor(inputRefs.current[0]);
-
-      loadVoucherType();
     }
+
+    
+    loadVoucherTypeName();
+    
+    loadPreDefinedVoucherTypeName();
   }, []);
 
   const pulseCursor = input => {
@@ -47,22 +41,6 @@ const VoucherTypeCreate = () => {
         input.value = value.charAt(0).toUpperCase() + value.slice(1);
         input.setSelectionRange(0, 0);
       }, 0);
-    }
-  };
-
-  const handleInputChange = e => {
-    const { name, value } = e.target;
-    setVoucher(prevVoucher => ({
-      ...prevVoucher,
-      [name]: value,
-    }));
-
-    if (name === 'voucherType') {
-      const filtered = VoucherMenu.filter(item =>
-        item.label.toLowerCase().includes(value.toLowerCase()),
-      );
-      setVoucherTypeSuggestions(filtered);
-      setVoucherTypeFocused(true);
     }
   };
 
@@ -87,22 +65,7 @@ const VoucherTypeCreate = () => {
     }
 
     if (key === 'Enter') {
-      if (voucherTypeFocused && voucherTypeSuggestions.length > 0) {
-        // Select the highlighted suggestion
-        const selectedItem = voucherTypeSuggestions[highlightedSuggestionVoucherType];
-        setVoucher(prevVoucher => ({
-          ...prevVoucher,
-          voucherType: selectedItem.label,
-        }));
-        setVoucherTypeFocused(false); // Hide suggestions after selection
-      } else if (periodicityFocused && periodicitySuggestions.length > 0){
-        const selectPeriodicity = periodicitySuggestions[highlightedSuggestionPeriodicity];
-        setVoucher(prevVoucher => ({
-          ...prevVoucher,
-          restartNumberingPeriodicity: selectPeriodicity,
-        }));
-        setPeriodicityFocused(false); // Hide suggestions after selection
-      } else if (e.target.value.trim() !== '') {
+       if (e.target.value.trim() !== '') {
         const nextField = index + 1;
         if (nextField < inputRefs.current.length) {
           inputRefs.current[nextField].focus();
@@ -122,157 +85,35 @@ const VoucherTypeCreate = () => {
           pulseCursor(inputRefs.current[prevField]);
         }
       }
-    } else if (key === 'ArrowDown') {
-      e.preventDefault();
-      if (voucherTypeFocused) {
-        setHighlightedSuggestionVoucherType(prevIndex =>
-          Math.min(prevIndex + 1, voucherTypeSuggestions.length - 1),
-        );
-      } else if (periodicityFocused) {
-        setHighlightedSuggestionPeriodicity(prevIndex =>
-          Math.min(prevIndex + 1, periodicitySuggestions.length - 1),
-        );
-      }
-    } else if (key === 'ArrowUp') {
-      e.preventDefault();
-      if (voucherTypeFocused) {
-        setHighlightedSuggestionVoucherType(prevIndex => Math.max(prevIndex - 1, 0));
-      } else if (periodicityFocused) {
-        setHighlightedSuggestionPeriodicity(prevIndex => Math.max(prevIndex - 1, 0));
-      }
-    } else if (key === 'Tab') {
-      setVoucherTypeFocused(false);
-      setPeriodicityFocused(false);
     }
   };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-
-    const userConfirmed = window.confirm('Do you want confirm this submit!');
-    if (userConfirmed) {
-      try {
-        const response = await createVoucherTypeMaster(voucher);
-        console.log('Voucher created successfully!', response.data);
-
-        // Reset the form fields
-        setVoucher({
-          voucherTypeName: '',
-          voucherType: '',
-          startingNumber: '',
-          widthOfNumericalPart: '',
-          prefillWithZero: '',
-          restartNumberingApplicationForm: '',
-          restartNumberingStartingNumber: '',
-          restartNumberingPeriodicity: '',
-          prefixDetailsApplicationForm: '',
-          prefixDetailsParticulars: '',
-          suffixDetailsApplicationForm: '',
-          suffixDetailsParticulars: '',
-        });
-
-        // Optionally, focus the first input field after reset
-        if (inputRefs.current[0]) {
-          inputRefs.current[0].focus();
-        }
-      } catch (error) {
-        console.error('Error creating voucher type master:', error);
-      }
-    }
-  };
-
-  const loadVoucherType = async () => {
+  const loadVoucherTypeName = async () => {
     try {
-      const result = await axios.get(
-        `http://localhost:9080/voucherTypeMasterApi/displayVoucher/${type}`, 
-      );
+      const result = await getSpecificVoucher(type);
       console.log(result.data);
       setVoucher(result.data);
     } catch (error) {
-      console.error('Error fetching voucher type data:', error);
+      console.error('Error fetching voucher type name data:', error);
     }
   };
 
-  useEffect(() => {
-    if (optionsRef.current) {
-      optionsRef.current.scrollTop = highlightedSuggestionVoucherType * 30; // Adjust scroll position
+  const loadPreDefinedVoucherTypeName = async () => {
+    try{
+      const result = await getSpecificPreDefinedVoucher(type);
+      console.log(result.data);
+      setVoucher(result.data);
+    } catch (error) {
+      console.error('Error fetching predefined voucher type name data:', error);
+      
     }
-  }, [highlightedSuggestionVoucherType]);
-
-  useEffect(() => {
-    if (periodicityRef.current) {
-      periodicityRef.current.scrollTop = highlightedSuggestionPeriodicity * 30;
-    }
-  }, [highlightedSuggestionPeriodicity]);
-
-  const handleSuggestionClick = item => {
-    setVoucher(prevVoucher => ({
-      ...prevVoucher,
-      voucherType: item.label,
-    }));
-    setVoucherTypeFocused(false); // Hide suggestions after selection
-  };
-
-  const handlePeriodicityClick = periodicity => {
-    setVoucher(prevVoucher => ({
-      ...prevVoucher,
-      restartNumberingPeriodicity: periodicity,
-    }));
-    setPeriodicityFocused(false);
-  };
-
-  // Function to format date input
-  const formatDateInput = value => {
-    const datePattern = /(\d{1,2})[./-](\d{1,2})[./-](\d{2})/;
-    const match = value.match(datePattern);
-
-    if (match) {
-      const day = match[1];
-      const month = match[2];
-      const year = match[3];
-
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ];
-
-      const formattedMonth = months[parseInt(month, 10) - 1];
-
-      if (formattedMonth) {
-        return `${day}-${formattedMonth}-20${year}`;
-      }
-    }
-
-    return value;
-  };
-
-  // Handle Date Input Change
-  const handleDateInputChange = e => {
-    const { name, value } = e.target;
-
-    // Format the input value using formatDateInput function
-    const formattedValue = formatDateInput(value);
-
-    setVoucher(prevVoucher => ({
-      ...prevVoucher,
-      [name]: formattedValue,
-    }));
-  };
+  }
+  
 
   return (
     <>
       <div className="#FFF5E1 w-[90%] h-[80vh]">
-        <form action="" onSubmit={handleSubmit}>
+        <form action="">
           <div className="bg-white">
             <div className="mt-2 w-[1100px] h-[80vh]">
               <div className="w-full h-20">
@@ -288,11 +129,11 @@ const VoucherTypeCreate = () => {
                       name="voucherTypeName"
                       value={voucher.voucherTypeName}
                       ref={input => (inputRefs.current[0] = input)}
-                      onChange={handleInputChange}
+                      
                       onKeyDown={e => handleKeyDown(e, 0)}
                       onFocus={() => pulseCursor(inputRefs.current[0])}
                       className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                      autoComplete="off"
+                      autoComplete="off" readOnly
                     />
                   </div>
                   <div className="ml-2 flex leading-6">
@@ -306,40 +147,11 @@ const VoucherTypeCreate = () => {
                       name="voucherType"
                       value={voucher.voucherType}
                       ref={input => (inputRefs.current[1] = input)}
-                      onChange={handleInputChange}
+                      onFocus={() => pulseCursor(inputRefs.current[1])}
                       onKeyDown={e => handleKeyDown(e, 1)}
-                      onFocus={(e) => {pulseCursor(e.target); setVoucherTypeFocused(true);}}
-                      onBlur={() => setVoucherTypeFocused(false)}
                       className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                      autoComplete="off"
+                      autoComplete="off" readOnly
                     />
-                    {voucherTypeFocused && voucherTypeSuggestions.length > 0 && (
-                      <div
-                        className="w-[15%] h-[85.5vh] border border-gray-500 bg-[#CAF4FF]"
-                        style={{ position: 'absolute', top: '42px', left: '1024px' }}
-                      >
-                        <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
-                          <p>List of Voucher Types</p>
-                        </div>
-                        <ul
-                          className="suggestions w-full h-[20vh] text-left text-sm mt-2"
-                          ref={optionsRef}
-                        >
-                          {voucherTypeSuggestions.map((item, index) => (
-                            <li
-                              key={index}
-                              tabIndex={0}
-                              className={`pl-2 ${
-                                highlightedSuggestionVoucherType === index ? 'bg-yellow-200' : ''
-                              }`}
-                              onClick={() => handleSuggestionClick(item)}
-                            >
-                              {item.label}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                   </div>
                 </div>
 
@@ -355,11 +167,11 @@ const VoucherTypeCreate = () => {
                       name="startingNumber"
                       value={voucher.startingNumber}
                       ref={input => (inputRefs.current[2] = input)}
-                      onChange={handleInputChange}
+                      
                       onKeyDown={e => handleKeyDown(e, 2)}
                       onFocus={() => pulseCursor(inputRefs.current[2])}
                       className="w-[80px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                      autoComplete="off"
+                      autoComplete="off" readOnly
                     />
                   </div>
                   <div className="ml-2 flex leading-6">
@@ -374,10 +186,10 @@ const VoucherTypeCreate = () => {
                       value={voucher.widthOfNumericalPart}
                       ref={input => (inputRefs.current[3] = input)}
                       onKeyDown={e => handleKeyDown(e, 3)}
-                      onChange={handleInputChange}
+                      
                       onFocus={() => pulseCursor(inputRefs.current[3])}
                       className="w-[80px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                      autoComplete="off"
+                      autoComplete="off" readOnly
                     />
                   </div>
                   <div className="flex ml-2 leading-6">
@@ -391,11 +203,11 @@ const VoucherTypeCreate = () => {
                       name="prefillWithZero"
                       value={voucher.prefillWithZero}
                       ref={input => (inputRefs.current[4] = input)}
-                      onChange={handleInputChange}
+                      
                       onKeyDown={e => handleKeyDown(e, 4)}
                       onFocus={() => pulseCursor(inputRefs.current[4])}
                       className="w-[80px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                      autoComplete="off"
+                      autoComplete="off" readOnly
                     />
                   </div>
                 </div>
@@ -420,11 +232,11 @@ const VoucherTypeCreate = () => {
                         name="restartNumberingApplicationForm"
                         value={voucher.restartNumberingApplicationForm}
                         ref={input => (inputRefs.current[5] = input)}
-                        onChange={handleDateInputChange}
+                        
                         onKeyDown={e => handleKeyDown(e, 5)}
                         onFocus={() => pulseCursor(inputRefs.current[5])}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                        autoComplete="off"
+                        autoComplete="off" readOnly
                       />
                     </div>
                     <div>
@@ -435,11 +247,11 @@ const VoucherTypeCreate = () => {
                         name="restartNumberingStartingNumber"
                         value={voucher.restartNumberingStartingNumber}
                         ref={input => (inputRefs.current[6] = input)}
-                        onChange={handleInputChange}
+                        
                         onKeyDown={e => handleKeyDown(e, 6)}
                         onFocus={() => pulseCursor(inputRefs.current[6])}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                        autoComplete="off"
+                        autoComplete="off" readOnly
                       />
                     </div>
                     <div>
@@ -450,40 +262,15 @@ const VoucherTypeCreate = () => {
                         name="restartNumberingPeriodicity"
                         value={voucher.restartNumberingPeriodicity}
                         ref={input => (inputRefs.current[7] = input)}
-                        onChange={handleInputChange}
+                        
                         onKeyDown={e => handleKeyDown(e, 7)}
                         onFocus={() =>
-                          pulseCursor(setPeriodicityFocused(true))
+                          pulseCursor(inputRefs.current[7])
                         }
-                        onBlur={() => setPeriodicityFocused(false)}
+                        
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                        autoComplete="off"
+                        autoComplete="off" readOnly
                       />
-                      {periodicityFocused && periodicitySuggestions.length > 0 && (
-                        <div
-                          className="w-[130px] h-[23vh] border border-gray-500 bg-[#CAF4FF]"
-                          style={{ position: 'absolute', top: '158px', left: '388px' }}
-                        >
-                          <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
-                            <p>List of Periodicities</p>
-                          </div>
-                          <ul ref={periodicityRef} className="suggestions w-full h-[20vh] text-left text-sm mt-2">
-                            {periodicitySuggestions.map((periodicity, index) => (
-                              <li
-                                key={index}
-                                tabIndex={0}
-                                className={`pl-2 ${
-                                  highlightedSuggestionPeriodicity === index ? 'bg-yellow-200' : ''
-                                }`}
-                                onClick={() => handlePeriodicityClick(periodicity)}
-                                onMouseDown={() => handlePeriodicityClick(periodicity)}
-                              >
-                                {periodicity}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -504,11 +291,11 @@ const VoucherTypeCreate = () => {
                         name="prefixDetailsApplicationForm"
                         value={voucher.prefixDetailsApplicationForm}
                         ref={input => (inputRefs.current[8] = input)}
-                        onChange={handleDateInputChange}
+                        
                         onKeyDown={e => handleKeyDown(e, 8)}
                         onFocus={() => pulseCursor(inputRefs.current[8])}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                        autoComplete="off"
+                        autoComplete="off" readOnly
                       />
                     </div>
                     <div>
@@ -519,11 +306,11 @@ const VoucherTypeCreate = () => {
                         name="prefixDetailsParticulars"
                         value={voucher.prefixDetailsParticulars}
                         ref={input => (inputRefs.current[9] = input)}
-                        onChange={handleInputChange}
+                        
                         onKeyDown={e => handleKeyDown(e, 9)}
                         onFocus={() => pulseCursor(inputRefs.current[9])}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                        autoComplete="off"
+                        autoComplete="off" readOnly
                       />
                     </div>
                   </div>
@@ -545,11 +332,11 @@ const VoucherTypeCreate = () => {
                         name="suffixDetailsApplicationForm"
                         value={voucher.suffixDetailsApplicationForm}
                         ref={input => (inputRefs.current[10] = input)}
-                        onChange={handleDateInputChange}
+                        
                         onKeyDown={e => handleKeyDown(e, 10)}
                         onFocus={() => pulseCursor(inputRefs.current[10])}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                        autoComplete="off"
+                        autoComplete="off" readOnly
                       />
                     </div>
                     <div>
@@ -560,13 +347,13 @@ const VoucherTypeCreate = () => {
                         name="suffixDetailsParticulars"
                         value={voucher.suffixDetailsParticulars}
                         ref={input => (inputRefs.current[11] = input)}
-                        onChange={handleInputChange}
+                        
                         onKeyDown={e => {
                           handleKeyDown(e, 11);
                         }}
                         onFocus={() => pulseCursor(inputRefs.current[11])}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
-                        autoComplete="off"
+                        autoComplete="off" readOnly
                       />
                     </div>
                   </div>
@@ -581,4 +368,4 @@ const VoucherTypeCreate = () => {
   );
 };
 
-export default VoucherTypeCreate;
+export default VoucherTypeDisplay;

@@ -50,7 +50,7 @@ const CDAMaster = () => {
   return (
     <>
         <div className='container flex'>
-            <div className='w-[96%] flex h-[93.3vh]'>
+            <div className='w-[96%] flex h-[92.9vh]'>
                 {/* left side */}
                 <div className='w-1/2 bg-gradient-to-t to-blue-500 from-[#ccc]'></div>
                 {/* right side */}

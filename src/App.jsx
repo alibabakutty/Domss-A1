@@ -8,8 +8,9 @@ import CDAMaster from './components/cda-menu/CDAMaster'
 import CreateMasterFormRouter from "./components/create/CreateMasterFormRouter"
 import DisplayFilter from "./components/display/DisplayFilter"
 import AlterFilter from "./components/alter/AlterFilter"
-import DisplayMasterFormRouter from "./components/display/DisplayMasterFormRouter"
 import VoucherTypeCreate from "./components/forms/VoucherTypeCreate"
+import VoucherTypeDisplay from "./components/forms/VoucherTypeDisplay"
+import VoucherTypeAlter from "./components/forms/VoucherTypeAlter"
 
 function App() {
   
@@ -26,9 +27,10 @@ function App() {
           <Route path="menu/:type" element={<CDAMaster />} />
           <Route path="/:type/create" element={<CreateMasterFormRouter />} />
           <Route path="/:type/display" element={<DisplayFilter />} />
-          <Route path="/display/:type" element={<VoucherTypeCreate />} />
+          <Route path="/voucherTypeMasterApi/display/:type" element={<VoucherTypeDisplay />} />
+          <Route path="/preDefinedVoucherTypeApi/displayPreDefinedVoucher/:type" element={<VoucherTypeDisplay />} />
           <Route path="/:type/alter" element={<AlterFilter />} />
-          <Route path="alter/:type" element={<VoucherTypeCreate />} />
+          <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:type" element={<VoucherTypeAlter />} />
         </Routes>
       </BrowserRouter>
     </>

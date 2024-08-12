@@ -8,8 +8,9 @@ const DisplayFilter = () => {
     const { type } = useParams();
     const [voucherTypeSuggestions, setVoucherTypeSuggestions] = useState([]);
     const [preDefinedVoucherTypeSuggestions, setPreDefinedVoucherTypeSuggestions] = useState([]);
-    const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0); // Set default to -1
+    const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0); // Set default to 0
     const [selectedIndex, setSelectedIndex] = useState(2);
+    const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
     const listItemRefs = useRef([]); // Ref array for list items
     const navigate = useNavigate();
@@ -36,13 +37,28 @@ const DisplayFilter = () => {
         }
     }, [type]);
 
+    const handleInputChange = (e) => {
+        setFilterInput(e.target.value);
+        setSelectedIndex(2);  // Reset focus to the first item on input change
+    };
+
+    const filteredVoucherTypes = voucherTypeSuggestions.filter(voucher => 
+        voucher.voucherTypeName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredPreDefinedVoucherTypes = preDefinedVoucherTypeSuggestions.filter(voucher => 
+        voucher.voucherType.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
     const filteredNameValues = NameValues.filter(item => item.value.toLowerCase().includes(type.toLowerCase()));
 
     useEffect(() => {
-        const handleKeyDown = e => {
-            if (e.key === 'ArrowDown'){
-                setSelectedIndex(prev => {
-                    const newIndex = Math.min(prev + 1, voucherTypeSuggestions.length + preDefinedVoucherTypeSuggestions.length + 1);
+        const handleKeyDown = (e) => {
+            const totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length + 2;
+    
+            if (e.key === 'ArrowDown') {
+                setSelectedIndex((prev) => {
+                    const newIndex = Math.min(prev + 1, totalItems - 1); // Ensure the index doesn't exceed the total items
                     setHighlightedSuggestionVoucherType(
                         newIndex - 2 >= 0 ? newIndex - 2 : -1
                     );
@@ -51,9 +67,9 @@ const DisplayFilter = () => {
                     }
                     return newIndex;
                 });
-            } else if (e.key === 'ArrowUp'){
-                setSelectedIndex(prev => {
-                    const newIndex = Math.max(prev - 1, 0);
+            } else if (e.key === 'ArrowUp') {
+                setSelectedIndex((prev) => {
+                    const newIndex = Math.max(prev - 1, 0); // Ensure the index doesn't go below 0
                     setHighlightedSuggestionVoucherType(
                         newIndex - 2 >= 0 ? newIndex - 2 : -1
                     );
@@ -62,25 +78,32 @@ const DisplayFilter = () => {
                     }
                     return newIndex;
                 });
-            } else if (e.key === "Enter"){
-                if (selectedIndex === 0){
+            } else if (e.key === 'Enter') {
+                if (selectedIndex === 0) {
                     navigate('/voucher/create');
                     e.preventDefault();
-                } else if (selectedIndex === 1){
+                } else if (selectedIndex === 1) {
                     navigate('/menu/voucher');
-                } else if (voucherTypeSuggestions[selectedIndex - 2]){
-                    // Navigate to the selected voucher type
-                    navigate(`/voucherTypeMasterApi/display/${voucherTypeSuggestions[selectedIndex - 2].voucherTypeName}`);
-                } else if (preDefinedVoucherTypeSuggestions[selectedIndex - voucherTypeSuggestions.length - 2]){
-                    navigate(`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${preDefinedVoucherTypeSuggestions[selectedIndex - voucherTypeSuggestions.length - 2].voucherType}`);
+                } else if (selectedIndex >= 2 && selectedIndex < 2 + filteredVoucherTypes.length) {
+                    const selectedVoucher = filteredVoucherTypes[selectedIndex - 2];
+                    if (selectedVoucher) {
+                        navigate(`/voucherTypeMasterApi/display/${selectedVoucher.voucherTypeName}`);
+                    }
+                } else if (selectedIndex >= 2 + filteredVoucherTypes.length && selectedIndex < totalItems) {
+                    const selectedPreDefinedVoucher = filteredPreDefinedVoucherTypes[selectedIndex - 2 - filteredVoucherTypes.length];
+                    if (selectedPreDefinedVoucher) {
+                        navigate(`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${selectedPreDefinedVoucher.voucherType}`);
+                    }
                 }
-            } else if (e.key === 'Escape'){
+            } else if (e.key === 'Escape') {
                 navigate('/menu/voucher');
-            };
-        }
-        window.addEventListener('keydown',handleKeyDown);
-        return () => window.removeEventListener('keydown',handleKeyDown);
-    },[selectedIndex, highlightedSuggestionVoucherType, voucherTypeSuggestions, preDefinedVoucherTypeSuggestions, navigate]);
+            }
+        };
+    
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedIndex, highlightedSuggestionVoucherType, filteredVoucherTypes, filteredPreDefinedVoucherTypes, navigate]);
+    
 
     return (
         <>
@@ -98,6 +121,8 @@ const DisplayFilter = () => {
                                 type="text"
                                 id={value}
                                 name={value}
+                                value={filterInput}
+                                onChange={handleInputChange}
                                 ref={inputRef}
                                 className="w-[250px] ml-2 mt-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200  focus:border focus:border-blue-500 focus:outline-none"
                                 autoComplete="off"
@@ -124,23 +149,23 @@ const DisplayFilter = () => {
                             <div>
                                 <ul className=''>
                                     <p className='text-sm font-medium capitalize pl-2'>{`Customized ${type}`}</p>
-                                    {voucherTypeSuggestions.map((voucher,index) => (
+                                    {filteredVoucherTypes.map((voucher,index) => (
                                         <li 
                                             key={index} 
                                             className={`text-sm capitalize`}
                                             ref={el => listItemRefs.current[index + 2] = el} // Offset by 2 for Create and Back
                                         >
                                             <p className='text-[11px] text-[#2a67b1] capitalize pl-2 font-medium'>{voucher.voucherType}</p>
-                                            <Link to={`/voucherTypeMasterApi/display/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-2' : 'pl-2'}`}>{voucher.voucherTypeName}</Link>
+                                            <Link to={`/voucherTypeMasterApi/display/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-3' : 'pl-3'}`}>{voucher.voucherTypeName}</Link>
                                             
                                         </li>
                                     ))}
                                 </ul>
                                 <p className='text-sm font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p>
-                                {preDefinedVoucherTypeSuggestions.map((voucher,index) => (
+                                {filteredPreDefinedVoucherTypes.map((voucher,index) => (
                                     <li 
                                         key={index} 
-                                        className={`text-sm capitalize pl-2 list-none ${highlightedSuggestionVoucherType === voucherTypeSuggestions.length + index ? 'bg-yellow-200' : ''}`}
+                                        className={`text-sm capitalize pl-4 list-none ${highlightedSuggestionVoucherType === voucherTypeSuggestions.length + index ? 'bg-yellow-200' : ''}`}
                                         ref={el => listItemRefs.current[voucherTypeSuggestions.length + index + 2] = el} // Offset by 2 for Create and Back
                                     >
                                         <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`}>{voucher.voucherType}</Link>

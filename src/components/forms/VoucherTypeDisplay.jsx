@@ -27,6 +27,28 @@ const VoucherTypeDisplay = () => {
       pulseCursor(inputRefs.current[0]);
     }
 
+    const loadVoucherTypeName = async () => {
+        try {
+          const result = await getSpecificVoucher(type);
+          console.log(result.data);
+          setVoucher(result.data);
+        } catch (error) {
+          console.error('Error fetching voucher type name data:', error);
+        }
+      };
+    
+      const loadPreDefinedVoucherTypeName = async () => {
+        try{
+          const result = await getSpecificPreDefinedVoucher(type);
+          console.log(result.data);
+          setVoucher(result.data);
+        } catch (error) {
+          console.error('Error fetching predefined voucher type name data:', error);
+          
+        }
+      }
+
+      
     
     loadVoucherTypeName();
     
@@ -70,8 +92,6 @@ const VoucherTypeDisplay = () => {
         if (nextField < inputRefs.current.length) {
           inputRefs.current[nextField].focus();
           pulseCursor(inputRefs.current[nextField]);
-        } else {
-          handleSubmit(e); // Call handleSubmit if it's the last field
         }
       } else {
         e.preventDefault();
@@ -87,27 +107,6 @@ const VoucherTypeDisplay = () => {
       }
     }
   };
-
-  const loadVoucherTypeName = async () => {
-    try {
-      const result = await getSpecificVoucher(type);
-      console.log(result.data);
-      setVoucher(result.data);
-    } catch (error) {
-      console.error('Error fetching voucher type name data:', error);
-    }
-  };
-
-  const loadPreDefinedVoucherTypeName = async () => {
-    try{
-      const result = await getSpecificPreDefinedVoucher(type);
-      console.log(result.data);
-      setVoucher(result.data);
-    } catch (error) {
-      console.error('Error fetching predefined voucher type name data:', error);
-      
-    }
-  }
   
 
   return (

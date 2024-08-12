@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import RightSideButton from '../right-side-button/RightSideButton';
-import { createVoucherTypeMaster, getSpecificVoucher } from '../services/MasterService';
+import { createVoucherTypeMaster } from '../services/MasterService';
 import VoucherMenu from '../../assets/VoucherMenu';
-import { useParams } from 'react-router-dom';
 
 const VoucherTypeCreate = () => {
   const [voucher, setVoucher] = useState({
@@ -35,7 +34,6 @@ const VoucherTypeCreate = () => {
       inputRefs.current[0].focus();
       pulseCursor(inputRefs.current[0]);
 
-      loadVoucherType();
     }
   }, []);
 
@@ -178,18 +176,6 @@ const VoucherTypeCreate = () => {
       } catch (error) {
         console.error('Error creating voucher type master:', error);
       }
-    }
-  };
-
-  const loadVoucherType = async () => {
-    try {
-      const result = await axios.get(
-        `http://localhost:9080/voucherTypeMasterApi/displayVoucher/${type}`, 
-      );
-      console.log(result.data);
-      setVoucher(result.data);
-    } catch (error) {
-      console.error('Error fetching voucher type data:', error);
     }
   };
 

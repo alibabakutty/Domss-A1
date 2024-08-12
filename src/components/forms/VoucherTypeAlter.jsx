@@ -89,7 +89,7 @@ const VoucherTypeAlter = () => {
       }
     } else if (key === 'Backspace') {
       // Move focus to the previous input field if the current field is empty
-      if (e.target.value.trim() === '') {
+      if ((e.target.value.trim() === '') || (e.target.value.trim() !== '')) {
         const prevField = index - 1;
         if (prevField >= 0) {
           inputRefs.current[prevField].focus();

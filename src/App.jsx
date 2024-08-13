@@ -27,9 +27,9 @@ function App() {
           <Route path="menu/:type" element={<CDAMaster />} />
           <Route path="/:type/create" element={<CreateMasterFormRouter />} />
           <Route path="/:type/display" element={<DisplayFilter />} />
+          <Route path="/:type/alter" element={<AlterFilter />} />
           <Route path="/voucherTypeMasterApi/display/:type" element={<VoucherTypeDisplay />} />
           <Route path="/preDefinedVoucherTypeApi/displayPreDefinedVoucher/:type" element={<VoucherTypeDisplay />} />
-          <Route path="/:type/alter" element={<AlterFilter />} />
           <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:type" element={<VoucherTypeAlter />} />
         </Routes>
       </BrowserRouter>

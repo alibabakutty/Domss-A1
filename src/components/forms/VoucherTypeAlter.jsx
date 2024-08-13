@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getSpecificPreDefinedVoucher, getSpecificVoucher, updateVoucherTypeMaster } from '../services/MasterService';
+import VoucherMenu from '../../assets/VoucherMenu';
 const VoucherTypeAlter = () => {
     const { type } = useParams();
-
     const navigate = useNavigate();
+
     const [voucher, setVoucher] = useState({
         voucherTypeName: '',
         voucherType: '',
@@ -21,7 +22,15 @@ const VoucherTypeAlter = () => {
         suffixDetailsParticulars: '',
     });
     
+  const [voucherTypeFocused, setVoucherTypeFocused] = useState(false);
+  const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0);
+  const [voucherTypeSuggestions, setVoucherTypeSuggestions] = useState(VoucherMenu);
+  const [periodicityFocused, setPeriodicityFocused] = useState(false);
+  const [highlightedSuggestionPeriodicity, setHighlightedSuggestionPeriodicity] = useState(0);
+  const [periodicitySuggestions] = useState(['Daily', 'Monthly', 'Never', 'Weekly', 'Yearly']);
   const inputRefs = useRef([]);
+  const optionsRef = useRef(null);
+  const periodicityRef = useRef(null);
 
   const pulseCursor = input => {
     const value = input.value;
@@ -53,6 +62,14 @@ const VoucherTypeAlter = () => {
     const {name,value} = e.target;
     const capitalizedValue = value.charAt(0).toUpperCase() + value.slice(1);
     setVoucher({ ...voucher, [name]: capitalizedValue });
+
+    if (name === 'voucherType') {
+      const filtered = VoucherMenu.filter(item =>
+        item.label.toLowerCase().includes(value.toLowerCase()),
+      );
+      setVoucherTypeSuggestions(filtered);
+      setVoucherTypeFocused(true);
+    }
   };
 
   const handleKeyDown = (e, index) => {
@@ -76,7 +93,22 @@ const VoucherTypeAlter = () => {
     }
 
     if (key === 'Enter') {
-       if (e.target.value.trim() !== '') {
+      if (voucherTypeFocused && voucherTypeSuggestions.length > 0){
+        // select the highlighted suggestions
+        const selectedItem = voucherTypeSuggestions[highlightedSuggestionVoucherType];
+        setVoucher(prevVoucher => ({
+          ...prevVoucher,
+          voucherType: selectedItem.label,
+        }));
+        setVoucherTypeFocused(false);    // Hide suggestions after selection
+      } else if (periodicityFocused && periodicitySuggestions.length > 0){
+        const selectedPeriodicity = periodicitySuggestions[highlightedSuggestionPeriodicity];
+        setVoucher(prevVoucher => ({
+          ...prevVoucher,
+          restartNumberingPeriodicity: selectedPeriodicity,
+        }));
+        setPeriodicityFocused(false);    // Hide suggestions after selection
+      } else if (e.target.value.trim() !== '') {
         const nextField = index + 1;
         if (nextField < inputRefs.current.length) {
           inputRefs.current[nextField].focus();
@@ -104,7 +136,99 @@ const VoucherTypeAlter = () => {
             [e.target.name]: '', // Ensure the state is updated
         }));
         e.preventDefault();
+    } else if (key === 'ArrowDown'){
+      //  arrow down for available suggestions items
+      e.preventDefault();
+      if (voucherTypeFocused){
+        setHighlightedSuggestionVoucherType(prevIndex => 
+          Math.min(prevIndex + 1, voucherTypeSuggestions.length - 1),
+        );
+      } else if (periodicityFocused){
+        setHighlightedSuggestionPeriodicity(prevIndex => 
+          Math.min(prevIndex + 1, periodicitySuggestions.length - 1),
+        );
+      }
+    } else if (key === 'ArrowUp'){
+      //  arrow up for available suggestions items
+      e.preventDefault();
+      if (voucherTypeFocused){
+        setHighlightedSuggestionVoucherType(prevIndex =>
+          Math.max(prevIndex - 1, 0),
+        )
+      } else if (periodicityFocused){
+        setHighlightedSuggestionPeriodicity(prevIndex => 
+          Math.max(prevIndex - 1, 0),
+        )
+      } else if (key === 'Tab'){
+        //  tab for available suggestions items
+        setVoucherTypeFocused(false);
+        setPeriodicityFocused(false);
+      }
     }
+  };
+
+  useEffect(() => {
+    if (optionsRef.current){
+      optionsRef.current.scrollTop = highlightedSuggestionVoucherType * 30;   // Adjust scroll position
+    }
+  },[highlightedSuggestionVoucherType]);
+
+  useEffect(() => {
+    if (periodicityRef.current){
+      periodicityRef.current.scrollTop = highlightedSuggestionPeriodicity * 30; // Adjust scroll position
+    }
+  },[highlightedSuggestionPeriodicity]);
+
+  const handleSuggestionClick = item => {
+    setVoucher(prevVoucher => ({
+      ...prevVoucher,
+      voucherType: item.label,
+    }));
+    setVoucherTypeFocused(false);    // Hide the suggestions after selection
+  }
+
+  const handlePeriodicityClick = periodicity => {
+    setVoucher(prevVoucher => ({
+      ...prevVoucher,
+      restartNumberingPeriodicity: periodicity,
+    }));
+    setPeriodicityFocused(false);    // Hide the suggestions after selection
+  };
+
+  // Function to format date input
+  const formatDateInput = value => {
+    const datePattern = /(\d{1,2})[./-](\d{1,2})[./-](\d{2})/;
+    const match = value.match(datePattern);
+
+    if (match){
+      const day = match[1];
+      const month = match[2];
+      const year = match[3];
+
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      const formattedMonth = months[parseInt(month,10) - 1];
+
+      if (formattedMonth){
+        return `${day}-${formattedMonth}-20${year}`;
+      }
+    }
+      
+    return value;
+   
+  };
+
+  // Handle date input change
+  const handleDateInputChange = e => {
+    const {name,value} = e.target;
+
+    //  Format the input value using formatDateInput function
+    const formattedValue = formatDateInput(value);
+
+    setVoucher(prevVoucher => ({
+      ...prevVoucher,
+      [name]: formattedValue,
+    }))
   };
 
   const loadVoucherTypeName = async () => {
@@ -204,11 +328,39 @@ const VoucherTypeAlter = () => {
                       value={voucher.voucherType}
                       onChange={handleInputChange}
                       ref={input => (inputRefs.current[1] = input)}
-                      onFocus={() => pulseCursor(inputRefs.current[1])}
+                      onFocus={() => { setVoucherTypeFocused(true) }}
+                      onBlur={() => setVoucherTypeFocused(false)}
                       onKeyDown={e => handleKeyDown(e, 1)}
                       className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                       autoComplete="off" 
                     />
+                    {voucherTypeFocused && voucherTypeSuggestions.length > 0 && (
+                      <div
+                        className="w-[15%] h-[85.5vh] border border-gray-500 bg-[#CAF4FF]"
+                        style={{ position: 'absolute', top: '42px', left: '1024px' }}
+                      >
+                        <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
+                          <p>List of Voucher Types</p>
+                        </div>
+                        <ul
+                          className="suggestions w-full h-[20vh] text-left text-sm mt-2"
+                          ref={optionsRef}
+                        >
+                          {voucherTypeSuggestions.map((item, index) => (
+                            <li
+                              key={item}
+                              tabIndex={0}
+                              className={`pl-2 ${
+                                highlightedSuggestionVoucherType === index ? 'bg-yellow-200' : ''
+                              }`}
+                              onClick={() => handleSuggestionClick(item)}
+                            >
+                              {item.label}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -263,7 +415,6 @@ const VoucherTypeAlter = () => {
                       value={voucher.prefillWithZero}
                       onChange={handleInputChange}
                       ref={input => (inputRefs.current[4] = input)}
-                      
                       onKeyDown={e => handleKeyDown(e, 4)}
                       onFocus={() => pulseCursor(inputRefs.current[4])}
                       className="w-[80px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
@@ -292,7 +443,7 @@ const VoucherTypeAlter = () => {
                         name="restartNumberingApplicationForm"
                         value={voucher.restartNumberingApplicationForm}
                         ref={input => (inputRefs.current[5] = input)}
-                        onChange={handleInputChange}
+                        onChange={handleDateInputChange}
                         onKeyDown={e => handleKeyDown(e, 5)}
                         onFocus={() => pulseCursor(inputRefs.current[5])}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
@@ -325,12 +476,36 @@ const VoucherTypeAlter = () => {
                         onChange={handleInputChange}
                         onKeyDown={e => handleKeyDown(e, 7)}
                         onFocus={() =>
-                          pulseCursor(inputRefs.current[7])
+                          pulseCursor(setPeriodicityFocused(true))
                         }
-                        
+                        onBlur={() => setPeriodicityFocused(false)}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" 
                       />
+                      {periodicityFocused && periodicitySuggestions.length > 0 && (
+                        <div ref={periodicityRef}
+                          className="w-[130px] h-[23vh] border border-gray-500 bg-[#CAF4FF]"
+                          style={{ position: 'absolute', top: '158px', left: '388px' }}
+                        >
+                          <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
+                            <p>List of Periodicities</p>
+                          </div>
+                          <ul className="suggestions w-full h-[20vh] text-left text-sm mt-2">
+                            {periodicitySuggestions.map((periodicity, index) => (
+                              <li
+                                key={periodicity}
+                                className={`pl-2 ${
+                                  highlightedSuggestionPeriodicity === index ? 'bg-yellow-200' : ''
+                                }`}
+                                onClick={() => handlePeriodicityClick(periodicity)}
+                                onMouseDown={() => handlePeriodicityClick(periodicity)}
+                              >
+                                {periodicity}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -351,7 +526,7 @@ const VoucherTypeAlter = () => {
                         name="prefixDetailsApplicationForm"
                         value={voucher.prefixDetailsApplicationForm}
                         ref={input => (inputRefs.current[8] = input)}
-                        onChange={handleInputChange}
+                        onChange={handleDateInputChange}
                         onKeyDown={e => handleKeyDown(e, 8)}
                         onFocus={() => pulseCursor(inputRefs.current[8])}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
@@ -392,7 +567,7 @@ const VoucherTypeAlter = () => {
                         name="suffixDetailsApplicationForm"
                         value={voucher.suffixDetailsApplicationForm}
                         ref={input => (inputRefs.current[10] = input)}
-                        onChange={handleInputChange}
+                        onChange={handleDateInputChange}
                         onKeyDown={e => handleKeyDown(e, 10)}
                         onFocus={() => pulseCursor(inputRefs.current[10])}
                         className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"

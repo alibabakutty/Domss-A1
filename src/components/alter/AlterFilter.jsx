@@ -134,7 +134,7 @@ const AlterFilter = () => {
                                         ref={el => listItemRefs.current[index + 2] = el} // Offset by 2 for Create and Back
                                     >
                                         <p className='text-[11px] text-[#2a67b1] capitalize pl-2 font-medium'>{voucher.voucherType}</p>
-                                        <Link to={`/voucherTypeMasterApi/alterVoucherTypeMaster/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-2' : 'pl-2'}`}>{voucher.voucherTypeName}</Link>
+                                        <Link to={`/voucherTypeMasterApi/alterVoucherTypeMaster/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-3' : 'pl-3'}`}>{voucher.voucherTypeName}</Link>
                                         
                                     </li>
                                 ))}
@@ -146,7 +146,7 @@ const AlterFilter = () => {
                                     {preDefinedVoucherTypeSuggestions.map((voucher,index) => (
                                         <li 
                                             key={index} 
-                                            className={`text-sm capitalize pl-2 ${highlightedSuggestionVoucherType === voucherTypeSuggestion.length + index ? 'bg-yellow-200' : ''}`}
+                                            className={`text-sm capitalize pl-4 ${highlightedSuggestionVoucherType === voucherTypeSuggestion.length + index ? 'bg-yellow-200' : ''}`}
                                             ref={el => listItemRefs.current[voucherTypeSuggestion.length + index + 2] = el} // Offset by 2 for Create and Back
                                         >
                                             <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`}>{voucher.voucherType}</Link>

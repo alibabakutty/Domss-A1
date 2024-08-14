@@ -162,7 +162,7 @@ const GroupCreate = () => {
   return (
     <>
       <div>
-        <div className='w-[50%] h-[93.2vh] border border-r-slate-400'>
+        <div className='w-[50%] h-[92.9vh] border border-r-slate-400'>
           <form action="">
             <div className='flex leading-4 mt-1'>
               <label htmlFor="groupName" className='w-[6%] text-left text-sm'>Name</label>

@@ -19,7 +19,7 @@ const HeaderText = () => {
     }
   return (
     <>
-        <div className='bg-[#6EACDA] flex justify-between w-[90%]'>
+        <div className='bg-[#6EACDA] flex justify-between w-full'>
             <p className='text-[10px] font-bold pl-2'>{headerText}</p>
             <IoClose className='text-xs mt-[2px] mr-1' />
       </div>

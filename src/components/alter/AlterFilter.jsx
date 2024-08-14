@@ -11,6 +11,7 @@ const AlterFilter = () => {
     const [preDefinedVoucherTypeSuggestions, setPreDefinedVoucherTypeSuggestions] = useState([]);
     const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0);
     const [selectedIndex, setSelectedIndex] = useState(2);
+    const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
     const listItemRefs = useRef([]); // Ref array for list items
     const navigate = useNavigate();
@@ -38,25 +39,29 @@ const AlterFilter = () => {
         }
     },[type]);
 
+    const handleInputChange = (e) => {
+        setFilterInput(e.target.value);
+        setSelectedIndex(2);  // Reset focus to the first item on input change
+    };
+
+    const filteredVoucherTypes = voucherTypeSuggestion.filter(voucher => 
+        voucher.voucherTypeName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredPreDefinedVoucherTypes = preDefinedVoucherTypeSuggestions.filter(voucher => 
+        voucher.voucherType.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
     // Filter NameValues based on the type
     const filteredNameValues = NameValues.filter(item => item.value.toLowerCase().includes(type.toLowerCase()));
 
     useEffect(() => {
-        const handleKeyDown = e => {
-            if (e.key === 'ArrowDown'){
-                setSelectedIndex(prev => {
-                    const newIndex = Math.min(prev + 1, voucherTypeSuggestion.length + preDefinedVoucherTypeSuggestions.length + 1);
-                    setHighlightedSuggestionVoucherType(
-                        newIndex - 2 >= 0 ? newIndex - 2 : - 1
-                    );
-                    if (listItemRefs.current[newIndex]) {
-                        listItemRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                    }
-                    return newIndex;
-                });
-            } else if (e.key === 'ArrowUp'){
-                setSelectedIndex(prev => {
-                    const newIndex = Math.max(prev - 1, 0);
+        const handleKeyDown = (e) => {
+            const totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length + 2;
+    
+            if (e.key === 'ArrowDown') {
+                setSelectedIndex((prev) => {
+                    const newIndex = Math.min(prev + 1, totalItems - 1); // Ensure the index doesn't exceed the total items
                     setHighlightedSuggestionVoucherType(
                         newIndex - 2 >= 0 ? newIndex - 2 : -1
                     );
@@ -65,25 +70,42 @@ const AlterFilter = () => {
                     }
                     return newIndex;
                 });
-            } else if (e.key === "Enter"){
-                if (selectedIndex === 0){
+            } else if (e.key === 'ArrowUp') {
+                setSelectedIndex((prev) => {
+                    const newIndex = Math.max(prev - 1, 0); // Ensure the index doesn't go below 0
+                    setHighlightedSuggestionVoucherType(
+                        newIndex - 2 >= 0 ? newIndex - 2 : -1
+                    );
+                    if (listItemRefs.current[newIndex]) {
+                        listItemRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                    return newIndex;
+                });
+            } else if (e.key === 'Enter') {
+                if (selectedIndex === 0) {
                     navigate('/voucher/create');
                     e.preventDefault();
-                } else if (selectedIndex === 1){
+                } else if (selectedIndex === 1) {
                     navigate('/menu/voucher');
-                } else if (voucherTypeSuggestion[selectedIndex - 2]){
-                    // Navigate to the selected voucher type
-                    navigate(`/voucherTypeMasterApi/alterVoucherTypeMaster/${voucherTypeSuggestion[selectedIndex - 2].voucherTypeName}`);
-                } else if (preDefinedVoucherTypeSuggestions[selectedIndex - voucherTypeSuggestion.length - 2]){
-                    navigate(`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${preDefinedVoucherTypeSuggestions[selectedIndex - voucherTypeSuggestion.length - 2].voucherType}`);
+                } else if (selectedIndex >= 2 && selectedIndex < 2 + filteredVoucherTypes.length) {
+                    const selectedVoucher = filteredVoucherTypes[selectedIndex - 2];
+                    if (selectedVoucher) {
+                        navigate(`/voucherTypeMasterApi/alterVoucherTypeMaster/${selectedVoucher.voucherTypeName}`);
+                    }
+                } else if (selectedIndex >= 2 + filteredVoucherTypes.length && selectedIndex < totalItems) {
+                    const selectedPreDefinedVoucher = filteredPreDefinedVoucherTypes[selectedIndex - 2 - filteredVoucherTypes.length];
+                    if (selectedPreDefinedVoucher) {
+                        navigate(`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${selectedPreDefinedVoucher.voucherType}`);
+                    }
                 }
-            } else if (e.key === 'Escape'){
+            } else if (e.key === 'Escape') {
                 navigate('/menu/voucher');
-            };
-        }
-        window.addEventListener('keydown',handleKeyDown);
-        return () => window.removeEventListener('keydown',handleKeyDown);
-    },[selectedIndex, highlightedSuggestionVoucherType, voucherTypeSuggestion, preDefinedVoucherTypeSuggestions, navigate]);
+            }
+        };
+    
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectedIndex, highlightedSuggestionVoucherType, filteredVoucherTypes, filteredPreDefinedVoucherTypes, navigate]);
 
   return (
     <>
@@ -101,6 +123,8 @@ const AlterFilter = () => {
                         type="text"
                         id={value}
                         name={value}
+                        value={filterInput}
+                        onChange={handleInputChange}
                         ref={inputRef}
                         className="w-[250px] ml-2 mt-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200  focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off"
@@ -126,24 +150,24 @@ const AlterFilter = () => {
                     <div className='overflow-y-scroll h-[73vh]'>
                         <div>
                             <ul className=''>
-                                <p className='text-sm font-medium capitalize pl-2'>{`Customized ${type}`}</p>
-                                {voucherTypeSuggestion.map((voucher,index) => (
+                                <p className='text-[16px] font-medium capitalize pl-2'>{`Customized ${type}`}</p>
+                                {filteredVoucherTypes.map((voucher,index) => (
                                     <li 
                                         key={index} 
                                         className={`text-sm capitalize`}
                                         ref={el => listItemRefs.current[index + 2] = el} // Offset by 2 for Create and Back
                                     >
-                                        <p className='text-[11px] text-[#2a67b1] capitalize pl-2 font-medium'>{voucher.voucherType}</p>
-                                        <Link to={`/voucherTypeMasterApi/alterVoucherTypeMaster/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-3' : 'pl-3'}`}>{voucher.voucherTypeName}</Link>
+                                        <p className='text-sm capitalize pl-3 font-medium'>{voucher.voucherType}</p>
+                                        <Link to={`/voucherTypeMasterApi/alterVoucherTypeMaster/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-4' : 'pl-4'}`}>{voucher.voucherTypeName}</Link>
                                         
                                     </li>
                                 ))}
                             </ul>
                              {/* Conditionally render pre-defined items */}
-                             <p className='text-sm font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p>
+                             <p className='text-[16px] font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p>
                             {type === 'voucher' && (
                                 <ul className=''>
-                                    {preDefinedVoucherTypeSuggestions.map((voucher,index) => (
+                                    {filteredPreDefinedVoucherTypes.map((voucher,index) => (
                                         <li 
                                             key={index} 
                                             className={`text-sm capitalize pl-4 ${highlightedSuggestionVoucherType === voucherTypeSuggestion.length + index ? 'bg-yellow-200' : ''}`}

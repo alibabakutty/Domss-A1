@@ -17,6 +17,8 @@ const VoucherTypeDisplay = () => {
         prefixDetailsParticulars: '',
         suffixDetailsApplicationForm: '',
         suffixDetailsParticulars: '',
+        voucherDate: '',
+        voucherNumber: ''
     });
 
   const inputRefs = useRef([]);
@@ -116,9 +118,9 @@ const VoucherTypeDisplay = () => {
           <div className="bg-white">
             <div className="mt-2 w-[1100px] h-[80vh]">
               <div className="w-full h-20">
-                <div className="float-left w-[50%] ml-16">
+                <div className="float-left w-[50%] ml-10 mt-2">
                   <div className="ml-2 flex leading-6">
-                    <label htmlFor="voucherTypeName" className="w-[30%] text-sm font-medium">
+                    <label htmlFor="voucherTypeName" className="w-[30%] text-sm">
                       Voucher Type Name
                     </label>
                     <span>:</span>
@@ -136,7 +138,7 @@ const VoucherTypeDisplay = () => {
                     />
                   </div>
                   <div className="ml-2 flex leading-6">
-                    <label htmlFor="voucherType" className="w-[30%] text-sm font-medium">
+                    <label htmlFor="voucherType" className="w-[30%] text-sm">
                       Under
                     </label>
                     <span>:</span>
@@ -154,9 +156,9 @@ const VoucherTypeDisplay = () => {
                   </div>
                 </div>
 
-                <div className="float-right w-[40%] absolute left-[600px] top-[50px]">
+                <div className="float-right w-[40%] absolute left-[750px] top-[50px]">
                   <div className="ml-2 flex leading-6">
-                    <label htmlFor="startingNumber" className="w-[40%] text-sm font-medium">
+                    <label htmlFor="startingNumber" className="w-[40%] text-sm">
                       Starting Number
                     </label>
                     <span>:</span>
@@ -174,7 +176,7 @@ const VoucherTypeDisplay = () => {
                     />
                   </div>
                   <div className="ml-2 flex leading-6">
-                    <label htmlFor="widthOfNumericalPart" className="w-[40%] text-sm font-medium">
+                    <label htmlFor="widthOfNumericalPart" className="w-[40%] text-sm">
                       Width of Numerical Part
                     </label>
                     <span>:</span>
@@ -192,7 +194,7 @@ const VoucherTypeDisplay = () => {
                     />
                   </div>
                   <div className="flex ml-2 leading-6">
-                    <label htmlFor="prefillWithZero" className="w-[40%] text-sm font-medium">
+                    <label htmlFor="prefillWithZero" className="w-[40%] text-sm">
                       Prefill with Zero
                     </label>
                     <span>:</span>
@@ -212,17 +214,17 @@ const VoucherTypeDisplay = () => {
                 </div>
               </div>
 
-              <div className="flex justify-evenly text-center border border-gray-400 w-[1229px] h-[75vh] ml-[1px]">
-                <div className="w-[420px] border border-r-slate-400">
+              <div className="flex justify-evenly text-center border border-gray-400 w-[1364px] h-[78vh] ml-[1px]">
+                <div className="w-[400px] border border-r-slate-400">
                   <div className="border border-b-slate-400">
-                    <p>Restart Numbering</p>
+                    <p className='text-sm'>Restart Numbering</p>
                   </div>
-                  <div className="flex justify-evenly border border-b-gray-400">
-                    <p>Applicable Form</p>
-                    <p>Starting Number</p>
-                    <p>Periodicity</p>
+                  <div className="flex justify-between border border-b-gray-400">
+                    <p className='text-sm ml-1'>Applicable From</p>
+                    <p className='text-sm'>Starting Number</p>
+                    <p className='text-sm mr-1'>Periodicity</p>
                   </div>
-                  <div className="flex justify-evenly">
+                  <div className="flex justify-between">
                     <div>
                       <label htmlFor="restartNumberingApplicationForm"></label>
                       <input
@@ -234,7 +236,7 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 5)}
                         onFocus={() => pulseCursor(inputRefs.current[5])}
-                        className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -249,7 +251,7 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 6)}
                         onFocus={() => pulseCursor(inputRefs.current[6])}
-                        className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -267,21 +269,21 @@ const VoucherTypeDisplay = () => {
                           pulseCursor(inputRefs.current[7])
                         }
                         
-                        className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" readOnly
                       />
                     </div>
                   </div>
                 </div>
-                <div className="w-[420px] border border-r-slate-400">
+                <div className="w-[330px] border border-r-slate-400">
                   <div className="border border-b-slate-400">
-                    <p>Prefix Details</p>
+                    <p className='text-sm'>Prefix Details</p>
                   </div>
-                  <div className="flex justify-evenly border border-b-gray-400">
-                    <p>Application Form</p>
-                    <p>Particulars</p>
+                  <div className="flex justify-between border border-b-gray-400">
+                    <p className='ml-1 text-sm'>Application From</p>
+                    <p className='text-sm mr-1'>Particulars</p>
                   </div>
-                  <div className="flex justify-evenly">
+                  <div className="flex justify-between">
                     <div>
                       <label htmlFor="prefixDetailsApplicationForm"></label>
                       <input
@@ -293,7 +295,7 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 8)}
                         onFocus={() => pulseCursor(inputRefs.current[8])}
-                        className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -308,21 +310,21 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 9)}
                         onFocus={() => pulseCursor(inputRefs.current[9])}
-                        className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" readOnly
                       />
                     </div>
                   </div>
                 </div>
-                <div className="w-[420px] border border-r-slate-400">
+                <div className="w-[330px] border border-r-slate-400">
                   <div className="border border-b-slate-400">
-                    <p>Suffix Details</p>
+                    <p className='text-sm'>Suffix Details</p>
                   </div>
-                  <div className="flex justify-evenly border border-b-gray-400">
-                    <p>Application Form</p>
-                    <p>Particulars</p>
+                  <div className="flex justify-between border border-b-gray-400">
+                    <p className='ml-1 text-sm'>Application From</p>
+                    <p className='text-sm mr-1'>Particulars</p>
                   </div>
-                  <div className="flex justify-evenly">
+                  <div className="flex justify-between">
                     <div>
                       <label htmlFor="suffixDetailsApplicationForm"></label>
                       <input
@@ -334,7 +336,7 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 10)}
                         onFocus={() => pulseCursor(inputRefs.current[10])}
-                        className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -351,9 +353,28 @@ const VoucherTypeDisplay = () => {
                           handleKeyDown(e, 11);
                         }}
                         onFocus={() => pulseCursor(inputRefs.current[11])}
-                        className="w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" readOnly
                       />
+                    </div>
+                  </div>
+                </div>
+                <div className='w-[299px] border'>
+                  <div className='border border-b-slate-400'>
+                    <p className='text-sm'>Voucher Details</p>
+                  </div>
+                  <div className='flex justify-between border border-b-gray-400'>
+                    <p className='text-sm ml-1'>Voucher Date</p>
+                    <p className='text-sm mr-1'>Voucher No</p>
+                  </div>
+                  <div className='flex justify-between'>
+                    <div>
+                      <label htmlFor="voucherDate"></label>
+                      <input type="text" id='voucherDate' name='voucherDate' value={voucher.voucherDate} ref={input => (inputRefs.current[12] = input)} onKeyDown={e => handleKeyDown(e, 12)} className='w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' readOnly />
+                    </div>
+                    <div>
+                      <label htmlFor="voucherNumber"></label>
+                      <input type="text" id='voucherNumber' name='voucherNumber' value={voucher.voucherNumber} ref={input => inputRefs.current[13] = input} onKeyDown={e => handleKeyDown(e, 13)}  className='w-[150px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' readOnly />
                     </div>
                   </div>
                 </div>
@@ -362,7 +383,6 @@ const VoucherTypeDisplay = () => {
           </div>
         </form>
       </div>
-      <RightSideButton />
     </>
   );
 };

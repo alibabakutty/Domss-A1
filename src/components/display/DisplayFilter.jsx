@@ -145,23 +145,23 @@ const DisplayFilter = () => {
                                 </Link>
                             </div>
                         </div>
-                        <div className='overflow-y-scroll h-[73vh]'>
+                        <div className='overflow-y-scroll h-[70vh]'>
                             <div>
                                 <ul className=''>
-                                    <p className='text-sm font-medium capitalize pl-2'>{`Customized ${type}`}</p>
+                                    <p className='text-[16px] font-medium capitalize pl-2'>{`Customized ${type}`}</p>
                                     {filteredVoucherTypes.map((voucher,index) => (
                                         <li 
                                             key={index} 
                                             className={`text-sm capitalize`}
                                             ref={el => listItemRefs.current[index + 2] = el} // Offset by 2 for Create and Back
                                         >
-                                            <p className='text-[11px] text-[#2a67b1] capitalize pl-2 font-medium'>{voucher.voucherType}</p>
-                                            <Link to={`/voucherTypeMasterApi/display/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-3' : 'pl-3'}`}>{voucher.voucherTypeName}</Link>
+                                            <p className='text-sm capitalize pl-3 font-medium'>{voucher.voucherType}</p>
+                                            <Link to={`/voucherTypeMasterApi/display/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-4' : 'pl-4'}`}>{voucher.voucherTypeName}</Link>
                                             
                                         </li>
                                     ))}
                                 </ul>
-                                <p className='text-sm font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p>
+                                <p className='text-[16px] font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p>
                                 {filteredPreDefinedVoucherTypes.map((voucher,index) => (
                                     <li 
                                         key={index} 

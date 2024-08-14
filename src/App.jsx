@@ -8,7 +8,6 @@ import CDAMaster from './components/cda-menu/CDAMaster'
 import CreateMasterFormRouter from "./components/create/CreateMasterFormRouter"
 import DisplayFilter from "./components/display/DisplayFilter"
 import AlterFilter from "./components/alter/AlterFilter"
-import VoucherTypeCreate from "./components/forms/VoucherTypeCreate"
 import VoucherTypeDisplay from "./components/forms/VoucherTypeDisplay"
 import VoucherTypeAlter from "./components/forms/VoucherTypeAlter"
 

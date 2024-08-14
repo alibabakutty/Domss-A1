@@ -316,7 +316,7 @@ const VoucherTypeAlter = () => {
           <div className="bg-white">
             <div className="mt-2 w-[1100px] h-[80vh]">
               <div className="w-full h-20">
-                <div className="float-left w-[50%] ml-10 mt-2">
+                <div className="float-left w-[50%] ml-1 mt-2">
                   <div className="ml-2 flex leading-6">
                     <label htmlFor="voucherTypeName" className="w-[30%] text-sm">
                       Voucher Type Name

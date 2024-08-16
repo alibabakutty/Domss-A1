@@ -7,7 +7,7 @@ import NameValues from '../../assets/NameValues';
 const DisplayFilter = () => {
     const { type } = useParams();
     const [voucherTypeSuggestions, setVoucherTypeSuggestions] = useState([]);
-    const [preDefinedVoucherTypeSuggestions, setPreDefinedVoucherTypeSuggestions] = useState([]);
+    const [combinedVoucherSuggestions, setCombinedVoucherSuggestions] = useState([]); // Combined list
     const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0); // Set default to 0
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
@@ -28,8 +28,9 @@ const DisplayFilter = () => {
             // Fetch both custom and predefined vouchers
             Promise.all([listOfVouchers(), listOfPreDefinedVouchers()])
                 .then(([customResponse, predefinedResponse]) => {
-                    setVoucherTypeSuggestions(customResponse.data);
-                    setPreDefinedVoucherTypeSuggestions(predefinedResponse.data);
+                    const combinedList = [...customResponse.data, ...predefinedResponse.data];
+                    setVoucherTypeSuggestions(combinedList);
+                    setCombinedVoucherSuggestions(combinedList);
                 })
                 .catch(error => {
                     console.log(error);
@@ -42,19 +43,15 @@ const DisplayFilter = () => {
         setSelectedIndex(2);  // Reset focus to the first item on input change
     };
 
-    const filteredVoucherTypes = voucherTypeSuggestions.filter(voucher => 
+    const filteredCombinedVouchers = combinedVoucherSuggestions.filter(voucher => 
         voucher.voucherTypeName.toLowerCase().includes(filterInput.toLowerCase())
-    );
-
-    const filteredPreDefinedVoucherTypes = preDefinedVoucherTypeSuggestions.filter(voucher => 
-        voucher.voucherType.toLowerCase().includes(filterInput.toLowerCase())
     );
 
     const filteredNameValues = NameValues.filter(item => item.value.toLowerCase().includes(type.toLowerCase()));
 
     useEffect(() => {
         const handleKeyDown = (e) => {
-            const totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length + 2;
+            const totalItems = filteredCombinedVouchers.length + 2;
     
             if (e.key === 'ArrowDown') {
                 setSelectedIndex((prev) => {
@@ -84,15 +81,14 @@ const DisplayFilter = () => {
                     e.preventDefault();
                 } else if (selectedIndex === 1) {
                     navigate('/menu/voucher');
-                } else if (selectedIndex >= 2 && selectedIndex < 2 + filteredVoucherTypes.length) {
-                    const selectedVoucher = filteredVoucherTypes[selectedIndex - 2];
+                } else if (selectedIndex >= 2 && selectedIndex < totalItems) {
+                    const selectedVoucher = filteredCombinedVouchers[selectedIndex - 2];
                     if (selectedVoucher) {
-                        navigate(`/voucherTypeMasterApi/display/${selectedVoucher.voucherTypeName}`);
-                    }
-                } else if (selectedIndex >= 2 + filteredVoucherTypes.length && selectedIndex < totalItems) {
-                    const selectedPreDefinedVoucher = filteredPreDefinedVoucherTypes[selectedIndex - 2 - filteredVoucherTypes.length];
-                    if (selectedPreDefinedVoucher) {
-                        navigate(`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${selectedPreDefinedVoucher.voucherType}`);
+                        if (selectedVoucher.voucherTypeName) {
+                            navigate(`/voucherTypeMasterApi/display/${selectedVoucher.voucherTypeName}`);
+                        } else if (selectedVoucher.voucherType) {
+                            navigate(`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${selectedVoucher.voucherType}`);
+                        }
                     }
                 }
             } else if (e.key === 'Escape') {
@@ -102,7 +98,7 @@ const DisplayFilter = () => {
     
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, highlightedSuggestionVoucherType, filteredVoucherTypes, filteredPreDefinedVoucherTypes, navigate]);
+    }, [selectedIndex, highlightedSuggestionVoucherType, filteredCombinedVouchers, navigate]);
     
 
     return (
@@ -148,29 +144,19 @@ const DisplayFilter = () => {
                         <div className='overflow-y-scroll h-[70vh]'>
                             <div>
                                 <ul className=''>
-                                    {/* <p className='text-[16px] font-medium capitalize pl-2'>{`Customized ${type}`}</p> */}
-                                    {filteredVoucherTypes.map((voucher,index) => (
+                                    {filteredCombinedVouchers.map((voucher, index) => (
                                         <li 
                                             key={index} 
                                             className={`text-sm capitalize`}
                                             ref={el => listItemRefs.current[index + 2] = el} // Offset by 2 for Create and Back
                                         >
-                                            <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`}><p className='text-sm capitalize pl-3 font-medium'>{voucher.voucherType}</p></Link>
-                                            <Link to={`/voucherTypeMasterApi/display/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-4' : 'pl-4'}`}>{voucher.voucherTypeName}</Link>
-                                            
+                                            <p className='text-sm capitalize pl-3 font-medium'>{voucher.voucherType}</p>
+                                            <Link to={voucher.voucherTypeName ? `/voucherTypeMasterApi/display/${voucher.voucherTypeName}` : `/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-4' : 'pl-4'}`}>
+                                                {voucher.voucherTypeName || voucher.voucherType}
+                                            </Link>
                                         </li>
                                     ))}
                                 </ul>
-                                {/* <p className='text-[16px] font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p> */}
-                                {filteredPreDefinedVoucherTypes.map((voucher,index) => (
-                                    <li 
-                                        key={index} 
-                                        className={`text-sm capitalize pl-4 list-none ${highlightedSuggestionVoucherType === voucherTypeSuggestions.length + index ? 'bg-yellow-200' : ''}`}
-                                        ref={el => listItemRefs.current[voucherTypeSuggestions.length + index + 2] = el} // Offset by 2 for Create and Back
-                                    >
-                                        <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`}>{voucher.voucherType}</Link>
-                                    </li>
-                                ))}
                             </div>
                         </div>
                     </div>

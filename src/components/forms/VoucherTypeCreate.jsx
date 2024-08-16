@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createVoucherTypeMaster } from '../services/MasterService';
 import VoucherMenu from '../../assets/VoucherMenu';
 import RightSideButton from '../right-side-button/RightSideButton';
+import { useNavigate } from 'react-router-dom';
 
 const VoucherTypeCreate = () => {
   const [voucher, setVoucher] = useState({
@@ -30,6 +31,7 @@ const VoucherTypeCreate = () => {
   const inputRefs = useRef([]);
   const optionsRef = useRef(null);
   const periodicityRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -148,6 +150,8 @@ const VoucherTypeCreate = () => {
     } else if (key === 'Tab') {
       setVoucherTypeFocused(false);
       setPeriodicityFocused(false);
+    } else if (key === 'Escape'){
+      navigate('/');
     }
   };
 

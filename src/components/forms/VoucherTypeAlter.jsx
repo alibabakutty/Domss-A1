@@ -161,6 +161,8 @@ const VoucherTypeAlter = () => {
         setVoucherTypeFocused(false);
         setPeriodicityFocused(false);
       }
+    } else if (key === 'Escape'){
+      navigate(-1);
     }
   };
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import RightSideButton from '../right-side-button/RightSideButton';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getSpecificPreDefinedVoucher, getSpecificVoucher } from '../services/MasterService';
 const VoucherTypeDisplay = () => {
     const { type } = useParams();
@@ -22,6 +22,7 @@ const VoucherTypeDisplay = () => {
     });
 
   const inputRefs = useRef([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -107,6 +108,8 @@ const VoucherTypeDisplay = () => {
           pulseCursor(inputRefs.current[prevField]);
         }
       }
+    } else if (key === 'Escape'){
+      navigate(-1);
     }
   };
   

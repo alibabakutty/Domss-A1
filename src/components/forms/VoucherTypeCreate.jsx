@@ -341,10 +341,11 @@ const VoucherTypeCreate = () => {
                             <li
                               key={index}
                               tabIndex={0}
-                              className={`pl-2 ${
-                                highlightedSuggestionVoucherType === index ? 'bg-yellow-200' : ''
+                              className={`pl-2 cursor-pointer hover:bg-yellow-200 ${
+                                highlightedSuggestionVoucherType === index ? 'bg-yellow-200 ' : ''
                               }`}
                               onClick={() => handleSuggestionClick(item)}
+                              onMouseDown={(e) => e.preventDefault()}
                             >
                               {item.label}
                             </li>

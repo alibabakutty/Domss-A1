@@ -23,8 +23,8 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path="nav/:navbar" element={<NavbarDropDown headerText = "Gateway of Domss" />} />
           <Route path="/companyCreateForm" element={<CreateForm headerText = "Company Creation" />} />
-          <Route path="menu/:type" element={<CDAMaster />} />
-          <Route path="/:type/create" element={<CreateMasterFormRouter />} />
+          <Route path="menu/:type" element={<CreateMasterFormRouter />} />
+          {/* <Route path="/:type/create" element={} /> */}
           <Route path="/:type/display" element={<DisplayFilter />} />
           <Route path="/:type/alter" element={<AlterFilter />} />
           <Route path="/voucherTypeMasterApi/display/:type" element={<VoucherTypeDisplay />} />

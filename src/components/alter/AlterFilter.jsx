@@ -147,7 +147,7 @@ const AlterFilter = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className='overflow-y-scroll h-[73vh]'>
+                    <div className='overflow-y-scroll h-[70vh]'>
                         <div>
                             <ul className=''>
                                 <p className='text-[16px] font-medium capitalize pl-2'>{`Customized ${type}`}</p>

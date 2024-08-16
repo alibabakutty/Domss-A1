@@ -148,20 +148,20 @@ const DisplayFilter = () => {
                         <div className='overflow-y-scroll h-[70vh]'>
                             <div>
                                 <ul className=''>
-                                    <p className='text-[16px] font-medium capitalize pl-2'>{`Customized ${type}`}</p>
+                                    {/* <p className='text-[16px] font-medium capitalize pl-2'>{`Customized ${type}`}</p> */}
                                     {filteredVoucherTypes.map((voucher,index) => (
                                         <li 
                                             key={index} 
                                             className={`text-sm capitalize`}
                                             ref={el => listItemRefs.current[index + 2] = el} // Offset by 2 for Create and Back
                                         >
-                                            <p className='text-sm capitalize pl-3 font-medium'>{voucher.voucherType}</p>
+                                            <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`}><p className='text-sm capitalize pl-3 font-medium'>{voucher.voucherType}</p></Link>
                                             <Link to={`/voucherTypeMasterApi/display/${voucher.voucherTypeName}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-4' : 'pl-4'}`}>{voucher.voucherTypeName}</Link>
                                             
                                         </li>
                                     ))}
                                 </ul>
-                                <p className='text-[16px] font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p>
+                                {/* <p className='text-[16px] font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p> */}
                                 {filteredPreDefinedVoucherTypes.map((voucher,index) => (
                                     <li 
                                         key={index} 

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getSpecificPreDefinedVoucher, getSpecificVoucher, updateVoucherTypeMaster } from '../services/MasterService';
 import VoucherMenu from '../../assets/VoucherMenu';
+import RightSideButton from '../right-side-button/RightSideButton';
 const VoucherTypeAlter = () => {
     const { type } = useParams();
     const navigate = useNavigate();
@@ -33,22 +34,11 @@ const VoucherTypeAlter = () => {
   const optionsRef = useRef(null);
   const periodicityRef = useRef(null);
 
-  const pulseCursor = input => {
-    const value = input.value;
-    if (value) {
-      input.value = '';
-      setTimeout(() => {
-        input.value = value.charAt(0).toUpperCase() + value.slice(1);
-        input.setSelectionRange(0, 0);
-      }, 0);
-    }
-  };
-
   useEffect(() => {
     const focusAndPulseCursor = () => {
         if (inputRefs.current[0]) {
             inputRefs.current[0].focus();
-            pulseCursor(inputRefs.current[0]);
+            inputRefs.current[0].setSelectionRange(0, 0);
         }
     }
 
@@ -113,7 +103,7 @@ const VoucherTypeAlter = () => {
         const nextField = index + 1;
         if (nextField < inputRefs.current.length) {
           inputRefs.current[nextField].focus();
-          pulseCursor(inputRefs.current[nextField]);
+          inputRefs.current[nextField].setSelectionRange(0,0);
         } else {
           handleSubmit(e); // Call handleSubmit if it's the last field
         }
@@ -122,21 +112,27 @@ const VoucherTypeAlter = () => {
       }
     } else if (key === 'Backspace') {
       // Move focus to the previous input field if the current field is empty
-      if ((e.target.value.trim() === '') || (e.target.value.trim() !== '')) {
+      const input = inputRefs.current[index];
+      const value = input.value;
+      const cursorPosition = input.selectionStart;
+
+      if (cursorPosition === 0 && value.length !== 0){
         const prevField = index - 1;
-        if (prevField >= 0) {
+        if (inputRefs.current[prevField]){
+          inputRefs.current[prevField]?.focus();      // ?. ----- optional chaining operator (null or undefined)  
+          inputRefs.current[prevField].setSelectionRange(0,0);
+          e.preventDefault();
+        }
+      } else if (e.target.value !== ''){
+        return;
+      } else{
+        const prevField = index - 1;
+        if (inputRefs.current[prevField]){
           inputRefs.current[prevField].focus();
-          pulseCursor(inputRefs.current[prevField]);
+          inputRefs.current[prevField].setSelectionRange(0,0);
+          e.preventDefault();
         }
       }
-    } else if (key === 'Delete'){
-        // Clear the value of the current input field
-        e.target.value='';
-        setVoucher(prevVoucher => ({
-            ...prevVoucher,
-            [e.target.name]: '', // Ensure the state is updated
-        }));
-        e.preventDefault();
     } else if (key === 'ArrowDown'){
       //  arrow down for available suggestions items
       e.preventDefault();
@@ -330,7 +326,6 @@ const VoucherTypeAlter = () => {
                       ref={input => (inputRefs.current[0] = input)}
                       onChange={handleInputChange}
                       onKeyDown={e => handleKeyDown(e, 0)}
-                      onFocus={() => pulseCursor(inputRefs.current[0])}
                       className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                       autoComplete="off" 
                     />
@@ -355,14 +350,14 @@ const VoucherTypeAlter = () => {
                     />
                     {voucherTypeFocused && voucherTypeSuggestions.length > 0 && (
                       <div
-                        className="w-[20%] h-[92.5vh] border border-gray-500 bg-[#CAF4FF]"
-                        style={{ position: 'absolute', top: '42px', left: '1093px' }}
+                        className="w-[20%] h-[92.5vh] border border-gray-500 bg-[#CAF4FF] z-10"
+                        style={{ position: 'absolute', top: '42px', left: '958px' }}
                       >
                         <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
                           <p>List of Voucher Types</p>
                         </div>
                         <ul
-                          className="suggestions w-full h-[20vh] text-left text-sm mt-2"
+                          className="suggestions w-full h-[86vh] text-left text-sm mt-2 overflow-y-scroll"
                           ref={optionsRef}
                         >
                           {voucherTypeSuggestions.map((item, index) => (
@@ -383,7 +378,7 @@ const VoucherTypeAlter = () => {
                   </div>
                 </div>
 
-                <div className="float-right w-[40%] absolute left-[750px] top-[50px]">
+                <div className="float-right w-[40%] absolute left-[650px] top-[50px]">
                   <div className="ml-2 flex leading-6">
                     <label htmlFor="startingNumber" className="w-[40%] text-sm">
                       Starting Number
@@ -396,10 +391,8 @@ const VoucherTypeAlter = () => {
                       value={voucher.startingNumber}
                       onChange={handleVoucherNumberInputChange}
                       ref={input => (inputRefs.current[2] = input)}
-                      
                       onKeyDown={e => handleKeyDown(e, 2)}
-                      onFocus={() => pulseCursor(inputRefs.current[2])}
-                      className="w-[80px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[60px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                       autoComplete="off" 
                     />
                   </div>
@@ -416,9 +409,7 @@ const VoucherTypeAlter = () => {
                       onChange={handleInputChange}
                       ref={input => (inputRefs.current[3] = input)}
                       onKeyDown={e => handleKeyDown(e, 3)}
-                      
-                      onFocus={() => pulseCursor(inputRefs.current[3])}
-                      className="w-[80px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[60px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                       autoComplete="off" 
                     />
                   </div>
@@ -435,15 +426,14 @@ const VoucherTypeAlter = () => {
                       onChange={handleInputChange}
                       ref={input => (inputRefs.current[4] = input)}
                       onKeyDown={e => handleKeyDown(e, 4)}
-                      onFocus={() => pulseCursor(inputRefs.current[4])}
-                      className="w-[80px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[60px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                       autoComplete="off" 
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-evenly text-center border border-gray-400 w-[1364px] h-[78vh] ml-[1px]">
+              <div className="flex justify-evenly text-center border border-gray-400 w-[1228px] h-[78.4vh] ml-[1px]">
                 <div className="w-[400px] border border-r-slate-400">
                   <div className="border border-b-slate-400">
                     <p className='text-sm'>Restart Numbering</p>
@@ -464,7 +454,6 @@ const VoucherTypeAlter = () => {
                         ref={input => (inputRefs.current[5] = input)}
                         onChange={handleDateInputChange}
                         onKeyDown={e => handleKeyDown(e, 5)}
-                        onFocus={() => pulseCursor(inputRefs.current[5])}
                         className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" 
                       />
@@ -479,7 +468,6 @@ const VoucherTypeAlter = () => {
                         ref={input => (inputRefs.current[6] = input)}
                         onChange={handleInputChange}
                         onKeyDown={e => handleKeyDown(e, 6)}
-                        onFocus={() => pulseCursor(inputRefs.current[6])}
                         className="w-[100px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" 
                       />
@@ -494,8 +482,7 @@ const VoucherTypeAlter = () => {
                         ref={input => (inputRefs.current[7] = input)}
                         onChange={handleInputChange}
                         onKeyDown={e => handleKeyDown(e, 7)}
-                        onFocus={() =>
-                          pulseCursor(setPeriodicityFocused(true))
+                        onFocus={() => setPeriodicityFocused(true)
                         }
                         onBlur={() => setPeriodicityFocused(false)}
                         className="w-[100px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
@@ -547,7 +534,6 @@ const VoucherTypeAlter = () => {
                         ref={input => (inputRefs.current[8] = input)}
                         onChange={handleDateInputChange}
                         onKeyDown={e => handleKeyDown(e, 8)}
-                        onFocus={() => pulseCursor(inputRefs.current[8])}
                         className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" 
                       />
@@ -562,7 +548,6 @@ const VoucherTypeAlter = () => {
                         ref={input => (inputRefs.current[9] = input)}
                         onChange={handleVoucherNumberInputChange}
                         onKeyDown={e => handleKeyDown(e, 9)}
-                        onFocus={() => pulseCursor(inputRefs.current[9])}
                         className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" 
                       />
@@ -588,7 +573,6 @@ const VoucherTypeAlter = () => {
                         ref={input => (inputRefs.current[10] = input)}
                         onChange={handleDateInputChange}
                         onKeyDown={e => handleKeyDown(e, 10)}
-                        onFocus={() => pulseCursor(inputRefs.current[10])}
                         className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" 
                       />
@@ -606,7 +590,6 @@ const VoucherTypeAlter = () => {
                         onKeyDown={e => {
                           handleKeyDown(e, 11);
                         }}
-                        onFocus={() => pulseCursor(inputRefs.current[11])}
                         className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
                         autoComplete="off" 
                       />
@@ -624,7 +607,7 @@ const VoucherTypeAlter = () => {
                   <div className='flex justify-between'>
                     <div className=''>
                       <label htmlFor="voucherDate"></label>
-                      <input type="text" id='voucherDate' name='voucherDate' value={voucher.voucherDate} ref={input => (inputRefs.current[12] = input)} onKeyDown={e => handleKeyDown(e, 12)} onFocus={() => pulseCursor(inputRefs.current[12])} onChange={handleDateInputChange} className='w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' />
+                      <input type="text" id='voucherDate' name='voucherDate' value={voucher.voucherDate} ref={input => (inputRefs.current[12] = input)} onKeyDown={e => handleKeyDown(e, 12)} onChange={handleDateInputChange} className='w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' />
                     </div>
                     <div>
                       <label htmlFor="voucherNumber"></label>
@@ -636,6 +619,7 @@ const VoucherTypeAlter = () => {
             </div>
           </div>
         </form>
+        <RightSideButton />
       </div>
     </>
   );

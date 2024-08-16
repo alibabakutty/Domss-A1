@@ -214,7 +214,7 @@ const VoucherTypeDisplay = () => {
                 </div>
               </div>
 
-              <div className="flex justify-evenly text-center border border-gray-400 w-[1364px] h-[78vh] ml-[1px]">
+              <div className="flex justify-evenly text-center border border-gray-400 w-[1364px] h-[78.4vh] ml-[1px]">
                 <div className="w-[400px] border border-r-slate-400">
                   <div className="border border-b-slate-400">
                     <p className='text-sm'>Restart Numbering</p>

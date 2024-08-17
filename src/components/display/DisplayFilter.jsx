@@ -7,12 +7,12 @@ import NameValues from '../../assets/NameValues';
 const DisplayFilter = () => {
     const { type } = useParams();
     const [voucherTypeSuggestions, setVoucherTypeSuggestions] = useState([]);
-    const [combinedVoucherSuggestions, setCombinedVoucherSuggestions] = useState([]); // Combined list
-    const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0); // Set default to 0
+    const [combinedVoucherSuggestions, setCombinedVoucherSuggestions] = useState([]);
+    const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0);
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
-    const listItemRefs = useRef([]); // Ref array for list items
+    const listItemRefs = useRef([]);
     const navigate = useNavigate();
 
     const formatType = (str) => {
@@ -24,13 +24,32 @@ const DisplayFilter = () => {
             inputRef.current.focus();
         }
 
-        if (type === 'voucher'){
+        if (type === 'voucher') {
             // Fetch both custom and predefined vouchers
             Promise.all([listOfVouchers(), listOfPreDefinedVouchers()])
                 .then(([customResponse, predefinedResponse]) => {
-                    const combinedList = [...customResponse.data, ...predefinedResponse.data];
-                    setVoucherTypeSuggestions(combinedList);
-                    setCombinedVoucherSuggestions(combinedList);
+                    const customVouchers = customResponse.data;
+                    const predefinedVouchers = predefinedResponse.data;
+
+                    // Merge vouchers with the same voucherType
+                    const mergedVouchers = [...customVouchers];
+                    predefinedVouchers.forEach(preVoucher => {
+                        const existingVoucherIndex = mergedVouchers.findIndex(v => v.voucherType === preVoucher.voucherType);
+                        if (existingVoucherIndex !== -1) {
+                            // Merge predefined details into the existing voucher
+                            mergedVouchers[existingVoucherIndex] = {
+                                ...mergedVouchers[existingVoucherIndex],
+                                voucherTypeName: mergedVouchers[existingVoucherIndex].voucherTypeName || preVoucher.voucherTypeName,
+                                predefinedVoucherType: preVoucher.voucherType,
+                            };
+                        } else {
+                            // Add the predefined voucher if not already present
+                            mergedVouchers.push(preVoucher);
+                        }
+                    });
+
+                    setVoucherTypeSuggestions(mergedVouchers);
+                    setCombinedVoucherSuggestions(mergedVouchers);
                 })
                 .catch(error => {
                     console.log(error);
@@ -86,8 +105,8 @@ const DisplayFilter = () => {
                     if (selectedVoucher) {
                         if (selectedVoucher.voucherTypeName) {
                             navigate(`/voucherTypeMasterApi/display/${selectedVoucher.voucherTypeName}`);
-                        } else if (selectedVoucher.voucherType) {
-                            navigate(`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${selectedVoucher.voucherType}`);
+                        } else if (selectedVoucher.predefinedVoucherType) {
+                            navigate(`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${selectedVoucher.predefinedVoucherType}`);
                         }
                     }
                 }
@@ -99,7 +118,6 @@ const DisplayFilter = () => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [selectedIndex, highlightedSuggestionVoucherType, filteredCombinedVouchers, navigate]);
-    
 
     return (
         <>
@@ -107,8 +125,8 @@ const DisplayFilter = () => {
             <div className='w-[96%] h-[92.9vh] flex'>
                 <div className='w-1/2 bg-gradient-to-t to-blue-500 from-[#ccc]'></div>
                 <div className='w-1/2 bg-slate-100 border border-l-blue-400 flex justify-center flex-col items-center'>
-                    <div className="w-[50%] h-16 flex flex-col justify-center items-center border border-black bg-white border-b-0 ">
-                        <p className="text-[13px] font-semibold underline underline-offset-4 decoration-gray-400">
+                    <div class="w-[50%] h-16 flex flex-col justify-center items-center border border-black bg-white border-b-0 ">
+                        <p class="text-[13px] font-semibold underline underline-offset-4 decoration-gray-400">
                             {formatType(type)} Display
                         </p>
                         {filteredNameValues.map(({id, value}) => (
@@ -150,9 +168,9 @@ const DisplayFilter = () => {
                                             className={`text-sm capitalize`}
                                             ref={el => listItemRefs.current[index + 2] = el} // Offset by 2 for Create and Back
                                         >
-                                            <p className='text-sm capitalize pl-3 font-medium'>{voucher.voucherType}</p>
-                                            <Link to={voucher.voucherTypeName ? `/voucherTypeMasterApi/display/${voucher.voucherTypeName}` : `/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-4' : 'pl-4'}`}>
-                                                {voucher.voucherTypeName || voucher.voucherType}
+                                            <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.predefinedVoucherType}`}><p className='text-sm capitalize pl-3 font-medium'>{voucher.voucherType}</p></Link>
+                                            <Link to={voucher.voucherTypeName ? `/voucherTypeMasterApi/display/${voucher.voucherTypeName}` : `/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.predefinedVoucherType}`} className={`${highlightedSuggestionVoucherType === index ? 'bg-yellow-200 block pl-4' : 'pl-4'}`}>
+                                                {voucher.voucherTypeName || voucher.predefinedVoucherType}
                                             </Link>
                                         </li>
                                     ))}

@@ -150,7 +150,6 @@ const AlterFilter = () => {
                     <div className='overflow-y-scroll h-[70vh]'>
                         <div>
                             <ul className=''>
-                                <p className='text-[16px] font-medium capitalize pl-2'>{`Customized ${type}`}</p>
                                 {filteredVoucherTypes.map((voucher,index) => (
                                     <li 
                                         key={index} 
@@ -164,13 +163,12 @@ const AlterFilter = () => {
                                 ))}
                             </ul>
                              {/* Conditionally render pre-defined items */}
-                             <p className='text-[16px] font-medium capitalize pl-2'>{`Pre-Defined ${type}`}</p>
                             {type === 'voucher' && (
                                 <ul className=''>
                                     {filteredPreDefinedVoucherTypes.map((voucher,index) => (
                                         <li 
                                             key={index} 
-                                            className={`text-sm capitalize pl-4 ${highlightedSuggestionVoucherType === voucherTypeSuggestion.length + index ? 'bg-yellow-200' : ''}`}
+                                            className={`text-sm capitalize pl-3 font-medium ${highlightedSuggestionVoucherType === voucherTypeSuggestion.length + index ? 'bg-yellow-200' : ''}`}
                                             ref={el => listItemRefs.current[voucherTypeSuggestion.length + index + 2] = el} // Offset by 2 for Create and Back
                                         >
                                             <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`}>{voucher.voucherType}</Link>

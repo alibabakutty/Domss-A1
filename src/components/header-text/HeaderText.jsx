@@ -8,13 +8,13 @@ const HeaderText = () => {
 
     if (location.pathname === '/companyCreateForm'){
         headerText = "Company Creation";
-    } else if (location.pathname === '/group/create'){
+    } else if (location.pathname === '/menu/group'){
       headerText = "Group Creation";
-    } else if (location.pathname === '/voucher/create'){
+    } else if (location.pathname === '/menu/voucher'){
       headerText = "Voucher Type Creation";
-    } else if (location.pathname === '/currency/create'){
+    } else if (location.pathname === '/menu/currency'){
       headerText = "Currency Creation";
-    } else if (location.pathname === '/ledger/create'){
+    } else if (location.pathname === '/menu/ledger'){
       headerText = "Ledger Creation";
     }
   return (

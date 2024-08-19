@@ -70,7 +70,7 @@ const CurrencyCreate = () => {
     e.preventDefault();
 
     const userConfirmed = window.confirm('Do you want to confirm this submit!');
-    if (!userConfirmed){
+    if (userConfirmed){
       try{
          // Convert rates to float
          const formattedCurrency = {

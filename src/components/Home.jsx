@@ -79,9 +79,10 @@ const Home = () => {
                 
             ]
         },
-        { id: 36, name: 'Project Category', 
+        { id: 36, name: 'Project Category Master', 
             subItems: [
-                { id: 37, name: 'Project Master', path: 'menu/projectMaster'}
+                { id: 37, name: 'Project Category', path: 'menu/projectCategory'},
+                { id: 38, name: 'Project Name', path: 'menu/projectName'},
             ]
         }
     ];
@@ -114,7 +115,7 @@ const Home = () => {
 
     useEffect(() => {
         const handleKeyDown = event => {
-            const projectMasterIndex = filteredItems.findIndex(item => item.name === 'Project Master');
+            const projectMasterIndex = filteredItems.findIndex(item => item.name === 'Project Name');
     
             if (event.key === 'ArrowUp') {
                 setActiveIndex(prev => {

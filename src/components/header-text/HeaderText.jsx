@@ -16,6 +16,8 @@ const HeaderText = () => {
       headerText = "Currency Creation";
     } else if (location.pathname === '/menu/ledger'){
       headerText = "Ledger Creation";
+    } else if (location.pathname === '/menu/department'){
+      headerText = "Department Creation";
     }
   return (
     <>

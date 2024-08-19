@@ -22,7 +22,8 @@ import BatchMasterCategoryCreate from '../forms/BatchMasterCategoryCreate'
 import BatchMasterSerialNumberCreate from '../forms/BatchMasterSerialNumberCreate'
 import BatchMasterColorCreate from '../forms/BatchMasterColorCreate'
 import BatchMasterSizeCreate from '../forms/BatchMasterSizeCreate'
-import ProjectMasterCreate from '../forms/ProjectMasterCreate'
+import ProjectCategoryCreate from '../forms/ProjectCategoryCreate'
+import ProjectNameCreate from '../forms/ProjectNameCreate'
 
 const CreateMasterFormRouter = () => {
   const { type } = useParams();
@@ -73,8 +74,10 @@ const CreateMasterFormRouter = () => {
         return <BatchMasterColorCreate />
       case 'batchMasterSize':
         return <BatchMasterSizeCreate />
-      case 'projectMaster':
-        return <ProjectMasterCreate />
+      case 'projectCategory':
+        return <ProjectCategoryCreate />
+      case 'projectName':
+        return <ProjectNameCreate />
     
       default:
         return <div>404 Not Found!</div>;

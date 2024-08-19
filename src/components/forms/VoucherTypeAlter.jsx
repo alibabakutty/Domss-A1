@@ -287,7 +287,7 @@ const VoucherTypeAlter = () => {
             console.error('Error creating voucher type master:', error);    
         }
     }
-    navigate('/voucher/alter');
+    navigate(`${type}/alter`);
   };
 
   const handleVoucherNumberInputChange = e => {

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { createDepartmentMaster } from '../services/MasterService';
 import RightSideButton from '../right-side-button/RightSideButton';
+// import { useLocation } from 'react-router-dom';
 
 const DepartmentCreate = () => {
   const [department, setDepartment] = useState({
@@ -8,6 +9,8 @@ const DepartmentCreate = () => {
   });
 
   const inputRefs = useRef([]);
+  // const location = useLocation();
+  // const preventConfirm = location.state?.preventConfirm;
 
   const handleInputChange = e => {
     const {name,value} = e.target;
@@ -23,34 +26,37 @@ const DepartmentCreate = () => {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    const userConfirmed = window.confirm('Do you want confirm this submit!');
-    if (userConfirmed){
-      try {
+    try {
         const response = await createDepartmentMaster(department);
-        console.log('Department created successfully!',response.data);
+        console.log('Department created successfully!', response.data);
 
-        // Reset the form fields
         setDepartment({
-          departmentName: ''
+            departmentName: ''
         });
 
-        // Optionally, focus the first input field after reset
-        if (inputRefs.current[0]){
-          inputRefs.current[0].focus();
+        if (inputRefs.current[0]) {
+            inputRefs.current[0].focus();
         }
 
-      } catch (error) {
+    } catch (error) {
         console.error('Error creating department master:', error);
-      }
     }
-  };
+};
 
   const handleKeyDown = (e,index) => {
     const key = e.key;
 
     if (key === 'Enter'){
+      e.preventDefault();     // Prevent default form submission on Enter
+      // Show confirmation prompt
+      const userConfirmed = window.confirm('Do you want to confirm this submit?');
+      if (!userConfirmed) return;
+      // Check if the current input has a value
       if (e.target.value.trim() !== ''){
-        handleSubmit(e);
+        // Check if it's the last input field
+        if (index === inputRefs.current.length - 1){
+          handleSubmit(e);   // Submit the form
+        }
       }
     }
   }

@@ -147,7 +147,7 @@ const Home = () => {
                 if (activeIndex === -1) {
                     navigate('/changeCompany');
                 } else if (filteredItems[activeIndex]?.path) {
-                    navigate(`/${filteredItems[activeIndex].path}`);
+                    navigate(`/${filteredItems[activeIndex].path}`, {state: { preventConfirm: true }});
                 }
             }
         };

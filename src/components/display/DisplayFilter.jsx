@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfCurrencies, listOfPreDefinedVouchers, listOfVouchers } from '../services/MasterService';
+import { listOfCurrencies, listOfDepartments, listOfLocations, listOfPreDefinedVouchers, listOfVouchers } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const DisplayFilter = () => {
@@ -9,11 +9,19 @@ const DisplayFilter = () => {
     const [voucherTypeSuggestions, setVoucherTypeSuggestions] = useState([]);
     const [preDefinedVoucherTypeSuggestions, setPreDefinedVoucherTypeSuggestions] = useState([]);
     const [currencySuggestions, setCurrencySuggestions] = useState([]);
+    const [departmentSuggestions, setDepartmentSuggestions] = useState([]);
+    const [locationSuggestions, setLocationSuggestions] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
     const listItemRefs = useRef([]);
     const navigate = useNavigate();
+    const typeNames = {
+        currency: 'Currencies',
+        voucher: 'Vouchers',
+        department: 'Departments',
+        location: 'Locations'
+      };
 
     const formatType = (str) => {
         return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
@@ -37,6 +45,18 @@ const DisplayFilter = () => {
                     setCurrencySuggestions(response.data);
                 })
                 .catch(error => console.error(error));
+        } else if (type === 'department'){
+            listOfDepartments()
+            .then(response => {
+                setDepartmentSuggestions(response.data);
+            })
+            .catch(error => console.error(error));
+        } else if (type === 'location'){
+            listOfLocations()
+            .then(response => {
+                setLocationSuggestions(response.data);
+            })
+            .catch(error => console.error(error));
         }
     }, [type]);
 
@@ -57,9 +77,28 @@ const DisplayFilter = () => {
         currency.forexCurrencyName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const shouldShowScroll = (type === 'voucher')
-        ? (filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length > 20)
-        : (filteredCurrencies.length > 20);
+    const filteredDepartments = departmentSuggestions.filter(department => 
+        department.departmentName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredLocations = locationSuggestions.filter(location =>
+        location.godownName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    // Logic to determine if the scrollbar should be shown based on the type
+    let shouldShowScroll;
+    
+    if (type === 'voucher') {
+        shouldShowScroll = (filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length > 20);
+    } else if (type === 'currency'){
+        shouldShowScroll = (filteredCurrencies.length > 20);
+    } else if (type === 'department'){
+        shouldShowScroll = (filteredDepartments.length > 20);
+    } else if (type === 'location'){
+        shouldShowScroll = (filteredLocations.length > 20);
+    } else{
+        shouldShowScroll = false;
+    }
 
     const filteredNameValues = NameValues.filter(item => item.value.toLowerCase().includes(type.toLowerCase()));
 
@@ -69,7 +108,11 @@ const DisplayFilter = () => {
             if (type === 'currency') {
                 totalItems = filteredCurrencies.length;
             } else if (type === 'voucher') {
-                totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length + 2;
+                totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length;
+            } else if (type === 'department'){
+                totalItems = filteredDepartments.length;
+            } else if (type === 'location'){
+                totalItems = filteredLocations.length;
             }
 
             if (e.key === 'ArrowDown') {
@@ -108,6 +151,20 @@ const DisplayFilter = () => {
                             navigate(`/currencyMasterApi/displayCurrency/${selectedCurrency.forexCurrencySymbol}`);
                         }
                     }
+                } else if (type === 'department'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredDepartments.length){
+                        const selectedDepartment = filteredDepartments[selectedIndex - 2];
+                        if (selectedDepartment) {
+                            navigate(`/departmentMasterApi/displayDepartment/${selectedDepartment.departmentName}`);
+                        }
+                    }
+                } else if (type === 'location'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredLocations.length){
+                        const selectedLocation = filteredLocations[selectedIndex - 2];
+                        if (selectedLocation) {
+                            navigate(`/locationMasterApi/displayGodown/${selectedLocation.godownName}`);
+                        }
+                    }
                 }
             } else if (e.key === 'Escape') {
                 navigate(`/menu/${type}`);
@@ -116,7 +173,7 @@ const DisplayFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -149,7 +206,7 @@ const DisplayFilter = () => {
                         </div>
                         <div className='w-[350px] h-[85vh] border border-gray-600 bg-[#def1fc]'>
                             <h2 className="p-1 bg-[#2a67b1] text-white text-left text-[13px] pl-3">
-                                List of {type === 'currency' ? 'Currencies' : 'Vouchers'}
+                                List of {typeNames[type] || 'Items'}
                             </h2>
                             <div className='border border-b-slate-400'>
                                 <div className={`w-full ${selectedIndex === 0 ? 'bg-yellow-200' : ''}`}>
@@ -212,6 +269,16 @@ const DisplayFilter = () => {
                                                     <Link to={`/currencyMasterApi/displayCurrency/${currency.forexCurrencySymbol}`}>
                                                         <p className='text-sm uppercase font-medium pl-3'>{currency.forexCurrencySymbol} - {currency.forexCurrencyName}</p>
                                                     </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'department' && (
+                                        <ul>
+                                            {filteredDepartments.map((department,index) => (
+                                                <li key={index} className={`text-sm capitalize ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                >
+                                                    <p className='text-sm capitalize font-medium pl-3'>{department.departmentName}</p>
                                                 </li>
                                             ))}
                                         </ul>

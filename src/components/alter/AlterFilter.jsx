@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfCurrencies, listOfPreDefinedVouchers, listOfVouchers } from '../services/MasterService';
+import { listOfCurrencies, listOfDepartments, listOfPreDefinedVouchers, listOfVouchers } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const AlterFilter = () => {
@@ -9,6 +9,7 @@ const AlterFilter = () => {
     const [voucherTypeSuggestions, setVoucherTypeSuggestions] = useState([]);
     const [preDefinedVoucherTypeSuggestions, setPreDefinedVoucherTypeSuggestions] = useState([]);
     const [currencySuggestions, setCurrencySuggestions] = useState([]);
+    const [departmentSuggestions, setDepartmentSuggestions] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
@@ -37,6 +38,12 @@ const AlterFilter = () => {
                     setCurrencySuggestions(response.data);
                 })
                 .catch(error => console.error(error));
+        } else if (type === 'department'){
+            listOfDepartments()
+            .then(response => {
+                setDepartmentSuggestions(response.data);
+            })
+            .catch(error => console.error(error));
         }
     }, [type]);
 
@@ -57,9 +64,22 @@ const AlterFilter = () => {
         currency.forexCurrencyName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const shouldShowScroll = (type === 'voucher')
-        ? (filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length > 20)
-        : (filteredCurrencies.length > 20);
+    const filteredDepartments = departmentSuggestions.filter(department => 
+        department.departmentName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+     // Logic to determine if the scrollbar should be shown based on the type
+     let shouldShowScroll;
+    
+     if (type === 'voucher'){
+        shouldShowScroll = (filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length > 20);
+     } else if (type === 'currency'){
+        shouldShowScroll = (filteredCurrencies.length > 20);
+     } else if (type === 'department'){
+        shouldShowScroll = (filteredDepartments.length > 20);
+     } else{
+        shouldShowScroll = false;
+     }
 
     const filteredNameValues = NameValues.filter(item => item.value.toLowerCase().includes(type.toLowerCase()));
 
@@ -69,7 +89,9 @@ const AlterFilter = () => {
             if (type === 'currency') {
                 totalItems = filteredCurrencies.length;
             } else if (type === 'voucher') {
-                totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length + 2;
+                totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length;
+            } else if (type === 'department'){
+                totalItems = filteredDepartments.length;
             }
 
             if (e.key === 'ArrowDown') {
@@ -108,6 +130,13 @@ const AlterFilter = () => {
                             navigate(`/currencyMasterApi/alterCurrencyMaster/${selectedCurrency.forexCurrencySymbol}`);
                         }
                     }
+                } else if (type === 'department'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredDepartments.length){
+                        const selectedDepartment = filteredDepartments[selectedIndex - 2];
+                        if (selectedDepartment) {
+                            navigate(`/departmentMasterApi/alterDepartmentMaster/${selectedDepartment.departmentName}`);
+                        }
+                    }
                 }
             } else if (e.key === 'Escape') {
                 navigate(`/menu/${type}`);
@@ -116,7 +145,7 @@ const AlterFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -212,6 +241,16 @@ const AlterFilter = () => {
                                                     <Link to={`/currencyMasterApi/alterCurrencyMaster/${currency.forexCurrencySymbol}`}>
                                                         <p className='text-sm uppercase font-medium pl-3'>{currency.forexCurrencySymbol} - {currency.forexCurrencyName}</p>
                                                     </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'department' && (
+                                        <ul>
+                                            {filteredDepartments.map((department,index) => (
+                                                <li key={index} className={`text-sm capitalize ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                >
+                                                    <Link className='text-sm capitalize font-medium pl-3'>{department.departmentName}</Link>
                                                 </li>
                                             ))}
                                         </ul>

@@ -11,6 +11,8 @@ import VoucherTypeDisplay from "./components/forms/VoucherTypeDisplay"
 import VoucherTypeAlter from "./components/forms/VoucherTypeAlter"
 import CurrencyDisplay from "./components/forms/CurrencyDisplay"
 import CurrencyAlter from "./components/forms/CurrencyAlter"
+import DepartmentDisplay from "./components/forms/DepartmentDisplay"
+import DepartmentAlter from "./components/forms/DepartmentAlter"
 
 function App() {
   
@@ -25,14 +27,15 @@ function App() {
           <Route path="nav/:navbar" element={<NavbarDropDown headerText = "Gateway of Domss" />} />
           <Route path="/companyCreateForm" element={<CreateForm headerText = "Company Creation" />} />
           <Route path="menu/:type" element={<CreateMasterFormRouter />} />
-          {/* <Route path="/:type/create" element={} /> */}
           <Route path="/:type/display" element={<DisplayFilter />} />
           <Route path="/:type/alter" element={<AlterFilter />} />
           <Route path="/voucherTypeMasterApi/display/:type" element={<VoucherTypeDisplay />} />
           <Route path="/preDefinedVoucherTypeApi/displayPreDefinedVoucher/:type" element={<VoucherTypeDisplay />} />
           <Route path="/currencyMasterApi/displayCurrency/:type" element={<CurrencyDisplay />} />
+          <Route path="/departmentMasterApi/displayDepartment/:type" element={<DepartmentDisplay />} />
           <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:type" element={<VoucherTypeAlter />} />
           <Route path="/currencyMasterApi/alterCurrencyMaster/:type" element={<CurrencyAlter />} />
+        <Route path="/departmentMasterApi/alterDepartmentMaster/:type" element={<DepartmentAlter />} />
         </Routes>
       </BrowserRouter>
     </>

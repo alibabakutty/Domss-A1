@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfCurrencies, listOfDepartments, listOfLocations, listOfPreDefinedVouchers, listOfVouchers } from '../services/MasterService';
+import { listOfBranchOffices, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfVouchers } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const DisplayFilter = () => {
@@ -11,6 +11,8 @@ const DisplayFilter = () => {
     const [currencySuggestions, setCurrencySuggestions] = useState([]);
     const [departmentSuggestions, setDepartmentSuggestions] = useState([]);
     const [locationSuggestions, setLocationSuggestions] = useState([]);
+    const [headOfficeSuggestions, setHeadOfficeSuggestions] = useState([]);
+    const [branchOfficeSuggestions, setBranchOfficeSuggestions] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
@@ -20,7 +22,9 @@ const DisplayFilter = () => {
         currency: 'Currencies',
         voucher: 'Vouchers',
         department: 'Departments',
-        location: 'Locations'
+        location: 'Locations',
+        headOffice: 'Head Offices',
+        branchOffice: 'Branch Offices'
       };
 
     const formatType = (str) => {
@@ -57,6 +61,18 @@ const DisplayFilter = () => {
                 setLocationSuggestions(response.data);
             })
             .catch(error => console.error(error));
+        } else if (type === 'headOffice'){
+            listOfHeadOffices()
+            .then(response => {
+                setHeadOfficeSuggestions(response.data);
+            })
+            .catch(error => console.error(error));
+        } else if (type === 'branchOffice'){
+            listOfBranchOffices()
+            .then(response => 
+                setBranchOfficeSuggestions(response.data)
+            )
+            .catch(error => console.error(error));
         }
     }, [type]);
 
@@ -85,6 +101,14 @@ const DisplayFilter = () => {
         location.godownName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
+    const filteredHeadOffices = headOfficeSuggestions.filter(headOffice =>
+        headOffice.headOfficeName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredBranchOffices = branchOfficeSuggestions.filter(branchOffice => 
+        branchOffice.branchOfficeName.toLowerCase().includes(filterInput.toLowerCase())
+    )
+
     // Logic to determine if the scrollbar should be shown based on the type
     let shouldShowScroll;
     
@@ -96,6 +120,10 @@ const DisplayFilter = () => {
         shouldShowScroll = (filteredDepartments.length > 20);
     } else if (type === 'location'){
         shouldShowScroll = (filteredLocations.length > 20);
+    } else if (type === 'headOffice'){
+        shouldShowScroll = (filteredHeadOffices.length > 20);
+    } else if (type === 'branchOffice'){
+        shouldShowScroll = (filteredBranchOffices.length > 20);
     } else{
         shouldShowScroll = false;
     }
@@ -113,6 +141,10 @@ const DisplayFilter = () => {
                 totalItems = filteredDepartments.length;
             } else if (type === 'location'){
                 totalItems = filteredLocations.length;
+            } else if (type === 'headOffice'){
+                totalItems = filteredHeadOffices.length;
+            } else if (type === 'branchOffice'){
+                totalItems = filteredBranchOffices.length;
             }
 
             if (e.key === 'ArrowDown') {
@@ -165,6 +197,20 @@ const DisplayFilter = () => {
                             navigate(`/locationMasterApi/displayGodown/${selectedLocation.godownName}`);
                         }
                     }
+                } else if (type === 'headOffice'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredHeadOffices.length){
+                        const selectedHeadOffice = filteredHeadOffices[selectedIndex - 2];
+                        if (selectedHeadOffice) {
+                            navigate(`/headOfficeMasterApi/displayHeadOffice/${selectedHeadOffice.headOfficeName}`);
+                        }
+                    }
+                } else if (type === 'branchOffice'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredBranchOffices.length){
+                        const selectedBranchOffice = filteredBranchOffices[selectedIndex - 2];
+                        if (selectedBranchOffice) {
+                            navigate(`/branchOfficeMasterApi/displayBranchOffice/${selectedBranchOffice.branchOfficeName}`);
+                        }
+                    }
                 }
             } else if (e.key === 'Escape') {
                 navigate(`/menu/${type}`);
@@ -173,7 +219,7 @@ const DisplayFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -250,8 +296,8 @@ const DisplayFilter = () => {
                                                         className={`text-sm capitalize font-medium pl-3 ${selectedIndex === index + filteredVoucherTypes.length + 2 ? 'bg-yellow-200' : ''}`}
                                                         ref={el => listItemRefs.current[index + filteredVoucherTypes.length + 2] = el}
                                                     >
-                                                        <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`}>
-                                                            <p className='text-sm capitalize font-medium'>{voucher.voucherType}</p>
+                                                        <Link to={`/preDefinedVoucherTypeApi/displayPreDefinedVoucher/${voucher.voucherType}`} className='text-sm capitalize font-medium'>
+                                                        {voucher.voucherType}
                                                         </Link>
                                                     </li>
                                                 ))}
@@ -263,11 +309,11 @@ const DisplayFilter = () => {
                                             {filteredCurrencies.map((currency, index) => (
                                                 <li
                                                     key={index}
-                                                    className={`text-sm capitalize ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                    className={`text-sm capitalize font-medium pl-3 ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                     ref={el => listItemRefs.current[index + 2] = el}
                                                 >
                                                     <Link to={`/currencyMasterApi/displayCurrency/${currency.forexCurrencySymbol}`}>
-                                                        <p className='text-sm uppercase font-medium pl-3'>{currency.forexCurrencySymbol} - {currency.forexCurrencyName}</p>
+                                                    {currency.forexCurrencySymbol} - {currency.forexCurrencyName}
                                                     </Link>
                                                 </li>
                                             ))}
@@ -276,9 +322,44 @@ const DisplayFilter = () => {
                                     {type === 'department' && (
                                         <ul>
                                             {filteredDepartments.map((department,index) => (
-                                                <li key={index} className={`text-sm capitalize ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
                                                 >
-                                                    <p className='text-sm capitalize font-medium pl-3'>{department.departmentName}</p>
+                                                <Link to={`/departmentMasterApi/displayDepartment/${department.departmentName}`}>
+                                                    {department.departmentName}
+                                                </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'location' && (
+                                        <ul>
+                                            {filteredLocations.map((location,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                   <Link to={`/locationMasterApi/displayGodown/${location.godownName}`}>
+                                                    {location.godownName}
+                                                   </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'headOffice' && (
+                                        <ul>
+                                            {filteredHeadOffices.map((headOffice,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/headOfficeMasterApi/displayHeadOffice/${headOffice.headOfficeName}`}>
+                                                        {headOffice.headOfficeName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'branchOffice' && (
+                                        <ul>
+                                            {filteredBranchOffices.map((branchOffice,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/branchOfficeMasterApi/displayBranchOffice/${branchOffice.branchOfficeName}`}>
+                                                        {branchOffice.branchOfficeName}
+                                                    </Link>
                                                 </li>
                                             ))}
                                         </ul>

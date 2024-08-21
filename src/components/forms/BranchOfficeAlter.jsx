@@ -1,37 +1,32 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { createBranchOfficeMaster } from '../services/MasterService';
 import RightSideButton from '../right-side-button/RightSideButton';
-import { createHeadOfficeMaster } from '../services/MasterService';
 
-const HeadOfficeCreate = () => {
-  const [headOffice, setHeadOffice] = useState({
-    headOfficeName: ''
+const BranchOfficeAlter = () => {
+  const [branchOffice, setBranchOffice] = useState({
+    branchOfficeName: ''
   });
 
   const inputRefs = useRef([]);
 
   const handleInputChange = (e) => {
-    const {name,value} = e.target;
-    setHeadOffice({
-      ...headOffice,
-      [name]: value,
-    })
-  }
+    const { name, value } = e.target;
+    setBranchOffice({ ...branchOffice, [name]: value });
+  };
 
   useEffect(() => {
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
     }
-  },[]);
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await createHeadOfficeMaster(headOffice);
+      const response = await createBranchOfficeMaster(branchOffice);
       console.log(response.data);
       // After the submit
-      setHeadOffice({
-        headOfficeName: ''
-      })
+      setBranchOffice({ branchOfficeName: '' });
       if (inputRefs.current[0]){
         inputRefs.current[0].focus();
       }
@@ -66,9 +61,9 @@ const HeadOfficeCreate = () => {
     <>
       <form action="" className='border border-slate-500 w-[50%] h-[10vh]' onSubmit={handleSubmit}>
         <div className='text-sm p-3 flex'>
-          <label htmlFor="headOfficeName" className='w-[30%]'>Head Office Name</label>
+          <label htmlFor="branchOfficeName" className='w-[30%]'>Branch Office Name</label>
           <span>:</span>
-          <input type="text" id='headOfficeName' name='headOfficeName' value={headOffice.headOfficeName} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 0)} ref={el => inputRefs.current[0] = el} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+          <input type="text" id='branchOfficeName' name='branchOfficeName' value={branchOffice.branchOfficeName} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 0)} ref={input => inputRefs.current[0] = input} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
         </div>
       </form>
       <RightSideButton />
@@ -76,4 +71,4 @@ const HeadOfficeCreate = () => {
   )
 }
 
-export default HeadOfficeCreate
+export default BranchOfficeAlter

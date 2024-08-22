@@ -5,7 +5,7 @@ import { getSpecificCurrency } from '../services/MasterService';
 
 const CurrencyDisplay = () => {
 
-    const { type } = useParams();
+    const { datas } = useParams();
 
   const [currency, setCurrency] = useState({
     forexCurrencySymbol: '',
@@ -33,7 +33,7 @@ const CurrencyDisplay = () => {
 
     const loadCurrency = async () => {
         try{
-            const result = await getSpecificCurrency(type);
+            const result = await getSpecificCurrency(datas);
             console.log(result.data);
             setCurrency(result.data);
 
@@ -68,6 +68,9 @@ const CurrencyDisplay = () => {
           e.preventDefault();
         }
       }
+    } else if (key === 'Escape'){
+      e.preventDefault();
+      navigate(-1);
     }
   };
   return (

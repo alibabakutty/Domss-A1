@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const HeadOfficeAlter = () => {
 
-    const { type } = useParams();
+    const { datas } = useParams();
   const [headOffice, setHeadOffice] = useState({
     headOfficeName: ''
   });
@@ -32,7 +32,7 @@ const HeadOfficeAlter = () => {
 
     const loadHeadOffice = async () => {
         try {
-            const result = await getSpecificHeadOffice(type);
+            const result = await getSpecificHeadOffice(datas);
             console.log(result.data);
             setHeadOffice(result.data);
         } catch (error) {
@@ -48,7 +48,7 @@ const HeadOfficeAlter = () => {
     const userConfirmed = window.confirm('Do you want to confirm this submit!');
     if (userConfirmed){
       try{
-        const response = await updateHeadOfficeMaster(type, headOffice);
+        const response = await updateHeadOfficeMaster(datas, headOffice);
         console.log('Godown altered successfully!',response.data);
   
         if (inputRefs.current[0]){
@@ -70,6 +70,8 @@ const HeadOfficeAlter = () => {
         handleSubmit(e);  // call handlesubmit if it's the last field
       }
       
+    } else if (key === 'Escape'){
+      navigate(-1);
     }
   }
   return (

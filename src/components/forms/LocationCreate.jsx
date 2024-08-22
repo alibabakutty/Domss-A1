@@ -49,19 +49,13 @@ const LocationCreate = () => {
 
     if (key === 'Enter'){
       e.preventDefault();      // Prevent default form submission on Enter
-      // Show confirmation prompt
-      const userConfirmed = window.confirm('Do you want to confirm this submit?');
-      
-      if(userConfirmed){
-        // Check if the current input has a value
-        if(e.target.value.trim() !== ''){
+      // Only show confirmation if the input field is not empty
+      if (e.target.value.trim() !== '') {
+        const userConfirmed = window.confirm('Do you want to confirm this submit?');
+        if (userConfirmed) {
           // Check if it's the last input field
-          if(index === inputRefs.current.length -1){
-            // Submit the form
-            handleSubmit(e);
-          }else {
-            // Move focus to the next input
-            inputRefs.current[index + 1].focus();
+          if (index === inputRefs.current.length - 1) {
+            handleSubmit(e); // Submit the form
           }
         }
       }

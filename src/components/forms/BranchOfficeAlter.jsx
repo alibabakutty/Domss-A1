@@ -4,7 +4,7 @@ import RightSideButton from '../right-side-button/RightSideButton';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const BranchOfficeAlter = () => {
-  const { type } = useParams();
+  const { datas } = useParams();
   const [branchOffice, setBranchOffice] = useState({
     branchOfficeName: ''
   });
@@ -29,7 +29,7 @@ const BranchOfficeAlter = () => {
 
   const loadBranchOffice = async () => {
     try {
-      const result = await getSpecificBranchOffice(type);
+      const result = await getSpecificBranchOffice(datas);
       console.log(result.data);
       setBranchOffice(result.data);
     } catch (error) {
@@ -55,6 +55,9 @@ const BranchOfficeAlter = () => {
           inputRefs.current[index + 1].focus();
           }
       }
+    } else if (key === 'Escape'){
+      e.preventDefault();
+      navigate(-1);
     }
   };
 
@@ -64,7 +67,7 @@ const BranchOfficeAlter = () => {
     const userConfirmed = window.confirm('Do you want to confirm this submit!');
     if (userConfirmed){
         try {
-            const response = await updateBranchOfficeMaster(type, branchOffice);
+            const response = await updateBranchOfficeMaster(datas, branchOffice);
             console.log('Branch office altered successfully!', response.data);
             // Optionally, reset and focus the first input field
             setBranchOffice({ branchOfficeName: '' });

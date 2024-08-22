@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfBranchOffices, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfVouchers } from '../services/MasterService';
+import { listOfBranchOffices, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfVouchers } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const DisplayFilter = () => {
@@ -13,6 +13,7 @@ const DisplayFilter = () => {
     const [locationSuggestions, setLocationSuggestions] = useState([]);
     const [headOfficeSuggestions, setHeadOfficeSuggestions] = useState([]);
     const [branchOfficeSuggestions, setBranchOfficeSuggestions] = useState([]);
+    const [revenueCategorySuggestions, setRevenueCategorySuggestions] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
@@ -24,7 +25,8 @@ const DisplayFilter = () => {
         department: 'Departments',
         location: 'Locations',
         headOffice: 'Head Offices',
-        branchOffice: 'Branch Offices'
+        branchOffice: 'Branch Offices',
+        revenueCategory: 'Revenue Categories'
       };
 
     const formatType = (str) => {
@@ -57,6 +59,9 @@ const DisplayFilter = () => {
                 } else if (type === 'branchOffice') {
                     const response = await listOfBranchOffices();
                     setBranchOfficeSuggestions(response.data);
+                } else if (type === 'revenueCategory'){
+                    const response = await listOfRevenueCategories();
+                    setRevenueCategorySuggestions(response.data);
                 }
             } catch (error) {
                 console.error(error);
@@ -97,6 +102,10 @@ const DisplayFilter = () => {
 
     const filteredBranchOffices = branchOfficeSuggestions.filter(branchOffice => 
         branchOffice.branchOfficeName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredRevenueCategories = revenueCategorySuggestions.filter(revenueCategory => 
+        revenueCategory.revenueCategoryName.toLowerCase().includes(filterInput.toLowerCase())
     )
 
     // Logic to determine if the scrollbar should be shown based on the type
@@ -114,6 +123,8 @@ const DisplayFilter = () => {
         shouldShowScroll = (filteredHeadOffices.length > 20);
     } else if (type === 'branchOffice'){
         shouldShowScroll = (filteredBranchOffices.length > 20);
+    } else if (type === 'revenueCategory'){
+        shouldShowScroll = (filteredRevenueCategories.length > 20);
     } else{
         shouldShowScroll = false;
     }
@@ -135,6 +146,8 @@ const DisplayFilter = () => {
                 totalItems = filteredHeadOffices.length;
             } else if (type === 'branchOffice'){
                 totalItems = filteredBranchOffices.length;
+            } else if (type === 'revenueCategory'){
+                totalItems = filteredRevenueCategories.length;
             }
 
             if (e.key === 'ArrowDown') {
@@ -201,6 +214,13 @@ const DisplayFilter = () => {
                             navigate(`/branchOfficeMasterApi/displayBranchOffice/${selectedBranchOffice.branchOfficeName}`);
                         }
                     }
+                } else if (type === 'revenueCategory'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredRevenueCategories.length){
+                        const selectedRevenueCategory = filteredRevenueCategories[selectedIndex - 2];
+                        if (selectedRevenueCategory) {
+                            navigate(`/revenueCategoryMasterApi/displayRevenueCategory/${selectedRevenueCategory.revenueCategoryName}`);
+                        }
+                    }
                 }
             } else if (e.key === 'Escape') {
                 navigate(`/menu/${type}`);
@@ -209,7 +229,7 @@ const DisplayFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -349,6 +369,17 @@ const DisplayFilter = () => {
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
                                                     <Link to={`/branchOfficeMasterApi/displayBranchOffice/${branchOffice.branchOfficeName}`}>
                                                         {branchOffice.branchOfficeName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'revenueCategory' && (
+                                        <ul>
+                                            {filteredRevenueCategories.map((revenueCategory,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/revenueCategoryMasterApi/displayRevenueCategory/${revenueCategory.revenueCategoryName}`}>
+                                                        {revenueCategory.revenueCategoryName}
                                                     </Link>
                                                 </li>
                                             ))}

@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import RightSideButton from '../right-side-button/RightSideButton';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getSpecificPreDefinedVoucher, getSpecificVoucher } from '../services/MasterService';
 const VoucherTypeDisplay = () => {
-    const { type } = useParams();
+    const { datas } = useParams();
     const [voucher, setVoucher] = useState({
         voucherTypeName: '',
         voucherType: '',
@@ -32,7 +31,7 @@ const VoucherTypeDisplay = () => {
 
     const loadVoucherTypeName = async () => {
         try {
-          const result = await getSpecificVoucher(type);
+          const result = await getSpecificVoucher(datas);
           console.log(result.data);
           setVoucher(result.data);
         } catch (error) {
@@ -42,7 +41,7 @@ const VoucherTypeDisplay = () => {
     
       const loadPreDefinedVoucherTypeName = async () => {
         try{
-          const result = await getSpecificPreDefinedVoucher(type);
+          const result = await getSpecificPreDefinedVoucher(datas);
           console.log(result.data);
           setVoucher(result.data);
         } catch (error) {

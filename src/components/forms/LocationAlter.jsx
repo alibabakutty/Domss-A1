@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const LocationAlter = () => {
 
-  const { type } = useParams();
+  const { datas } = useParams();
   const [location, setLocation] = useState({
     godownName: ''
   });
@@ -32,7 +32,7 @@ const LocationAlter = () => {
 
     const loadLocation = async () => {
       try {
-        const result = await getSpecificLocation(type);
+        const result = await getSpecificLocation(datas);
         console.log(result.data);
         setLocation(result.data);
       } catch (error) {
@@ -49,7 +49,7 @@ const LocationAlter = () => {
     const userConfirmed = window.confirm('Do you want to confirm this submit!');
     if (userConfirmed){
       try{
-        const response = await updateLocationMaster(type, location);
+        const response = await updateLocationMaster(datas, location);
         console.log('Godown altered successfully!',response.data);
   
         if (inputRefs.current[0]){
@@ -71,6 +71,8 @@ const LocationAlter = () => {
         handleSubmit(e);  // call handlesubmit if it's the last field
       }
       
+    } else if (key === 'Escape'){
+      navigate(-1);
     }
   }
   return (

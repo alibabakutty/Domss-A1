@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton';
 import { createHeadOfficeMaster, getSpecificHeadOffice } from '../services/MasterService';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const HeadOfficeDisplay = () => {
 
-    const { type } = useParams();
+    const { datas } = useParams();
   const [headOffice, setHeadOffice] = useState({
     headOfficeName: ''
   });
 
   const inputRefs = useRef([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
@@ -19,7 +19,7 @@ const HeadOfficeDisplay = () => {
 
     const loadHeadOffice = async () => {
         try {
-            const result = await getSpecificHeadOffice(type);
+            const result = await getSpecificHeadOffice(datas);
             console.log(result.data);
             setHeadOffice(result.data);
         } catch (error) {
@@ -27,7 +27,17 @@ const HeadOfficeDisplay = () => {
         }
     }
     loadHeadOffice();
-  },[]);
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape'){
+        event.preventDefault();
+        navigate(-1);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return() => {document.removeEventListener('keydown', handleKeyDown)}
+  },[datas,navigate]);
   return (
     <>
       <div className='flex'>

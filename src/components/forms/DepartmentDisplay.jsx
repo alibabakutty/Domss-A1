@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const DepartmentDisplay = () => {
 
-    const { type } = useParams();
+    const { datas } = useParams();
   const [department, setDepartment] = useState({
     departmentName: ''
   });
@@ -19,7 +19,7 @@ const DepartmentDisplay = () => {
 
     const loadDepartment = async () => {
         try {
-            const result = await getSpecificDepartment(type);
+            const result = await getSpecificDepartment(datas);
             console.log(result.data);
             setDepartment(result.data);
         } catch (error) {
@@ -28,16 +28,23 @@ const DepartmentDisplay = () => {
     }
     loadDepartment();
 
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape'){
-        navigate(`/${type}/display`);    // Go back to the previous page
+    // Event listener for Escape key to go back to the previous page
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        navigate(-1); // Go back to the previous page
       }
     };
+
+    // Attach the event listener
     document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup the event listener on component unmount
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-    }
-  },[type, navigate]);
+    };
+
+  },[datas, navigate]);
   
   return (
     <>

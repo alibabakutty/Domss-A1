@@ -19,6 +19,8 @@ import HeadOfficeDisplay from "./components/forms/HeadOfficeDisplay"
 import HeadOfficeAlter from "./components/forms/HeadOfficeAlter"
 import BranchOfficeDisplay from "./components/forms/BranchOfficeDisplay"
 import BranchOfficeAlter from "./components/forms/BranchOfficeAlter"
+import RevenueCategoryDisplay from "./components/forms/RevenueCategoryDisplay"
+import RevenueCategoryAlter from "./components/forms/RevenueCategoryAlter"
 
 function App() {
   
@@ -35,19 +37,21 @@ function App() {
           <Route path="menu/:type" element={<CreateMasterFormRouter />} />
           <Route path="/:type/display" element={<DisplayFilter />} />
           <Route path="/:type/alter" element={<AlterFilter />} />
-          <Route path="/voucherTypeMasterApi/display/:type" element={<VoucherTypeDisplay />} />
-          <Route path="/preDefinedVoucherTypeApi/displayPreDefinedVoucher/:type" element={<VoucherTypeDisplay />} />
-          <Route path="/currencyMasterApi/displayCurrency/:type" element={<CurrencyDisplay />} />
-          <Route path="/departmentMasterApi/displayDepartment/:type" element={<DepartmentDisplay />} />
-          <Route path="/locationMasterApi/displayGodown/:type" element={<LocationDisplay />} />
-          <Route path="headOfficeMasterApi/displayHeadOffice/:type" element={<HeadOfficeDisplay />} />
-          <Route path="/branchOfficeMasterApi/displayBranchOffice/:type" element={<BranchOfficeDisplay />} />
-          <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:type" element={<VoucherTypeAlter />} />
-          <Route path="/currencyMasterApi/alterCurrencyMaster/:type" element={<CurrencyAlter />} />
-          <Route path="/departmentMasterApi/alterDepartmentMaster/:type" element={<DepartmentAlter />} />
-          <Route path="/locationMasterApi/alterGodown/:type" element={<LocationAlter />} />
-          <Route path="/headOfficeMasterApi/alterHeadOfficeMaster/:type" element={<HeadOfficeAlter />} />
-          <Route path="/branchOfficeMasterApi/alterBranchOfficeMaster/:type" element={<BranchOfficeAlter />} />
+          <Route path="/voucherTypeMasterApi/display/:datas" element={<VoucherTypeDisplay />} />
+          <Route path="/preDefinedVoucherTypeApi/displayPreDefinedVoucher/:datas" element={<VoucherTypeDisplay />} />
+          <Route path="/currencyMasterApi/displayCurrency/:datas" element={<CurrencyDisplay />} />
+          <Route path="/departmentMasterApi/displayDepartment/:datas" element={<DepartmentDisplay />} />
+          <Route path="/locationMasterApi/displayGodown/:datas" element={<LocationDisplay />} />
+          <Route path="headOfficeMasterApi/displayHeadOffice/:datas" element={<HeadOfficeDisplay />} />
+          <Route path="/branchOfficeMasterApi/displayBranchOffice/:datas" element={<BranchOfficeDisplay />} />
+          <Route path="/revenueCategoryMasterApi/displayRevenueCategory/:datas" element={<RevenueCategoryDisplay />} />
+          <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:datas" element={<VoucherTypeAlter />} />
+          <Route path="/currencyMasterApi/alterCurrencyMaster/:datas" element={<CurrencyAlter />} />
+          <Route path="/departmentMasterApi/alterDepartmentMaster/:datas" element={<DepartmentAlter />} />
+          <Route path="/locationMasterApi/alterGodown/:datas" element={<LocationAlter />} />
+          <Route path="/headOfficeMasterApi/alterHeadOfficeMaster/:datas" element={<HeadOfficeAlter />} />
+          <Route path="/branchOfficeMasterApi/alterBranchOfficeMaster/:datas" element={<BranchOfficeAlter />} />
+          <Route path="/revenueCategoryMasterApi/alterRevenueCategoryMaster/:datas" element={<RevenueCategoryAlter />} />
         </Routes>
       </BrowserRouter>
     </>

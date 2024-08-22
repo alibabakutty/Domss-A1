@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getSpecificBranchOffice } from '../services/MasterService';
 
 const BranchOfficeDisplay = () => {
 
-    const { type } = useParams();
+    const { datas } = useParams();
   const [branchOffice, setBranchOffice] = useState({
     branchOfficeName: ''
   });
 
   const inputRefs = useRef([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
@@ -19,7 +19,7 @@ const BranchOfficeDisplay = () => {
 
     const loadBranchOffice = async () => {
       try {
-        const result = await getSpecificBranchOffice(type);
+        const result = await getSpecificBranchOffice(datas);
         console.log(result.data);
         setBranchOffice(result.data);
       } catch (error) {
@@ -28,7 +28,23 @@ const BranchOfficeDisplay = () => {
     }
 
     loadBranchOffice();
-  },[]);
+
+    // Event listener for Escape key to go back to the previous page
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        navigate(-1); // Go back to the previous page
+      }
+    };
+
+    // Attach the event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  },[datas,navigate]);
 
   
   return (

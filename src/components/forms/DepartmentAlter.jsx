@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 const DepartmentAlter = () => {
 
-    const { type } = useParams();
+    const { datas } = useParams();
   const [department, setDepartment] = useState({
     departmentName: ""
   });
@@ -25,7 +25,7 @@ const DepartmentAlter = () => {
 
     const loadDepartment = async () => {
         try {
-            const result = await getSpecificDepartment(type);
+            const result = await getSpecificDepartment(datas);
             console.log(result.data);
             setDepartment(result.data);
         } catch (error) {
@@ -49,6 +49,9 @@ const DepartmentAlter = () => {
         if (e.target.value.trim() !== ''){
             handleSubmit(e);  // call handlesubmit if it's the last field
         }
+    } else if (key === 'Escape'){
+      e.preventDefault();
+      navigate(-1);
     }
   }
 
@@ -59,7 +62,7 @@ const DepartmentAlter = () => {
 
     if (userConfirmed){
         try {
-            const response = await updateDepartmentMaster(type, department)
+            const response = await updateDepartmentMaster(datas, department)
             console.log('Department master altered successfully!',response.data);
 
             // Optionally, focus the first input field after reset

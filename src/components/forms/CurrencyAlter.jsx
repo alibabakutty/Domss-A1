@@ -5,7 +5,7 @@ import { getSpecificCurrency, updateCurrencyMaster } from '../services/MasterSer
 
 const CurrencyAlter = () => {
 
-    const { type } = useParams();
+    const { datas } = useParams();
 
   const [currency, setCurrency] = useState({
     forexCurrencySymbol: '',
@@ -38,7 +38,7 @@ const CurrencyAlter = () => {
 
     const loadCurrency = async () => {
         try{
-            const result = await getSpecificCurrency(type);
+            const result = await getSpecificCurrency(datas);
             console.log(result.data);
             setCurrency(result.data);
 
@@ -84,6 +84,9 @@ const CurrencyAlter = () => {
           e.preventDefault();
         }
       }
+    } else if (key === 'Escape'){
+      e.preventDefault();
+      navigate(-1);
     }
   };
 
@@ -93,7 +96,7 @@ const CurrencyAlter = () => {
     const userConfirmed = window.confirm('Do you want to confirm this submit!');
     if (userConfirmed){
         try {
-            const response = await updateCurrencyMaster(type, currency);
+            const response = await updateCurrencyMaster(datas, currency);
             console.log('Currency altered successfully!', response.data);
 
             // Optionally, focus the first input field after reset

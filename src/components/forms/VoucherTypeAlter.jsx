@@ -4,7 +4,7 @@ import { getSpecificPreDefinedVoucher, getSpecificVoucher, updateVoucherTypeMast
 import VoucherMenu from '../../assets/VoucherMenu';
 import RightSideButton from '../right-side-button/RightSideButton';
 const VoucherTypeAlter = () => {
-    const { type } = useParams();
+    const { datas } = useParams();
     const navigate = useNavigate();
 
     const [voucher, setVoucher] = useState({
@@ -232,7 +232,7 @@ const VoucherTypeAlter = () => {
 
   const loadVoucherTypeName = async () => {
     try {
-      const result = await getSpecificVoucher(type);
+      const result = await getSpecificVoucher(datas);
       console.log(result.data);
       setVoucher(result.data);
     } catch (error) {
@@ -242,7 +242,7 @@ const VoucherTypeAlter = () => {
 
   const loadPreDefinedVoucherTypeName = async () => {
     try{
-      const result = await getSpecificPreDefinedVoucher(type);
+      const result = await getSpecificPreDefinedVoucher(datas);
       console.log(result.data);
       setVoucher(result.data);
     } catch (error) {

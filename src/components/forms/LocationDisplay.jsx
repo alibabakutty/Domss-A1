@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { getSpecificLocation } from '../services/MasterService';
 import RightSideButton from '../right-side-button/RightSideButton';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const LocationDisplay = () => {
 
-  const { type } = useParams();
+  const { datas } = useParams();
   const [location, setLocation] = useState({
     godownName: ''
   });
 
   const inputRefs = useRef([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
@@ -19,7 +19,7 @@ const LocationDisplay = () => {
 
     const loadLocation = async () => {
       try {
-        const result = await getSpecificLocation(type);
+        const result = await getSpecificLocation(datas);
         console.log(result.data);
         setLocation(result.data);
       } catch (error) {
@@ -27,7 +27,23 @@ const LocationDisplay = () => {
       }
     }
     loadLocation();
-  },[]);
+
+    // Event listener for Escape key to go back to the previous page
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        navigate(-1); // Go back to the previous page
+      }
+    };
+
+    // Attach the event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  },[datas, navigate]);
   return (
     <>
       <div className='flex'>

@@ -47,16 +47,17 @@ const DepartmentCreate = () => {
 
     if (key === 'Enter'){
       e.preventDefault();     // Prevent default form submission on Enter
-      // Show confirmation prompt
-      const userConfirmed = window.confirm('Do you want to confirm this submit?');
-      if (!userConfirmed) return;
-      // Check if the current input has a value
-      if (e.target.value.trim() !== ''){
-        // Check if it's the last input field
-        if (index === inputRefs.current.length - 1){
-          handleSubmit(e);   // Submit the form
+       // Only show confirmation if the input field is not empty
+       if (e.target.value.trim() !== '') {
+        const userConfirmed = window.confirm('Do you want to confirm this submit?');
+        if (userConfirmed) {
+          // Check if it's the last input field
+          if (index === inputRefs.current.length - 1) {
+            handleSubmit(e); // Submit the form
+          }
         }
       }
+      
     } else if (key === 'Escape'){
       navigate('/');
     }

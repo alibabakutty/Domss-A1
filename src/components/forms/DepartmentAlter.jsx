@@ -75,26 +75,29 @@ const DepartmentAlter = () => {
   
   return (
     <>
-      <form className="border border-slate-500 w-[50%] h-[10vh]" onSubmit={handleSubmit}>
-        <div className="text-sm p-3 flex">
-          <label htmlFor="departmentName" className="w-[30%]">
-            Department Name
-          </label>
-          <span>:</span>
-          <input
-            type="text"
-            id="departmentName"
-            name="departmentName"
-            value={department.departmentName}
-            onChange={handleInputChange}
-            ref={el => (inputRefs.current[0] = el)}
-            onKeyDown={e => handleKeyDown(e, 0)}
-            className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
-            autoComplete="off"
-          />
-        </div>
-      </form>
-      <RightSideButton />
+      <div className='flex'>
+        <div className='bg-slate-400 w-[54.95%] h-[92.9vh] border border-r-blue-400'></div>
+        <form className="border border-slate-500 w-[35%] h-[10vh] absolute left-[55%]" onSubmit={handleSubmit}>
+          <div className="text-sm p-3 flex">
+            <label htmlFor="departmentName" className="w-[30%]">
+              Department Name
+            </label>
+            <span>:</span>
+            <input
+              type="text"
+              id="departmentName"
+              name="departmentName"
+              value={department.departmentName}
+              onChange={handleInputChange}
+              ref={el => (inputRefs.current[0] = el)}
+              onKeyDown={e => handleKeyDown(e, 0)}
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              autoComplete="off"
+            />
+          </div>
+        </form>
+        <RightSideButton />
+      </div>
     </>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton'
 import { createCurrencyMaster } from '../services/MasterService';
+import { useNavigate } from 'react-router-dom';
 
 const CurrencyCreate = () => {
 
@@ -21,6 +22,7 @@ const CurrencyCreate = () => {
   });
 
   const inputRefs = useRef([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (inputRefs.current[0]){
@@ -63,6 +65,8 @@ const CurrencyCreate = () => {
           e.preventDefault();
         }
       }
+    } else if (key === 'Escape'){
+      navigate('/');
     }
   };
 

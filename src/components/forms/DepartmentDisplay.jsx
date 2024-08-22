@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { createDepartmentMaster, getSpecificDepartment } from '../services/MasterService';
+import { getSpecificDepartment } from '../services/MasterService';
 import RightSideButton from '../right-side-button/RightSideButton';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const DepartmentDisplay = () => {
 
@@ -11,7 +11,7 @@ const DepartmentDisplay = () => {
   });
 
   const inputRefs = useRef([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
@@ -27,11 +27,23 @@ const DepartmentDisplay = () => {
         }
     }
     loadDepartment();
-  },[]);
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape'){
+        navigate(`/${type}/display`);    // Go back to the previous page
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    }
+  },[type, navigate]);
   
   return (
     <>
-      <form className='border border-slate-500 w-[50%] h-[10vh]'>
+      <div className='flex'>
+      <div className='bg-slate-400 w-[54.95%] h-[92.9vh] border border-r-blue-400'></div>
+      <form className='border border-slate-500 w-[35%] h-[10vh] absolute left-[55%]'>
         <div className='text-sm p-3 flex'>
           <label htmlFor="departmentName" className='w-[30%]'>Department Name</label>
           <span>:</span>
@@ -39,6 +51,7 @@ const DepartmentDisplay = () => {
         </div>
       </form>
       <RightSideButton />
+      </div>
     </>
   )
 }

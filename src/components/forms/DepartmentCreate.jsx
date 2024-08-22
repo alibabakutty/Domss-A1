@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { createDepartmentMaster } from '../services/MasterService';
 import RightSideButton from '../right-side-button/RightSideButton';
+import { useNavigate } from 'react-router-dom';
 // import { useLocation } from 'react-router-dom';
 
 const DepartmentCreate = () => {
@@ -9,9 +10,7 @@ const DepartmentCreate = () => {
   });
 
   const inputRefs = useRef([]);
-  // const location = useLocation();
-  // const preventConfirm = location.state?.preventConfirm;
-
+  const navigate = useNavigate();
   const handleInputChange = e => {
     const {name,value} = e.target;
     setDepartment(prevState => ({...prevState, [name]: value}));
@@ -58,20 +57,25 @@ const DepartmentCreate = () => {
           handleSubmit(e);   // Submit the form
         }
       }
+    } else if (key === 'Escape'){
+      navigate('/');
     }
   }
 
   
   return (
     <>
-      <form className='border border-slate-500 w-[50%] h-[10vh]' onSubmit={handleSubmit}>
-        <div className='text-sm p-3 flex'>
-          <label htmlFor="departmentName" className='w-[30%]'>Department Name</label>
-          <span>:</span>
-          <input type="text" id='departmentName' name='departmentName' value={department.departmentName} ref={el => (inputRefs.current[0] = el)} onKeyDown={e => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-        </div>
-      </form>
-      <RightSideButton />
+      <div className='flex'>
+        <div className='bg-slate-400 w-[57.65%] h-[92.9vh] border border-r-blue-400'></div>
+        <form className='border border-slate-500 w-[36%] h-[10vh] absolute left-[54%]' onSubmit={handleSubmit}>
+          <div className='text-sm p-3 flex'>
+            <label htmlFor="departmentName" className='w-[30%]'>Department Name</label>
+            <span>:</span>
+            <input type="text" id='departmentName' name='departmentName' value={department.departmentName} ref={el => (inputRefs.current[0] = el)} onKeyDown={e => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+          </div>
+        </form>
+        <RightSideButton />
+      </div>
     </>
   )
 }

@@ -36,44 +36,34 @@ const DisplayFilter = () => {
             inputRef.current.focus();
         }
 
-        if (type === 'voucher') {
-            Promise.all([listOfVouchers(), listOfPreDefinedVouchers()])
-                .then(([customResponse, predefinedResponse]) => {
+        const fetchData = async () => {
+            try {
+                if (type === 'voucher') {
+                    const [customResponse, predefinedResponse] = await Promise.all([listOfVouchers(), listOfPreDefinedVouchers()]);
                     setVoucherTypeSuggestions(customResponse.data);
                     setPreDefinedVoucherTypeSuggestions(predefinedResponse.data);
-                })
-                .catch(error => console.error(error));
-        } else if (type === 'currency') {
-            listOfCurrencies()
-                .then(response => {
+                } else if (type === 'currency') {
+                    const response = await listOfCurrencies();
                     setCurrencySuggestions(response.data);
-                })
-                .catch(error => console.error(error));
-        } else if (type === 'department'){
-            listOfDepartments()
-            .then(response => {
-                setDepartmentSuggestions(response.data);
-            })
-            .catch(error => console.error(error));
-        } else if (type === 'location'){
-            listOfLocations()
-            .then(response => {
-                setLocationSuggestions(response.data);
-            })
-            .catch(error => console.error(error));
-        } else if (type === 'headOffice'){
-            listOfHeadOffices()
-            .then(response => {
-                setHeadOfficeSuggestions(response.data);
-            })
-            .catch(error => console.error(error));
-        } else if (type === 'branchOffice'){
-            listOfBranchOffices()
-            .then(response => 
-                setBranchOfficeSuggestions(response.data)
-            )
-            .catch(error => console.error(error));
-        }
+                } else if (type === 'department') {
+                    const response = await listOfDepartments();
+                    setDepartmentSuggestions(response.data);
+                } else if (type === 'location') {
+                    const response = await listOfLocations();
+                    setLocationSuggestions(response.data);
+                } else if (type === 'headOffice') {
+                    const response = await listOfHeadOffices();
+                    setHeadOfficeSuggestions(response.data);
+                } else if (type === 'branchOffice') {
+                    const response = await listOfBranchOffices();
+                    setBranchOfficeSuggestions(response.data);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
     }, [type]);
 
     const handleInputChange = (e) => {
@@ -324,7 +314,7 @@ const DisplayFilter = () => {
                                             {filteredDepartments.map((department,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
                                                 >
-                                                <Link to={`/departmentMasterApi/displayDepartment/${department.departmentName}`}>
+                                                <Link to={`/departmentMasterApi/displayDepartment/${type}`}>
                                                     {department.departmentName}
                                                 </Link>
                                                 </li>

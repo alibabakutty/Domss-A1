@@ -93,7 +93,7 @@ const CurrencyAlter = () => {
     const userConfirmed = window.confirm('Do you want to confirm this submit!');
     if (userConfirmed){
         try {
-            const response = await updateCurrencyMaster(currency.forexCurrencySymbol, currency);
+            const response = await updateCurrencyMaster(type, currency);
             console.log('Currency altered successfully!', response.data);
 
             // Optionally, focus the first input field after reset

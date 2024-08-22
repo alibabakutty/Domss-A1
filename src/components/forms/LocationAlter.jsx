@@ -75,14 +75,17 @@ const LocationAlter = () => {
   }
   return (
     <>
-      <form action="" className='border border-slate-500 w-[50%] h-[10vh]' onSubmit={handleSubmit}>
-        <div className='text-sm p-3 flex'>
-          <label htmlFor="godownName">Godown Name</label>
-          <span>:</span>
-          <input type="text" id='godownName' name="godownName" value={location.godownName} onChange={handleInputChange} ref={(input) => (inputRefs.current[0] = input)} onKeyDown={e => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-        </div>
-      </form>
-      <RightSideButton />
+      <div className='flex'>
+        <div className='bg-slate-400 w-[54%] h-[92.9vh] border border-r-blue-400'></div>
+        <form action="" className='border border-slate-500 w-[36%] h-[10vh] absolute left-[54%]' onSubmit={handleSubmit}>
+          <div className='text-sm p-3 flex'>
+            <label htmlFor="godownName">Godown Name</label>
+            <span>:</span>
+            <input type="text" id='godownName' name="godownName" value={location.godownName} onChange={handleInputChange} ref={(input) => (inputRefs.current[0] = input)} onKeyDown={e => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+          </div>
+        </form>
+        <RightSideButton />
+      </div>
     </>
   )
 }

@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfBranchOffices, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfVouchers } from '../services/MasterService';
+import { listOfBranchOffices, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfVouchers } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const DisplayFilter = () => {
@@ -14,6 +14,7 @@ const DisplayFilter = () => {
     const [headOfficeSuggestions, setHeadOfficeSuggestions] = useState([]);
     const [branchOfficeSuggestions, setBranchOfficeSuggestions] = useState([]);
     const [revenueCategorySuggestions, setRevenueCategorySuggestions] = useState([]);
+    const [revenueCenterSuggestions, setRevenueCenterSuggestions] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
@@ -26,7 +27,8 @@ const DisplayFilter = () => {
         location: 'Locations',
         headOffice: 'Head Offices',
         branchOffice: 'Branch Offices',
-        revenueCategory: 'Revenue Categories'
+        revenueCategory: 'Revenue Categories',
+        revenueCentre: 'Revenue Centers'
       };
 
     const formatType = (str) => {
@@ -62,6 +64,9 @@ const DisplayFilter = () => {
                 } else if (type === 'revenueCategory'){
                     const response = await listOfRevenueCategories();
                     setRevenueCategorySuggestions(response.data);
+                } else if (type === 'revenueCentre'){
+                    const response = await listOfRevenueCenters();
+                    setRevenueCenterSuggestions(response.data);
                 }
             } catch (error) {
                 console.error(error);
@@ -106,6 +111,10 @@ const DisplayFilter = () => {
 
     const filteredRevenueCategories = revenueCategorySuggestions.filter(revenueCategory => 
         revenueCategory.revenueCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredRevenueCenters = revenueCenterSuggestions.filter(revenueCenter => 
+        revenueCenter.revenueCenterName.toLowerCase().includes(filterInput.toLowerCase())
     )
 
     // Logic to determine if the scrollbar should be shown based on the type
@@ -125,6 +134,8 @@ const DisplayFilter = () => {
         shouldShowScroll = (filteredBranchOffices.length > 20);
     } else if (type === 'revenueCategory'){
         shouldShowScroll = (filteredRevenueCategories.length > 20);
+    } else if (type === 'revenueCentre'){
+        shouldShowScroll = (filteredRevenueCenters.length > 20);
     } else{
         shouldShowScroll = false;
     }
@@ -148,6 +159,8 @@ const DisplayFilter = () => {
                 totalItems = filteredBranchOffices.length;
             } else if (type === 'revenueCategory'){
                 totalItems = filteredRevenueCategories.length;
+            } else if (type === 'revenueCentre'){
+                totalItems = filteredRevenueCenters.length;
             }
 
             if (e.key === 'ArrowDown') {
@@ -221,6 +234,13 @@ const DisplayFilter = () => {
                             navigate(`/revenueCategoryMasterApi/displayRevenueCategory/${selectedRevenueCategory.revenueCategoryName}`);
                         }
                     }
+                } else if (type === 'revenueCentre'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredRevenueCenters.length){
+                        const selectedRevenueCenter = filteredRevenueCenters[selectedIndex - 2];
+                        if (selectedRevenueCenter) {
+                            navigate(`/revenueCenterMasterApi/displayRevenueCenter/${selectedRevenueCenter.revenueCenterName}`);
+                        }
+                    }
                 }
             } else if (e.key === 'Escape') {
                 navigate(`/menu/${type}`);
@@ -229,7 +249,7 @@ const DisplayFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -380,6 +400,18 @@ const DisplayFilter = () => {
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
                                                     <Link to={`/revenueCategoryMasterApi/displayRevenueCategory/${revenueCategory.revenueCategoryName}`}>
                                                         {revenueCategory.revenueCategoryName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'revenueCentre' && (
+                                        <ul>
+                                            {filteredRevenueCenters.map((revenueCenter,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/revenueCenterMasterApi/displayRevenueCenter/${revenueCenter.revenueCenterName}`}>
+                                                        {revenueCenter.revenueCenterName}
                                                     </Link>
                                                 </li>
                                             ))}

@@ -35,7 +35,7 @@ const RevenueCategoryDisplay = () => {
         const handleKeyDown = (event) => {
           if (event.key === 'Escape') {
             event.preventDefault();
-            navigate(-1); // Go back to the previous page
+            navigate(`/${datas}/display`); // Go back to the previous page
           }
         };
     

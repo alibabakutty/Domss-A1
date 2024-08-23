@@ -21,6 +21,8 @@ import BranchOfficeDisplay from "./components/forms/BranchOfficeDisplay"
 import BranchOfficeAlter from "./components/forms/BranchOfficeAlter"
 import RevenueCategoryDisplay from "./components/forms/RevenueCategoryDisplay"
 import RevenueCategoryAlter from "./components/forms/RevenueCategoryAlter"
+import RevenueCentreDisplay from "./components/forms/RevenueCenterDisplay"
+import RevenueCentreAlter from "./components/forms/RevenueCenterAlter"
 
 function App() {
   
@@ -45,6 +47,7 @@ function App() {
           <Route path="headOfficeMasterApi/displayHeadOffice/:datas" element={<HeadOfficeDisplay />} />
           <Route path="/branchOfficeMasterApi/displayBranchOffice/:datas" element={<BranchOfficeDisplay />} />
           <Route path="/revenueCategoryMasterApi/displayRevenueCategory/:datas" element={<RevenueCategoryDisplay />} />
+          <Route path="/revenueCenterMasterApi/displayRevenueCenter/:datas" element={<RevenueCentreDisplay />} />
           <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:datas" element={<VoucherTypeAlter />} />
           <Route path="/currencyMasterApi/alterCurrencyMaster/:datas" element={<CurrencyAlter />} />
           <Route path="/departmentMasterApi/alterDepartmentMaster/:datas" element={<DepartmentAlter />} />
@@ -52,6 +55,7 @@ function App() {
           <Route path="/headOfficeMasterApi/alterHeadOfficeMaster/:datas" element={<HeadOfficeAlter />} />
           <Route path="/branchOfficeMasterApi/alterBranchOfficeMaster/:datas" element={<BranchOfficeAlter />} />
           <Route path="/revenueCategoryMasterApi/alterRevenueCategoryMaster/:datas" element={<RevenueCategoryAlter />} />
+          <Route path="/revenueCenterMasterApi/alterRevenueCenterMaster/:datas" element={<RevenueCentreAlter />} />
         </Routes>
       </BrowserRouter>
     </>

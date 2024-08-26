@@ -72,10 +72,10 @@ const Home = () => {
         },
         { id: 31, name: 'Batch Master', 
             subItems: [
-                { id: 32, name: 'Batch Master - Category', path: 'menu/batchMasterCategory'},
-                { id: 33, name: 'Batch Master - Serial No', path: 'menu/batchMasterSerialNumber'},
-                { id: 34, name: 'Batch Master - Color', path: 'menu/batchMasterColor'},
-                { id: 35, name: 'Batch Master - Size', path: 'menu/batchMasterSize'},
+                { id: 32, name: 'Batch Master - Category', path: 'menu/batchCategory'},
+                { id: 33, name: 'Batch Master - Serial No', path: 'menu/batchSerialNumber'},
+                { id: 34, name: 'Batch Master - Color', path: 'menu/batchColor'},
+                { id: 35, name: 'Batch Master - Size', path: 'menu/batchSize'},
                 
             ]
         },

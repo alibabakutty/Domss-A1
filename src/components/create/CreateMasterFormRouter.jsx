@@ -18,12 +18,12 @@ import RevenueCategoryCreate from '../forms/RevenueCategoryCreate'
 import RevenueCentreCreate from '../forms/RevenueCentreCreate'
 import CostCategoryCreate from '../forms/CostCategoryCreate'
 import CostCentreCreate from '../forms/CostCentreCreate'
-import BatchMasterCategoryCreate from '../forms/BatchMasterCategoryCreate'
-import BatchMasterSerialNumberCreate from '../forms/BatchMasterSerialNumberCreate'
-import BatchMasterColorCreate from '../forms/BatchMasterColorCreate'
-import BatchMasterSizeCreate from '../forms/BatchMasterSizeCreate'
 import ProjectCategoryCreate from '../forms/ProjectCategoryCreate'
 import ProjectNameCreate from '../forms/ProjectNameCreate'
+import BatchCategoryCreate from '../forms/BatchCategoryCreate'
+import BatchSerialNumberCreate from '../forms/BatchSerialNumberCreate'
+import BatchColorCreate from '../forms/BatchColorCreate'
+import BatchSizeCreate from '../forms/BatchSizeCreate'
 
 const CreateMasterFormRouter = () => {
   const { type } = useParams();
@@ -66,14 +66,14 @@ const CreateMasterFormRouter = () => {
         return <CostCategoryCreate />
       case 'costCentre':
         return <CostCentreCreate />
-      case 'batchMasterCategory':
-        return <BatchMasterCategoryCreate />
-      case 'batchMasterSerialNumber':
-        return <BatchMasterSerialNumberCreate />
-      case 'batchMasterColor':
-        return <BatchMasterColorCreate />
-      case 'batchMasterSize':
-        return <BatchMasterSizeCreate />
+      case 'batchCategory':
+        return <BatchCategoryCreate />
+      case 'batchSerialNumber':
+        return <BatchSerialNumberCreate />
+      case 'batchColor':
+        return <BatchColorCreate />
+      case 'batchSize':
+        return <BatchSizeCreate />
       case 'projectCategory':
         return <ProjectCategoryCreate />
       case 'projectName':

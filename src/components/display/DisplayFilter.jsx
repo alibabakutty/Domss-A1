@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfBranchOffices, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfVouchers } from '../services/MasterService';
+import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const DisplayFilter = () => {
@@ -15,6 +15,14 @@ const DisplayFilter = () => {
     const [branchOfficeSuggestions, setBranchOfficeSuggestions] = useState([]);
     const [revenueCategorySuggestions, setRevenueCategorySuggestions] = useState([]);
     const [revenueCenterSuggestions, setRevenueCenterSuggestions] = useState([]);
+    const [costCategorySuggestions, setCostCategorySuggestions] = useState([]);
+    const [costCenterSuggestions, setCostCenterSuggestions] = useState([]);
+    const [batchCategorySuggestions, setBatchCategorySuggestions] = useState([]);
+    const [batchSerialNumberSuggestions, setBatchSerialNumberSuggestions] = useState([]);
+    const [batchColorSuggestions, setBatchColorSuggestions] = useState([]);
+    const [batchSizeSuggestions, setBatchSizeSuggestions] = useState([]);
+    const [projectCategorySuggestions, setProjectCategorySuggestions] = useState([]);
+    const [projectNameSuggestions, setProjectNameSuggestions] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
@@ -28,7 +36,15 @@ const DisplayFilter = () => {
         headOffice: 'Head Offices',
         branchOffice: 'Branch Offices',
         revenueCategory: 'Revenue Categories',
-        revenueCentre: 'Revenue Centers'
+        revenueCentre: 'Revenue Centers',
+        costCategory: 'Cost Categories',
+        costCentre: 'Cost Centers',
+        batchCategory: 'Batch Categories',
+        batchSerialNumber: 'Batch Serial Numbers',
+        batchColor: 'Batch Colors',
+        batchSize: 'Batch Sizes',
+        projectCategory: 'Project Categories',
+        project: 'Projects'
       };
 
     const formatType = (str) => {
@@ -67,6 +83,30 @@ const DisplayFilter = () => {
                 } else if (type === 'revenueCentre'){
                     const response = await listOfRevenueCenters();
                     setRevenueCenterSuggestions(response.data);
+                } else if (type === 'costCategory'){
+                    const response = await listOfCostCategories();
+                    setCostCategorySuggestions(response.data);
+                } else if (type === 'costCentre'){
+                    const response = await listsOfCostCenters();
+                    setCostCenterSuggestions(response.data);
+                } else if (type === 'batchCategory'){
+                    const response = await listsOfBatchCategories();
+                    setBatchCategorySuggestions(response.data);
+                } else if (type === 'batchSerialNumber'){
+                    const response = await listOfBatchSerialNumbers();
+                    setBatchSerialNumberSuggestions(response.data);
+                } else if (type === 'batchColor'){
+                    const response = await listOfBatchColorNames();
+                    setBatchColorSuggestions(response.data);
+                } else if (type === 'batchSize'){
+                    const response = await listOfBatchSizes();
+                    setBatchSizeSuggestions(response.data);
+                } else if (type === 'projectCategory'){
+                    const response = await listsOfProjectCategories();
+                    setProjectCategorySuggestions(response.data);
+                } else if (type === 'project'){
+                    const response = await listsOfProjectNames();
+                    setProjectNameSuggestions(response.data);
                 }
             } catch (error) {
                 console.error(error);
@@ -115,7 +155,39 @@ const DisplayFilter = () => {
 
     const filteredRevenueCenters = revenueCenterSuggestions.filter(revenueCenter => 
         revenueCenter.revenueCenterName.toLowerCase().includes(filterInput.toLowerCase())
-    )
+    );
+
+    const filteredCostCategories = costCategorySuggestions.filter(costCategory =>
+        costCategory.costCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredCostCenters = costCenterSuggestions.filter(costCenter =>
+        costCenter.costCenterName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredBatchCategories = batchCategorySuggestions.filter(batchCategory =>
+        batchCategory.batchCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredBatchSerialNumbers = batchSerialNumberSuggestions.filter(batchSerial =>
+        batchSerial.batchSerialNumber.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredBatchColors = batchColorSuggestions.filter(batchColor =>
+        batchColor.batchColorName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredBatchSizes = batchSizeSuggestions.filter(batchSize =>
+        batchSize.batchSizeName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredProjectCategories = projectCategorySuggestions.filter(projectCategory =>
+        projectCategory.projectCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredProjectNames = projectNameSuggestions.filter(project =>
+        project.projectName.toLowerCase().includes(filterInput.toLowerCase())
+    );
 
     // Logic to determine if the scrollbar should be shown based on the type
     let shouldShowScroll;
@@ -136,6 +208,22 @@ const DisplayFilter = () => {
         shouldShowScroll = (filteredRevenueCategories.length > 20);
     } else if (type === 'revenueCentre'){
         shouldShowScroll = (filteredRevenueCenters.length > 20);
+    } else if (type === 'costCategory'){
+        shouldShowScroll = (filteredCostCategories.length > 20);
+    } else if (type === 'costCentre'){
+        shouldShowScroll = (filteredCostCenters.length > 20);
+    } else if (type === 'batchCategory'){
+        shouldShowScroll = (filteredBatchCategories.length > 20);
+    } else if (type === 'batchSerialNumber'){
+        shouldShowScroll = (filteredBatchSerialNumbers.length > 20);
+    } else if (type === 'batchColor'){
+        shouldShowScroll = (filteredBatchColors.length > 20);
+    } else if (type === 'batchSize'){
+        shouldShowScroll = (filteredBatchSizes.length > 20);
+    } else if (type === 'projectCategory'){
+        shouldShowScroll = (filteredProjectCategories.length > 20);
+    } else if (type === 'project'){
+        shouldShowScroll = (filteredProjectNames.length > 20);
     } else{
         shouldShowScroll = false;
     }
@@ -161,6 +249,22 @@ const DisplayFilter = () => {
                 totalItems = filteredRevenueCategories.length;
             } else if (type === 'revenueCentre'){
                 totalItems = filteredRevenueCenters.length;
+            } else if (type === 'costCategory'){
+                totalItems = filteredCostCategories.length;
+            } else if (type === 'costCentre'){
+                totalItems = filteredCostCenters.length;
+            } else if (type === 'batchCategory'){
+                totalItems = filteredBatchCategories.length;
+            } else if (type === 'batchSerialNumber'){
+                totalItems = filteredBatchSerialNumbers.length;
+            } else if (type === 'batchColor'){
+                totalItems = filteredBatchColors.length;
+            } else if (type === 'batchSize'){
+                totalItems = filteredBatchSizes.length;
+            } else if (type === 'projectCategory'){
+                totalItems = filteredProjectCategories.length;
+            } else if (type === 'project'){
+                totalItems = filteredProjectNames.length;
             }
 
             if (e.key === 'ArrowDown') {
@@ -241,6 +345,62 @@ const DisplayFilter = () => {
                             navigate(`/revenueCenterMasterApi/displayRevenueCenter/${selectedRevenueCenter.revenueCenterName}`);
                         }
                     }
+                } else if (type === 'costCategory'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredCostCategories.length){
+                        const selectedCostCategory = filteredCostCategories[selectedIndex - 2];
+                        if (selectedCostCategory) {
+                            navigate(`/costCategoryMasterApi/displayCostCategory/${selectedCostCategory.costCategoryName}`);
+                        }
+                    }
+                } else if (type === 'costCentre'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredCostCenters.length){
+                        const selectedCostCenter = filteredCostCenters[selectedIndex - 2];
+                        if (selectedCostCenter) {
+                            navigate(`/costCenterMasterApi/displayCostCenter/${selectedCostCenter.costCenterName}`);
+                        }
+                    }
+                } else if (type === 'batchCategory'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredBatchCategories.length){
+                        const selectedBatchCategory = filteredBatchCategories[selectedIndex - 2];
+                        if (selectedBatchCategory) {
+                            navigate(`batchCategoryMasterApi/displayBatchCategory/${selectedBatchCategory.batchCategoryName}`);
+                        }
+                    }
+                } else if (type === 'batchSerialNumber'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredBatchSerialNumbers.length){
+                        const selectedBatchSerialNumber = filteredBatchSerialNumbers[selectedIndex - 2];
+                        if (selectedBatchSerialNumber){
+                            navigate(`batchSerialNumberMasterApi/displayBatchSerialNumber/${selectedBatchSerialNumber.batchSerialNumber}`);
+                        }
+                    }
+                } else if (type === 'batchColor'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredBatchColors.length){
+                        const selectedBatchColor = filteredBatchColors[selectedIndex - 2];
+                        if (selectedBatchColor){
+                            navigate(`batchColorMasterApi/displayBatchColor/${selectedBatchColor.batchColorName}`)
+                        }
+                    }
+                } else if (type === 'batchSize'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredBatchSizes.length){
+                        const selectedBatchSize = filteredBatchSizes[selectedIndex - 2];
+                        if (selectedBatchSize){
+                            navigate(`batchSizeMasterApi/displayBatchSize/${selectedBatchSize.batchSizeName}`);
+                        }
+                    }
+                } else if (type === 'projectCategory'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredProjectCategories.length){
+                        const selectedProjectCategory = filteredProjectCategories[selectedIndex - 2];
+                        if (selectedProjectCategory) {
+                            navigate(`projectCategoryMasterApi/displayProjectCategory/${selectedProjectCategory.projectCategoryName}`);
+                        }
+                    }
+                } else if (type === 'project'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredProjectNames.length){
+                        const selectedProject = filteredProjectNames[selectedIndex - 2];
+                        if (selectedProject) {
+                            navigate(`projectNameMasterApi/displayProjectName/${selectedProject.projectName}`);
+                        }
+                    }
                 }
             } else if (e.key === 'Escape') {
                 navigate(`/menu/${type}`);
@@ -249,7 +409,7 @@ const DisplayFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -412,6 +572,102 @@ const DisplayFilter = () => {
                                                 ref={el => listItemRefs.current[index + 2] = el}>
                                                     <Link to={`/revenueCenterMasterApi/displayRevenueCenter/${revenueCenter.revenueCenterName}`}>
                                                         {revenueCenter.revenueCenterName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'costCategory' && (
+                                        <ul>
+                                            {filteredCostCategories.map((costCategory,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/costCategoryMasterApi/displayCostCategory/${costCategory.costCategoryName}`}>
+                                                        {costCategory.costCategoryName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'costCentre' && (
+                                        <ul>
+                                            {filteredCostCenters.map((costCenter,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/costCenterMasterApi/displayCostCenter/${costCenter.costCenterName}`}>
+                                                        {costCenter.costCenterName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'batchCategory' && (
+                                        <ul>
+                                            {filteredBatchCategories.map((batchCategory,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/batchCategoryMasterApi/displayBatchCategory/${batchCategory.batchCategoryName}`}>
+                                                        {batchCategory.batchCategoryName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'batchSerialNumber' && (
+                                        <ul>
+                                            {filteredBatchSerialNumbers.map((batchSerial,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/batchSerialNumberMasterApi/displayBatchSerialNumber/${batchSerial.batchSerialNumber}`}>
+                                                        {batchSerial.batchSerialNumber}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'batchColor' && (
+                                        <ul>
+                                            {filteredBatchColors.map((batchColor,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`batchColorMasterApi/displayBatchColor/${batchColor.batchColorName}`}>
+                                                        {batchColor.batchColorName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'batchSize' && (
+                                        <ul>
+                                            {filteredBatchSizes.map((batchSize,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/batchSizeMasterApi/displayBatchSize/${batchSize.batchSizeName}`}>
+                                                        {batchSize.batchSizeName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'projectCategory' && (
+                                        <ul>
+                                            {filteredProjectCategories.map((projectCategory,index) =>(
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`projectCategoryMasterApi/displayProjectCategory/${projectCategory.projectCategoryName}`}>
+                                                        {projectCategory.projectCategoryName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'project' && (
+                                        <ul>
+                                            {filteredProjectNames.map((project,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`projectNameMasterApi/displayProjectName/${project.projectName}`}>
+                                                        {project.projectName}
                                                     </Link>
                                                 </li>
                                             ))}

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton'
 import { useNavigate, useParams } from 'react-router-dom';
-import { createRevenueCenterMaster, getSpecificRevenueCenter, listOfRevenueCategories, updateRevenueCenterMaster } from '../services/MasterService';
+import { getSpecificRevenueCenter, listOfRevenueCategories, updateRevenueCenterMaster } from '../services/MasterService';
 
 const RevenueCentreAlter = () => {
   const { datas } = useParams();

@@ -45,7 +45,7 @@ const Home = () => {
         },
         { id: 19, name: 'Location Master',
             subItems: [
-                { id: 20, name: 'Godown Name', path: 'menu/location'}
+                { id: 20, name: 'Godown Name', path: 'menu/godown'}
             ]
         },
         { id: 21, name: 'Head Office Category', 
@@ -61,13 +61,13 @@ const Home = () => {
         { id: 25, name: 'Revenue Category Master', 
             subItems: [
                 { id: 26, name: 'Revenue Category', path: 'menu/revenueCategory'},
-                { id: 27, name: 'Revenue Centre', path: 'menu/revenueCentre'},
+                { id: 27, name: 'Revenue Center', path: 'menu/revenueCenter'},
             ]
         },
         { id: 28, name: 'Cost Category Master', 
             subItems: [
                 { id: 29, name: 'Cost Category', path: 'menu/costCategory'},
-                { id: 30, name: 'Cost Centre', path: 'menu/costCentre'},
+                { id: 30, name: 'Cost Center', path: 'menu/costCenter'},
             ]
         },
         { id: 31, name: 'Batch Master', 
@@ -82,7 +82,7 @@ const Home = () => {
         { id: 36, name: 'Project Category Master', 
             subItems: [
                 { id: 37, name: 'Project Category', path: 'menu/projectCategory'},
-                { id: 38, name: 'Project Name', path: 'menu/projectName'},
+                { id: 38, name: 'Project Name', path: 'menu/project'},
             ]
         }
     ];

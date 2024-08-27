@@ -23,6 +23,22 @@ import RevenueCategoryDisplay from "./components/forms/RevenueCategoryDisplay"
 import RevenueCategoryAlter from "./components/forms/RevenueCategoryAlter"
 import RevenueCentreDisplay from "./components/forms/RevenueCenterDisplay"
 import RevenueCentreAlter from "./components/forms/RevenueCenterAlter"
+import CostCategoryDisplay from "./components/forms/CostCategoryDisplay"
+import CostCenterDisplay from "./components/forms/CostCenterDisplay"
+import BatchCategoryDisplay from "./components/forms/BatchCategoryDisplay"
+import BatchSerialNumberDisplay from "./components/forms/BatchSerialNumberDisplay"
+import BatchColorDisplay from "./components/forms/BatchColorDisplay"
+import BatchSizeDisplay from "./components/forms/BatchSizeDisplay"
+import ProjectCategoryDisplay from "./components/forms/ProjectCategoryDisplay"
+import ProjectNameDisplay from "./components/forms/ProjectNameDisplay"
+import CostCategoryAlter from "./components/forms/CostCategoryAlter"
+import CostCenterAlter from "./components/forms/CostCenterAlter"
+import BatchCategoryAlter from "./components/forms/BatchCategoryAlter"
+import BatchSerialNumberAlter from "./components/forms/BatchSerialNumberAlter"
+import BatchColorAlter from "./components/forms/BatchColorAlter"
+import BatchSizeAlter from "./components/forms/BatchSizeAlter"
+import ProjectCategoryAlter from "./components/forms/ProjectCategoryAlter"
+import ProjectNameAlter from "./components/forms/ProjectNameAlter"
 
 function App() {
   
@@ -48,6 +64,14 @@ function App() {
           <Route path="/branchOfficeMasterApi/displayBranchOffice/:datas" element={<BranchOfficeDisplay />} />
           <Route path="/revenueCategoryMasterApi/displayRevenueCategory/:datas" element={<RevenueCategoryDisplay />} />
           <Route path="/revenueCenterMasterApi/displayRevenueCenter/:datas" element={<RevenueCentreDisplay />} />
+          <Route path="/costCategoryMasterApi/displayCostCategory/:datas" element={<CostCategoryDisplay />} />
+          <Route path="/costCenterMasterApi/displayCostCenter/:datas" element={<CostCenterDisplay />} />
+          <Route path="/batchCategoryMasterApi/displayBatchCategory/:datas" element={<BatchCategoryDisplay />} />
+          <Route path="/batchSerialNumberMasterApi/displayBatchSerialNumber/:datas" element={<BatchSerialNumberDisplay />} />
+          <Route path="/batchColorMasterApi/displayBatchColor/:datas" element={<BatchColorDisplay />} />
+          <Route path="/batchSizeMasterApi/displayBatchSize/:datas" element={<BatchSizeDisplay />} />
+          <Route path="/projectCategoryMasterApi/displayProjectCategory/:datas" element={<ProjectCategoryDisplay />} />
+          <Route path="/projectNameMasterApi/displayProjectName/:datas" element={<ProjectNameDisplay />} />
           <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:datas" element={<VoucherTypeAlter />} />
           <Route path="/currencyMasterApi/alterCurrencyMaster/:datas" element={<CurrencyAlter />} />
           <Route path="/departmentMasterApi/alterDepartmentMaster/:datas" element={<DepartmentAlter />} />
@@ -56,6 +80,14 @@ function App() {
           <Route path="/branchOfficeMasterApi/alterBranchOfficeMaster/:datas" element={<BranchOfficeAlter />} />
           <Route path="/revenueCategoryMasterApi/alterRevenueCategoryMaster/:datas" element={<RevenueCategoryAlter />} />
           <Route path="/revenueCenterMasterApi/alterRevenueCenterMaster/:datas" element={<RevenueCentreAlter />} />
+          <Route path="/costCategoryMasterApi/alterCostCategoryMaster/:datas" element={<CostCategoryAlter />} />
+          <Route path="/costCenterMasterApi/alterCostCenterMaster/:datas" element={<CostCenterAlter />} />
+          <Route path="/batchCategoryMasterApi/alterBatchCategoryMaster/:datas" element={<BatchCategoryAlter />} />
+          <Route path="/batchSerialNumberMasterApi/alterBatchSerialNumberMaster/:datas" element={<BatchSerialNumberAlter />} />
+          <Route path="/batchColorMasterApi/alterBatchColorMaster/:datas" element={<BatchColorAlter />} />
+          <Route path="/batchSizeMasterApi/alterBatchSizeMaster/:datas" element={<BatchSizeAlter />} />
+          <Route path="/projectCategoryMasterApi/alterProjectCategoryMaster/:datas" element={<ProjectCategoryAlter />} />
+          <Route path="/projectNameMasterApi/alterProjectNameMaster/:datas" element={<ProjectNameAlter />} />
         </Routes>
       </BrowserRouter>
     </>

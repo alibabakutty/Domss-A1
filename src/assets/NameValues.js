@@ -7,9 +7,9 @@ export default [
 	},
 	{
 		id: 2,
-		value: "currencyName",
-		label: "currencyName",
-        name:  "currencyName"
+		value: "forexCurrencyName",
+		label: "forexCurrencyName",
+        name:  "forexCurrencyName"
 	},
 	{
 		id: 3,
@@ -91,9 +91,9 @@ export default [
 	},
 	{
 		id: 16,
-		value: "revenueCentreName",
-		label: "revenueCentreName",
-        name:  "revenueCentreName"
+		value: "revenueCenterName",
+		label: "revenueCenterName",
+        name:  "revenueCenterName"
 	},
 	{
 		id: 17,
@@ -103,38 +103,44 @@ export default [
 	},
 	{
 		id: 18,
-		value: "costCentreName",
-		label: "costCentreName",
-        name:  "costCentreName"
+		value: "costCenterName",
+		label: "costCenterName",
+        name:  "costCenterName"
 	},
 	{
 		id: 19,
-		value: "branchCategoryName",
-		label: "branchCategoryName",
-        name:  "branchCategoryName"
+		value: "batchCategoryName",
+		label: "batchCategoryName",
+        name:  "batchCategoryName"
 	},
 	{
 		id: 20,
-		value: "branchSerialNumber",
-		label: "branchSerialNumber",
-        name:  "branchSerialNumber"
+		value: "batchSerialNumber",
+		label: "batchSerialNumber",
+        name:  "batchSerialNumber"
 	},
 	{
 		id: 21,
-		value: "branchColor",
-		label: "branchColor",
-        name:  "branchColor"
+		value: "batchColorName",
+		label: "batchColorName",
+        name:  "batchColorName"
 	},
 	{
 		id: 22,
-		value: "branchSize",
-		label: "branchSize",
-        name:  "branchSize"
+		value: "batchSizeName",
+		label: "batchSizeName",
+        name:  "batchSizeName"
 	},
 	{
 		id: 23,
-		value: "projectMaster",
-		label: "projectMaster",
-        name:  "projectMaster"
+		value: "projectCategoryName",
+		label: "projectCategoryName",
+        name:  "projectCategoryName"
+	},
+	{
+		id: 24,
+		value: "projectName",
+		label: "projectName",
+		name:  "projectName"
 	}
 ];

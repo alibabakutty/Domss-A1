@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton'
 import { useNavigate, useParams } from 'react-router-dom';
-import { createRevenueCenterMaster, getSpecificRevenueCenter } from '../services/MasterService';
+import { getSpecificRevenueCenter } from '../services/MasterService';
 
 const RevenueCentreDisplay = () => {
 
@@ -58,16 +58,6 @@ const RevenueCentreDisplay = () => {
           // Move to the next field if the current field is not the last one
           inputRefs.current[nextField].focus();
           inputRefs.current[nextField].setSelectionRange(0,0);
-        } else if (e.target.name === 'revenueCategoryName'){
-          // Show confirmation dialog only if revenueCategoryName is filled
-          const userConfirmed = window.confirm('Do you want to confirm this submit?');
-          if (userConfirmed) {
-            if (index === inputRefs.current.length - 1){
-              handleSubmit(e);
-            }
-          } else{
-            e.preventDefault();
-          }
         }
       } else if (revenueCategoryFocused && filteredSuggestion.length > 0){
         // If suggestions are focused, select the highlighted suggestion
@@ -99,8 +89,6 @@ const RevenueCentreDisplay = () => {
           e.preventDefault();
         }
       }
-    } else if (key === 'Escape') {
-      navigate(-1);
     }
   };
 

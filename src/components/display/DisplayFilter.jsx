@@ -32,13 +32,13 @@ const DisplayFilter = () => {
         currency: 'Currencies',
         voucher: 'Vouchers',
         department: 'Departments',
-        location: 'Locations',
+        godownn: 'Locations',
         headOffice: 'Head Offices',
         branchOffice: 'Branch Offices',
         revenueCategory: 'Revenue Categories',
-        revenueCentre: 'Revenue Centers',
+        revenueCenter: 'Revenue Centers',
         costCategory: 'Cost Categories',
-        costCentre: 'Cost Centers',
+        costCenter: 'Cost Centers',
         batchCategory: 'Batch Categories',
         batchSerialNumber: 'Batch Serial Numbers',
         batchColor: 'Batch Colors',
@@ -68,7 +68,7 @@ const DisplayFilter = () => {
                 } else if (type === 'department') {
                     const response = await listOfDepartments();
                     setDepartmentSuggestions(response.data);
-                } else if (type === 'location') {
+                } else if (type === 'godown') {
                     const response = await listOfLocations();
                     setLocationSuggestions(response.data);
                 } else if (type === 'headOffice') {
@@ -80,13 +80,13 @@ const DisplayFilter = () => {
                 } else if (type === 'revenueCategory'){
                     const response = await listOfRevenueCategories();
                     setRevenueCategorySuggestions(response.data);
-                } else if (type === 'revenueCentre'){
+                } else if (type === 'revenueCenter'){
                     const response = await listOfRevenueCenters();
                     setRevenueCenterSuggestions(response.data);
                 } else if (type === 'costCategory'){
                     const response = await listOfCostCategories();
                     setCostCategorySuggestions(response.data);
-                } else if (type === 'costCentre'){
+                } else if (type === 'costCenter'){
                     const response = await listsOfCostCenters();
                     setCostCenterSuggestions(response.data);
                 } else if (type === 'batchCategory'){
@@ -198,7 +198,7 @@ const DisplayFilter = () => {
         shouldShowScroll = (filteredCurrencies.length > 20);
     } else if (type === 'department'){
         shouldShowScroll = (filteredDepartments.length > 20);
-    } else if (type === 'location'){
+    } else if (type === 'godown'){
         shouldShowScroll = (filteredLocations.length > 20);
     } else if (type === 'headOffice'){
         shouldShowScroll = (filteredHeadOffices.length > 20);
@@ -206,11 +206,11 @@ const DisplayFilter = () => {
         shouldShowScroll = (filteredBranchOffices.length > 20);
     } else if (type === 'revenueCategory'){
         shouldShowScroll = (filteredRevenueCategories.length > 20);
-    } else if (type === 'revenueCentre'){
+    } else if (type === 'revenueCenter'){
         shouldShowScroll = (filteredRevenueCenters.length > 20);
     } else if (type === 'costCategory'){
         shouldShowScroll = (filteredCostCategories.length > 20);
-    } else if (type === 'costCentre'){
+    } else if (type === 'costCenter'){
         shouldShowScroll = (filteredCostCenters.length > 20);
     } else if (type === 'batchCategory'){
         shouldShowScroll = (filteredBatchCategories.length > 20);
@@ -239,7 +239,7 @@ const DisplayFilter = () => {
                 totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length;
             } else if (type === 'department'){
                 totalItems = filteredDepartments.length;
-            } else if (type === 'location'){
+            } else if (type === 'godown'){
                 totalItems = filteredLocations.length;
             } else if (type === 'headOffice'){
                 totalItems = filteredHeadOffices.length;
@@ -247,11 +247,11 @@ const DisplayFilter = () => {
                 totalItems = filteredBranchOffices.length;
             } else if (type === 'revenueCategory'){
                 totalItems = filteredRevenueCategories.length;
-            } else if (type === 'revenueCentre'){
+            } else if (type === 'revenueCenter'){
                 totalItems = filteredRevenueCenters.length;
             } else if (type === 'costCategory'){
                 totalItems = filteredCostCategories.length;
-            } else if (type === 'costCentre'){
+            } else if (type === 'costCenter'){
                 totalItems = filteredCostCenters.length;
             } else if (type === 'batchCategory'){
                 totalItems = filteredBatchCategories.length;
@@ -310,7 +310,7 @@ const DisplayFilter = () => {
                             navigate(`/departmentMasterApi/displayDepartment/${selectedDepartment.departmentName}`);
                         }
                     }
-                } else if (type === 'location'){
+                } else if (type === 'godown'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredLocations.length){
                         const selectedLocation = filteredLocations[selectedIndex - 2];
                         if (selectedLocation) {
@@ -338,7 +338,7 @@ const DisplayFilter = () => {
                             navigate(`/revenueCategoryMasterApi/displayRevenueCategory/${selectedRevenueCategory.revenueCategoryName}`);
                         }
                     }
-                } else if (type === 'revenueCentre'){
+                } else if (type === 'revenueCenter'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredRevenueCenters.length){
                         const selectedRevenueCenter = filteredRevenueCenters[selectedIndex - 2];
                         if (selectedRevenueCenter) {
@@ -352,7 +352,7 @@ const DisplayFilter = () => {
                             navigate(`/costCategoryMasterApi/displayCostCategory/${selectedCostCategory.costCategoryName}`);
                         }
                     }
-                } else if (type === 'costCentre'){
+                } else if (type === 'costCenter'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredCostCenters.length){
                         const selectedCostCenter = filteredCostCenters[selectedIndex - 2];
                         if (selectedCostCenter) {
@@ -363,42 +363,42 @@ const DisplayFilter = () => {
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredBatchCategories.length){
                         const selectedBatchCategory = filteredBatchCategories[selectedIndex - 2];
                         if (selectedBatchCategory) {
-                            navigate(`batchCategoryMasterApi/displayBatchCategory/${selectedBatchCategory.batchCategoryName}`);
+                            navigate(`/batchCategoryMasterApi/displayBatchCategory/${selectedBatchCategory.batchCategoryName}`);
                         }
                     }
                 } else if (type === 'batchSerialNumber'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredBatchSerialNumbers.length){
                         const selectedBatchSerialNumber = filteredBatchSerialNumbers[selectedIndex - 2];
                         if (selectedBatchSerialNumber){
-                            navigate(`batchSerialNumberMasterApi/displayBatchSerialNumber/${selectedBatchSerialNumber.batchSerialNumber}`);
+                            navigate(`/batchSerialNumberMasterApi/displayBatchSerialNumber/${selectedBatchSerialNumber.batchSerialNumber}`);
                         }
                     }
                 } else if (type === 'batchColor'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredBatchColors.length){
                         const selectedBatchColor = filteredBatchColors[selectedIndex - 2];
                         if (selectedBatchColor){
-                            navigate(`batchColorMasterApi/displayBatchColor/${selectedBatchColor.batchColorName}`)
+                            navigate(`/batchColorMasterApi/displayBatchColor/${selectedBatchColor.batchColorName}`)
                         }
                     }
                 } else if (type === 'batchSize'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredBatchSizes.length){
                         const selectedBatchSize = filteredBatchSizes[selectedIndex - 2];
                         if (selectedBatchSize){
-                            navigate(`batchSizeMasterApi/displayBatchSize/${selectedBatchSize.batchSizeName}`);
+                            navigate(`/batchSizeMasterApi/displayBatchSize/${selectedBatchSize.batchSizeName}`);
                         }
                     }
                 } else if (type === 'projectCategory'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredProjectCategories.length){
                         const selectedProjectCategory = filteredProjectCategories[selectedIndex - 2];
                         if (selectedProjectCategory) {
-                            navigate(`projectCategoryMasterApi/displayProjectCategory/${selectedProjectCategory.projectCategoryName}`);
+                            navigate(`/projectCategoryMasterApi/displayProjectCategory/${selectedProjectCategory.projectCategoryName}`);
                         }
                     }
                 } else if (type === 'project'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredProjectNames.length){
                         const selectedProject = filteredProjectNames[selectedIndex - 2];
                         if (selectedProject) {
-                            navigate(`projectNameMasterApi/displayProjectName/${selectedProject.projectName}`);
+                            navigate(`/projectNameMasterApi/displayProjectName/${selectedProject.projectName}`);
                         }
                     }
                 }
@@ -435,7 +435,7 @@ const DisplayFilter = () => {
                                     value={filterInput}
                                     onChange={handleInputChange}
                                     ref={inputRef}
-                                    className="w-[250px] ml-2 mt-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                                    className="w-[250px] ml-2 mt-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-0 relative z-10"
                                     autoComplete="off"
                                 />
                             ))}
@@ -521,7 +521,7 @@ const DisplayFilter = () => {
                                             ))}
                                         </ul>
                                     )}
-                                    {type === 'location' && (
+                                    {type === 'godown' && (
                                         <ul>
                                             {filteredLocations.map((location,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
@@ -565,7 +565,7 @@ const DisplayFilter = () => {
                                             ))}
                                         </ul>
                                     )}
-                                    {type === 'revenueCentre' && (
+                                    {type === 'revenueCenter' && (
                                         <ul>
                                             {filteredRevenueCenters.map((revenueCenter,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
@@ -589,7 +589,7 @@ const DisplayFilter = () => {
                                             ))}
                                         </ul>
                                     )}
-                                    {type === 'costCentre' && (
+                                    {type === 'costCenter' && (
                                         <ul>
                                             {filteredCostCenters.map((costCenter,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
@@ -630,7 +630,7 @@ const DisplayFilter = () => {
                                             {filteredBatchColors.map((batchColor,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`batchColorMasterApi/displayBatchColor/${batchColor.batchColorName}`}>
+                                                    <Link to={`/batchColorMasterApi/displayBatchColor/${batchColor.batchColorName}`}>
                                                         {batchColor.batchColorName}
                                                     </Link>
                                                 </li>
@@ -654,7 +654,7 @@ const DisplayFilter = () => {
                                             {filteredProjectCategories.map((projectCategory,index) =>(
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`projectCategoryMasterApi/displayProjectCategory/${projectCategory.projectCategoryName}`}>
+                                                    <Link to={`/projectCategoryMasterApi/displayProjectCategory/${projectCategory.projectCategoryName}`}>
                                                         {projectCategory.projectCategoryName}
                                                     </Link>
                                                 </li>
@@ -666,7 +666,7 @@ const DisplayFilter = () => {
                                             {filteredProjectNames.map((project,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`projectNameMasterApi/displayProjectName/${project.projectName}`}>
+                                                    <Link to={`/projectNameMasterApi/displayProjectName/${project.projectName}`}>
                                                         {project.projectName}
                                                     </Link>
                                                 </li>

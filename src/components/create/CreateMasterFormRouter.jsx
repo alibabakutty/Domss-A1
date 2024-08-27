@@ -52,7 +52,7 @@ const CreateMasterFormRouter = () => {
         return <SundryDebtorsCreate />
       case 'department':
         return <DepartmentCreate />
-      case 'location':
+      case 'godown':
         return <LocationCreate />
       case 'headOffice':
         return <HeadOfficeCreate />
@@ -60,11 +60,11 @@ const CreateMasterFormRouter = () => {
         return <BranchOfficeCreate />
       case 'revenueCategory':
         return <RevenueCategoryCreate />
-      case 'revenueCentre':
+      case 'revenueCenter':
         return <RevenueCentreCreate />
       case 'costCategory':
         return <CostCategoryCreate />
-      case 'costCentre':
+      case 'costCenter':
         return <CostCentreCreate />
       case 'batchCategory':
         return <BatchCategoryCreate />
@@ -76,7 +76,7 @@ const CreateMasterFormRouter = () => {
         return <BatchSizeCreate />
       case 'projectCategory':
         return <ProjectCategoryCreate />
-      case 'projectName':
+      case 'project':
         return <ProjectNameCreate />
     
       default:

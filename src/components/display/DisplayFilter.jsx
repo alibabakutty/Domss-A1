@@ -121,6 +121,7 @@ const DisplayFilter = () => {
         setSelectedIndex(2); // Reset focus to the first item on input change
     };
 
+    // Filter the suggestions based on user input
     const filteredVoucherTypes = voucherTypeSuggestions.filter(voucher =>
         voucher.voucherTypeName.toLowerCase().includes(filterInput.toLowerCase())
     );
@@ -189,44 +190,28 @@ const DisplayFilter = () => {
         project.projectName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    // Logic to determine if the scrollbar should be shown based on the type
-    let shouldShowScroll;
-    
-    if (type === 'voucher') {
-        shouldShowScroll = (filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length > 20);
-    } else if (type === 'currency'){
-        shouldShowScroll = (filteredCurrencies.length > 20);
-    } else if (type === 'department'){
-        shouldShowScroll = (filteredDepartments.length > 20);
-    } else if (type === 'godown'){
-        shouldShowScroll = (filteredLocations.length > 20);
-    } else if (type === 'headOffice'){
-        shouldShowScroll = (filteredHeadOffices.length > 20);
-    } else if (type === 'branchOffice'){
-        shouldShowScroll = (filteredBranchOffices.length > 20);
-    } else if (type === 'revenueCategory'){
-        shouldShowScroll = (filteredRevenueCategories.length > 20);
-    } else if (type === 'revenueCenter'){
-        shouldShowScroll = (filteredRevenueCenters.length > 20);
-    } else if (type === 'costCategory'){
-        shouldShowScroll = (filteredCostCategories.length > 20);
-    } else if (type === 'costCenter'){
-        shouldShowScroll = (filteredCostCenters.length > 20);
-    } else if (type === 'batchCategory'){
-        shouldShowScroll = (filteredBatchCategories.length > 20);
-    } else if (type === 'batchSerialNumber'){
-        shouldShowScroll = (filteredBatchSerialNumbers.length > 20);
-    } else if (type === 'batchColor'){
-        shouldShowScroll = (filteredBatchColors.length > 20);
-    } else if (type === 'batchSize'){
-        shouldShowScroll = (filteredBatchSizes.length > 20);
-    } else if (type === 'projectCategory'){
-        shouldShowScroll = (filteredProjectCategories.length > 20);
-    } else if (type === 'projectName'){
-        shouldShowScroll = (filteredProjectNames.length > 20);
-    } else{
-        shouldShowScroll = false;
-    }
+    // Determine if the scrollbar should be shown based on the type
+  const shouldShowScroll = (() => {
+    const countMap = {
+      voucher: filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length,
+      currency: filteredCurrencies.length,
+      department: filteredDepartments.length,
+      godown: filteredLocations.length,
+      headOffice: filteredHeadOffices.length,
+      branchOffice: filteredBranchOffices.length,
+      revenueCategory: filteredRevenueCategories.length,
+      revenueCenter: filteredRevenueCenters.length,
+      costCategory: filteredCostCategories.length,
+      costCenter: filteredCostCenters.length,
+      batchCategory: filteredBatchCategories.length,
+      batchSerialNumber: filteredBatchSerialNumbers.length,
+      batchColor: filteredBatchColors.length,
+      batchSize: filteredBatchSizes.length,
+      projectCategory: filteredProjectCategories.length,
+      projectName: filteredProjectNames.length
+    };
+    return countMap[type] > 20;
+  })();
 
     const filteredNameValues = NameValues.filter(item => item.value.toLowerCase().includes(type.toLowerCase()));
 

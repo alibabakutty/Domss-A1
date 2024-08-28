@@ -109,8 +109,8 @@ const Home = () => {
             inputRef.current.focus();
         }
 
-         // Set activeIndex to 1 by default and 0 when filter is applied
-        setActiveIndex(filter ? 0 : 1); // Reset to the first item when filter changes
+        // Reset to the first item when filter changes
+        setActiveIndex(filteredItems.length > 0 ? 0 : -1);   // Ensure valid index or -1 if no items
     }, [filter]);
 
     useEffect(() => {
@@ -119,18 +119,18 @@ const Home = () => {
     
             if (event.key === 'ArrowUp') {
                 setActiveIndex(prev => {
-                    let newIndex = prev - 1;
+                    let newIndex = Math.max(prev - 1, -1);  // Prevent index from going below -1
                     while (newIndex >= 0 && !filteredItems[newIndex].isSubItem) {
                         newIndex--;
                     }
                     if (itemRefs.current[newIndex]) {
                         itemRefs.current[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                     }
-                    return Math.max(-1, newIndex); // Ensure activeIndex is at least -1
+                    return newIndex; // Ensure activeIndex is at least -1
                 });
             } else if (event.key === 'ArrowDown') {
                 setActiveIndex(prev => {
-                    let newIndex = prev + 1;
+                    let newIndex = Math.min(prev + 1, filteredItems.length - 1);   // Prevent index from exceeding the filtered length
                     while (newIndex < filteredItems.length && !filteredItems[newIndex].isSubItem) {
                         newIndex++;
                     }

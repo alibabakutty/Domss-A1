@@ -20,6 +20,8 @@ export const createBatchColorMaster = (batchColor) => axios.post(`${REST_API_BAS
 export const createBatchSizeMaster = (batchSize) => axios.post(`${REST_API_BASE_URL}/batchSizeMasterApi/addBatchSize`, batchSize);
 export const createProjectCategoryMaster = (projectCategory) => axios.post(`${REST_API_BASE_URL}/projectCategoryMasterApi/addProjectCategory`, projectCategory);
 export const createProjectNameMaster = (projectName) => axios.post(`${REST_API_BASE_URL}/projectNameMasterApi/addProjectName`, projectName);
+export const createSundryCreditorMaster = (sundryCreditor) => axios.post(`${REST_API_BASE_URL}/sundryCreditorMasterApi/addSundryCreditor`, sundryCreditor);
+export const createSundryDebtorMaster = (sundryDebtor) => axios.post(`${REST_API_BASE_URL}/sundryDebtorMasterApi/addSundryDebtor`, sundryDebtor);
 
 // GET Specific Data
 export const getSpecificVoucher = (voucherTypeName) => axios.get(`${REST_API_BASE_URL}/voucherTypeMasterApi/displayVoucher/${voucherTypeName}`);
@@ -39,6 +41,9 @@ export const getSpecificBatchColor = (batchColorName) => axios.get(`${REST_API_B
 export const getSpecificBatchSize = (batchSizeName) => axios.get(`${REST_API_BASE_URL}/batchSizeMasterApi/displayBatchSize/${batchSizeName}`);
 export const getSpecificProjectCategory = (projectCategoryName) => axios.get(`${REST_API_BASE_URL}/projectCategoryMasterApi/displayProjectCategory/${projectCategoryName}`);
 export const getSpecificProjectName = (project) => axios.get(`${REST_API_BASE_URL}/projectNameMasterApi/displayProjectName/${project}`);
+export const getSpecificSundryCreditorName = (sundryCreditorName) => axios.get(`${REST_API_BASE_URL}/sundryCreditorMasterApi/displaySundryCreditor/${sundryCreditorName}`);
+export const getSpecificSundryDebtorName = (sundryDebtorName) => axios.get(`${REST_API_BASE_URL}/sundryDebtorMasterApi/displaySundryDebtor/${sundryDebtorName}`);
+
 
 // DISPLAY ALL
 export const listOfVouchers = () => axios.get(`${REST_API_BASE_URL}/voucherTypeMasterApi/allVouchers`);
@@ -58,6 +63,8 @@ export const listOfBatchColorNames = () => axios.get(`${REST_API_BASE_URL}/batch
 export const listOfBatchSizes = () => axios.get(`${REST_API_BASE_URL}/batchSizeMasterApi/allBatchSizes`);
 export const listsOfProjectCategories = () => axios.get(`${REST_API_BASE_URL}/projectCategoryMasterApi/allProjectCategories`);
 export const listsOfProjectNames = () => axios.get(`${REST_API_BASE_URL}/projectNameMasterApi/allProjects`);
+export const listsOfSundryCreditors = () => axios.get(`${REST_API_BASE_URL}/sundryCreditorMasterApi/allSundryCreditors`);
+export const listsOfSundryDebtors = () => axios.get(`${REST_API_BASE_URL}/sundryDebtorMasterApi/allSundryDebtors`);
 
 // ALTER
 export const updateVoucherTypeMaster = (voucherTypeName,voucher) => axios.put(`${REST_API_BASE_URL}/voucherTypeMasterApi/alterVoucherTypeMaster/${voucherTypeName}`, voucher);
@@ -76,6 +83,8 @@ export const updateBatchColorNameMaster = (batchColorName, batchColor) => axios.
 export const updateBatchSizeMaster = (batchSizeName, batchSize) => axios.put(`${REST_API_BASE_URL}/batchSizeMasterApi/alterBatchSizeMaster/${batchSizeName}`, batchSize);
 export const updateProjectCategoryMaster = (projectCategoryName, projectCategory) => axios.put(`${REST_API_BASE_URL}/projectCategoryMasterApi/alterProjectCategoryMaster/${projectCategoryName}`, projectCategory);
 export const updateProjectNameMaster = (projectName, project) => axios.put(`${REST_API_BASE_URL}/projectNameMasterApi/alterProjectNameMaster/${projectName}`, project);
+export const updateSundryCreditorMaster = (sundryCreditorName, sundryCreditor) => axios.put(`${REST_API_BASE_URL}/sundryCreditorMasterApi/alterSundryCreditorMaster/${sundryCreditorName}`, sundryCreditor);
+export const updateSundryDebtorMaster = (sundryDebtorName, sundryDebtor) => axios.put(`${REST_API_BASE_URL}/sundryDebtorMasterApi/alterSundryDebtorMaster/${sundryDebtorName}`, sundryDebtor);
 
 // DELETE
 export const deleteVoucher = (id) => axios.delete(`${REST_API_BASE_URL}/voucherTypeMasterApi/deleteVoucher/${id}`);
@@ -94,3 +103,5 @@ export const deleteBatchColorName = (id) => axios.delete(`${REST_API_BASE_URL}/b
 export const deleteBatchSizeName = (id) => axios.delete(`${REST_API_BASE_URL}/batchSizeMasterApi/deleteBatchSize/${id}`);
 export const deleteProjectCategoryName = (id) => axios.delete(`${REST_API_BASE_URL}/projectCategoryMasterApi/deleteProjectCategory/${id}`);
 export const deleteProjectName = (id) => axios.delete(`${REST_API_BASE_URL}/projectNameMasterApi/deleteProjectName/${id}`);
+export const deleteSundryCreditor = (id) => axios.delete(`${REST_API_BASE_URL}/sundryCreditorMasterApi/deleteSundryCreditor/${id}`);
+export const deleteSundryDebtor = (id) => axios.delete(`${REST_API_BASE_URL}/sundryDebtorMasterApi/deleteSundryDebtor/${id}`);

@@ -30,7 +30,7 @@ const CreateMasterFormRouter = () => {
 
   const renderComp = () => {
     switch (type) {
-      case 'group':
+      case 'groupName':
         return <GroupCreateForm />
       case 'ledger':
         return <LedgerCreateForm />
@@ -76,7 +76,7 @@ const CreateMasterFormRouter = () => {
         return <BatchSizeCreate />
       case 'projectCategory':
         return <ProjectCategoryCreate />
-      case 'project':
+      case 'projectName':
         return <ProjectNameCreate />
     
       default:

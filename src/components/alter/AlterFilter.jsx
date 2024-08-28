@@ -44,7 +44,7 @@ const AlterFilter = () => {
         batchColor: 'Batch Colors',
         batchSize: 'Batch Sizes',
         projectCategory: 'Project Categories',
-        project: 'Projects'
+        projectName: 'Projects'
       };
 
     const formatType = (str) => {
@@ -104,7 +104,7 @@ const AlterFilter = () => {
                 } else if (type === 'projectCategory'){
                     const response = await listsOfProjectCategories();
                     setProjectCategorySuggestions(response.data);
-                } else if (type === 'project'){
+                } else if (type === 'projectName'){
                     const response = await listsOfProjectNames();
                     setProjectNameSuggestions(response.data);
                 }
@@ -222,7 +222,7 @@ const AlterFilter = () => {
         shouldShowScroll = (filteredBatchSizes.length > 20);
     } else if (type === 'projectCategory'){
         shouldShowScroll = (filteredProjectCategories.length > 20);
-    } else if (type === 'project'){
+    } else if (type === 'projectName'){
         shouldShowScroll = (filteredProjectNames.length > 20);
     } else{
         shouldShowScroll = false;
@@ -263,7 +263,7 @@ const AlterFilter = () => {
                 totalItems = filteredBatchSizes.length;
             } else if (type === 'projectCategory'){
                 totalItems = filteredProjectCategories.length;
-            } else if (type === 'project'){
+            } else if (type === 'projectName'){
                 totalItems = filteredProjectNames.length;
             }
 
@@ -394,7 +394,7 @@ const AlterFilter = () => {
                             navigate(`/projectCategoryMasterApi/alterProjectCategoryMaster/${selectedProjectCategory.projectCategoryName}`);
                         }
                     }
-                } else if (type === 'project'){
+                } else if (type === 'projectName'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredProjectNames.length){
                         const selectedProject = filteredProjectNames[selectedIndex - 2];
                         if (selectedProject) {
@@ -658,7 +658,7 @@ const AlterFilter = () => {
                                             ))}
                                         </ul>
                                     )}
-                                    {type === 'project' && (
+                                    {type === 'projectName' && (
                                         <ul>
                                             {filteredProjectNames.map((project,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}

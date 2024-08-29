@@ -1,23 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton'
 import { createSundryDebtorMaster } from '../services/MasterService';
+import LeftSideMenu from '../left-side-menu/LeftSideMenu';
 
 const SundryDebtorsCreate = () => {
 
   const [sundryDebtor, setSundryDebtor] = useState({
     sundryDebtorName: '',
-    underGroup: '',
+    underGroup: 'Sundry Debtors',
     billWiseStatus: '',
     addressOne: '',
     addressTwo: '',
     addressThree: '',
     addressFour: '',
     addressFive: '',
+    landMarkOrArea: '',
     state: '',
     country: '',
     pincode: '',
     panOrItNumber: '',
-    msmeNumber: ''
+    msmeNumber: '',
+    openingBalance: ''
   })
 
   const inputRefs = useRef([]);
@@ -28,9 +31,26 @@ const SundryDebtorsCreate = () => {
     }
   },[]);
 
+  const formatNumberWithCommas = (value) => {
+    const [integerPart, decimalPart] = value.split('.');
+    const formattedInteger = integerPart.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+    return decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setSundryDebtor({ ...sundryDebtor, [name]: value });
+    if (name === 'openingBalance'){
+      const cleanedValue = value.replace(/[^0-9]/g, '');
+      const [integerPart, decimalPart] = cleanedValue.split('.');
+      let formattedValue = integerPart;
+      if (decimalPart) {
+        formattedValue += '.' + decimalPart.slice(0,2);
+      }
+      setSundryDebtor({ ...sundryDebtor, [name]: formattedValue });
+    } else{
+      setSundryDebtor({ ...sundryDebtor, [name]: value });
+    }
+    
   };
 
   const handleKeyDown = (e,index) => {
@@ -45,7 +65,7 @@ const SundryDebtorsCreate = () => {
         if (nextField < inputRefs.current.length){
           inputRefs.current[nextField].focus();
           inputRefs.current[nextField].setSelectionRange(0,0);   // Set the cursor at the beginning
-        } else if (e.target.name === 'msmeNumber'){
+        } else if (e.target.name === 'openingBalance'){
           const userConfirmed = window.confirm('Do you want to confirm this submit!');
           if (userConfirmed){
             if (index === inputRefs.current.length - 1){
@@ -65,16 +85,42 @@ const SundryDebtorsCreate = () => {
           inputRefs.current[prevField].setSelectionRange(0,0);
         }
       }
+    } else if ((key === 'y' || key === 'n' || key === 'Y' || key === 'N') && e.target.name === 'billWiseStatus'){
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'Yes' : 'No';
+      setSundryDebtor({
+        ...sundryDebtor,
+        billWiseStatus: value,
+      })
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await createSundryDebtorMaster(sundryDebtor);
+
+      const submissionData = {
+        ...sundryDebtor,
+        openingBalance: parseFloat(sundryDebtor.openingBalance) || 0
+      }
+      const response = await createSundryDebtorMaster(submissionData);
       console.log(response.data);
       setSundryDebtor({
-        ...sundryDebtor,
+        sundryDebtorName: '',
+        underGroup: 'Sundry Debtors',
+        billWiseStatus: '',
+        addressOne: '',
+        addressTwo: '',
+        addressThree: '',
+        addressFour: '',
+        addressFive: '',
+        landMarkOrArea: '',
+        state: '',
+        country: '',
+        pincode: '',
+        panOrItNumber: '',
+        msmeNumber: '',
+        openingBalance: ''
       })
 
       if (inputRefs.current[0]){
@@ -88,72 +134,82 @@ const SundryDebtorsCreate = () => {
   return (
     <>
       <div className='flex'>
-        <div className='bg-slate-400 w-[53.4%] h-[92.9vh] border border-r-blue-400'></div>
-        <form action="" className='border border-slate-500 w-[42.6%] h-[65vh]'>
-          <div className='text-sm p-1 flex'>
-            <label htmlFor="sundryDebtorName" className='w-[30%]'>Sundry Debtor's Name</label>
+        <LeftSideMenu />
+        <form action="" className='border border-slate-500 w-[47%] h-[65vh]'>
+          <div className='text-sm p-1 flex mt-3'>
+            <label htmlFor="sundryDebtorName" className='w-[35%] ml-2'>Sundry Debtor's Name</label>
             <span>:</span>
             <input type="text" id='sundryDebtorName' name='sundryDebtorName' ref={(input) => (inputRefs.current[0] = input)} value={sundryDebtor.sundryDebtorName} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
           <div className='text-sm p-1 flex'>
-            <label htmlFor="underGroup" className='w-[30%]'>Under</label>
+            <label htmlFor="underGroup" className='w-[35%] ml-2'>Under</label>
             <span>:</span>
-            <input type="text" id='underGroup' name='underGroup' value={sundryDebtor.underGroup} ref={(input) => (inputRefs.current[1] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 1)} className='w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+            <input type="text" id='underGroup' name='underGroup' value={sundryDebtor.underGroup} onChange={handleInputChange} className='w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
           </div>
           <div className='text-sm p-1 flex'>
-            <label htmlFor="billWiseStatus" className='w-[30%]'>Bill-Wise Status</label>
+            <label htmlFor="billWiseStatus" className='w-[35%] ml-2'>Bill-Wise Status</label>
             <span>:</span>
-            <input type="text" id='billWiseStatus' value={sundryDebtor.billWiseStatus} name='billWiseStatus' ref={(input) => (inputRefs.current[2] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 2)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+            <input type="text" id='billWiseStatus' value={sundryDebtor.billWiseStatus} name='billWiseStatus' ref={(input) => (inputRefs.current[1] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 1)} className='w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
           </div>
           <div className='text-sm p-1 flex'>
-            <label htmlFor="addressOne" className='w-[30%]'>Address1</label>
+            <label htmlFor="addressOne" className='w-[35%] ml-2'>Address</label>
             <span>:</span>
-            <input type="text" id='addressOne' name='addressOne' value={sundryDebtor.addressOne} ref={(input) => (inputRefs.current[3] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 3)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+            <input type="text" id='addressOne' name='addressOne' value={sundryDebtor.addressOne} ref={(input) => (inputRefs.current[2] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 2)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+          </div>
+          <div className='text-sm flex'>
+            <label htmlFor="addressTwo" className='w-[35%] ml-2'></label>
+            <span>:</span>
+            <input type="text" id='addressTwo' name='addressTwo' value={sundryDebtor.addressTwo} ref={(input) => (inputRefs.current[3] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 3)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+          </div>
+          <div className='text-sm flex'>
+            <label htmlFor="addressThree" className='w-[35%] ml-2'></label>
+            <span>:</span>
+            <input type="text" id='addressThree' name='addressThree' value={sundryDebtor.addressThree} ref={(input) => (inputRefs.current[4] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 4)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+          </div>
+          <div className='text-sm flex'>
+            <label htmlFor="addressFour" className='w-[35%] ml-2'></label>
+            <span>:</span>
+            <input type="text" id='addressFour' name='addressFour' value={sundryDebtor.addressFour} ref={(input) => (inputRefs.current[5] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 5)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+          </div>
+          <div className='text-sm flex'>
+            <label htmlFor="addressFive" className='w-[35%] ml-2'></label>
+            <span>:</span>
+            <input type="text" id='addressFive' name='addressFive' value={sundryDebtor.addressFive} ref={(input) => (inputRefs.current[6] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 6)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+          </div>
+          <div className='text-sm flex'>
+            <label htmlFor="landMarkOrArea" className='w-[34.55%] ml-3'>LandMark/Area</label>
+            <span>:</span>
+            <input type="text" id='landMarkOrArea' name='landMarkOrArea' value={sundryDebtor.landMarkOrArea} ref={(input) => (inputRefs.current[7] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 7)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
           <div className='text-sm p-1 flex'>
-            <label htmlFor="addressTwo" className='w-[30%]'>Address2</label>
-            <span>:</span>
-            <input type="text" id='addressTwo' name='addressTwo' value={sundryDebtor.addressTwo} ref={(input) => (inputRefs.current[4] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 4)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
-          </div>
-          <div className='text-sm p-1 flex'>
-            <label htmlFor="addressThree" className='w-[30%]'>Address3</label>
-            <span>:</span>
-            <input type="text" id='addressThree' name='addressThree' value={sundryDebtor.addressThree} ref={(input) => (inputRefs.current[5] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 5)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
-          </div>
-          <div className='text-sm p-1 flex'>
-            <label htmlFor="addressFour" className='w-[30%]'>Address4</label>
-            <span>:</span>
-            <input type="text" id='addressFour' name='addressFour' value={sundryDebtor.addressFour} ref={(input) => (inputRefs.current[6] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 6)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
-          </div>
-          <div className='text-sm p-1 flex'>
-            <label htmlFor="addressFive" className='w-[30%]'>Address5</label>
-            <span>:</span>
-            <input type="text" id='addressFive' name='addressFive' value={sundryDebtor.addressFive} ref={(input) => (inputRefs.current[7] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 7)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
-          </div>
-          <div className='text-sm p-1 flex'>
-            <label htmlFor="state" className='w-[30%]'>State</label>
+            <label htmlFor="state" className='w-[35%] ml-2'>State</label>
             <span>:</span>
             <input type="text" id='state' name='state' value={sundryDebtor.state} ref={(input) => (inputRefs.current[8] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 8)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
           </div>
           <div className='text-sm p-1 flex'>
-            <label htmlFor="country" className='w-[30%]'>Country</label>
+            <label htmlFor="country" className='w-[35%] ml-2'>Country</label>
             <span>:</span>
             <input type="text" id='country' name='country' value={sundryDebtor.country} ref={(input) => (inputRefs.current[9] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 9)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
           </div>
           <div className='text-sm p-1 flex'>
-            <label htmlFor="pincode" className='w-[30%]'>Pincode</label>
+            <label htmlFor="pincode" className='w-[35%] ml-2'>Pincode</label>
             <span>:</span>
             <input type="text" id='pincode' name='pincode' value={sundryDebtor.pincode} ref={(input) => (inputRefs.current[10] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 10)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
           </div>
           <div className='text-sm p-1 flex'>
-            <label htmlFor="panOrItNumber" className='w-[30%]'>PAN/IT No.</label>
+            <label htmlFor="panOrItNumber" className='w-[35%] ml-2'>PAN/IT No.</label>
             <span>:</span>
             <input type="text" id='panOrItNumber' name='panOrItNumber' value={sundryDebtor.panOrItNumber} ref={(input) => (inputRefs.current[11] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 11)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
           </div>
           <div className='text-sm p-1 flex'>
-            <label htmlFor="msmeNumber" className='w-[30%]'>MSME No.</label>
+            <label htmlFor="msmeNumber" className='w-[35%] ml-2'>MSME No.</label>
             <span>:</span>
             <input type="text" id='msmeNumber' name='msmeNumber' value={sundryDebtor.msmeNumber} ref={(input) => (inputRefs.current[12] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 12)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+          </div>
+          <div className='text-sm p-1 flex'>
+            <label htmlFor="openingBalance" className='w-[35%] ml-2'>Opening Balance (₹)</label>
+            <span>:</span>
+            <input type="text" id='openingBalance' name='openingBalance' ref={(input) => (inputRefs.current[13] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 13)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
           </div>
         </form>
         <RightSideButton />

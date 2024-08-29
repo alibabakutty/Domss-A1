@@ -30,12 +30,12 @@ const Home = () => {
          },
         { id: 13, name: 'Supplier Master' ,
             subItems: [
-                { id: 14, name: 'Sundry Creditors', path: 'menu/sundryCreditors'}
+                { id: 14, name: 'Sundry Creditors', path: 'menu/sundryCreditor'}
             ]
         },
         { id: 15, name: 'Customer Master',
             subItems: [
-                { id: 16, name: 'Sundry Debtors', path: 'menu/sundryDebtors'}
+                { id: 16, name: 'Sundry Debtors', path: 'menu/sundryDebtor'}
             ]
         },
         { id: 17, name: 'Department Master', 

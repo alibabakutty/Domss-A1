@@ -46,9 +46,9 @@ const CreateMasterFormRouter = () => {
         return <StockItemCreate />
       case 'unit':
         return <UnitCreate />
-      case 'sundryCreditors':
+      case 'sundryCreditor':
         return <SundryCreditorsCreate />
-      case 'sundryDebtors':
+      case 'sundryDebtor':
         return <SundryDebtorsCreate />
       case 'department':
         return <DepartmentCreate />

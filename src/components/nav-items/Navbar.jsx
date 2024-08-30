@@ -14,7 +14,7 @@ const Navbar = () => {
       <nav className="bg-[#2a67b1]">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex space-x-10 text-[13px] h-7">
-            <Link to={'/about'} className="text-white font-bold px-4 py-1">Domss Logo</Link>
+            <Link to={'/about'} className="text-white font-bold px-4 py-1">Great AI</Link>
 
             <Link to="nav/company" className={`text-white px-4 py-1 ${activeLink === 'nav/company' || activeLink === '/companyCreateForm' ? 'bg-blue-900' : 'bg-[#2a67b1]'}`} onClick={() => setActiveLink('nav/company')}>
               <span className="underline underline-offset-4 text-[#478CCF]" >K:</span> Company

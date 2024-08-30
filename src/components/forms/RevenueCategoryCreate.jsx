@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useNavigate } from 'react-router-dom';
 import { createRevenueCategoryMaster } from '../services/MasterService';
+import LeftSideMenu from '../left-side-menu/LeftSideMenu';
 
 const RevenueCategoryCreate = () => {
   const [revenueCategory, setRevenueCategory] = useState({
@@ -57,12 +58,12 @@ const RevenueCategoryCreate = () => {
   return (
     <>
       <div className='flex'>
-        <div className='bg-slate-400 w-[53.4%] h-[92.9vh] border border-r-blue-400'></div>
-        <form action="" className='border border-slate-500 w-[40%] h-[10vh] absolute left-[50%]' onSubmit={handleSubmit}>
+        <LeftSideMenu />
+        <form action="" className='border border-slate-500 w-[45.5%] h-[10vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
           <div className='text-sm p-3 flex'>
             <label htmlFor="revenueCategoryName" className='w-[30%]'>Revenue Category Name</label>
             <span>:</span>
-            <input type="text" id='revenueCategoryName' name="revenueCategoryName" value={revenueCategory.revenueCategoryName} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e,0)} ref={input => inputRefs.current[0] = input} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+            <input type="text" id='revenueCategoryName' name="revenueCategoryName" value={revenueCategory.revenueCategoryName} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e,0)} ref={input => inputRefs.current[0] = input} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
         </form>
         <RightSideButton />

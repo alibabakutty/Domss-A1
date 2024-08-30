@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton'
 import { useNavigate } from 'react-router-dom';
 import { createCostCategoryMaster } from '../services/MasterService';
+import LeftSideMenu from '../left-side-menu/LeftSideMenu';
 
 const CostCategoryCreate = () => {
   const [costCategory, setCostCategory] = useState({
@@ -64,12 +65,12 @@ const CostCategoryCreate = () => {
   return (
     <>
       <div className='flex'>
-        <div className='bg-slate-400 w-[57.62%] h-[92.9vh] border border-r-blue-400'></div>
-        <form action="" className='border border-slate-500 w-[36%] h-[10vh] absolute left-[54%]' onSubmit={handleSubmit}>
-          <div className='text-sm p-3 flex'>
-            <label htmlFor="costCategoryName" className='w-[30%]'>Cost Category Name</label>
+        <LeftSideMenu />
+        <form action="" className='border border-slate-500 w-[45.5%] h-[10vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
+          <div className='text-sm pl-3 mt-4 flex'>
+            <label htmlFor="costCategoryName" className='w-[25%]'>Cost Category Name</label>
             <span>:</span>
-            <input type="text" id='costCategoryName' name='costCategoryName' value={costCategory.costCategoryName} onChange={handleInputChange} ref={el => inputRefs.current[0] = el} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+            <input type="text" id='costCategoryName' name='costCategoryName' value={costCategory.costCategoryName} onChange={handleInputChange} ref={el => inputRefs.current[0] = el} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
         </form>
         <RightSideButton />

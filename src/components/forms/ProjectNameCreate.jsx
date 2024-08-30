@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton'
 import { useNavigate } from 'react-router-dom';
 import { createProjectNameMaster, listsOfProjectCategories } from '../services/MasterService';
+import LeftSideMenu from '../left-side-menu/LeftSideMenu';
 
 const ProjectNameCreate = () => {
   const [project, setProject] = useState({
@@ -142,23 +143,23 @@ const ProjectNameCreate = () => {
   return (
     <>
       <div className='flex'>
-        <div className='bg-slate-400 w-[53.4%] h-[92.9vh] border border-r-blue-400'></div>
-        <form className='border border-slate-500 w-[40%] h-[15vh] absolute left-[50%]' onSubmit={handleSubmit}>
-          <div className='text-sm p-3 flex'>
-            <label htmlFor="projectName" className='w-[30%]'>Project Name</label>
+        <LeftSideMenu />
+        <form className='border border-slate-500 w-[45.5%] h-[15vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
+          <div className='text-sm pl-3 mt-4 flex'>
+            <label htmlFor="projectName" className='w-[25%]'>Project Name</label>
             <span>:</span>
-            <input type="text" id='projectName' name='projectName' value={project.projectName} onChange={handleInputChange} ref={input => inputRefs.current[0] = input} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+            <input type="text" id='projectName' name='projectName' value={project.projectName} onChange={handleInputChange} ref={input => inputRefs.current[0] = input} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
           <div className='text-sm flex pl-3'>
-            <label htmlFor="projectCategoryName" className='w-[29.3%]'>Under</label>
+            <label htmlFor="projectCategoryName" className='w-[25%]'>Under</label>
             <span>:</span>
-            <input type="text" id='projectCategoryName' name='projectCategoryName' value={project.projectCategoryName} onChange={handleInputChange} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} onFocus={(e) => {setProjectCategoryFocused(true); handleInputChange(e);}} onBlur={() => setProjectCategoryFocused(false)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+            <input type="text" id='projectCategoryName' name='projectCategoryName' value={project.projectCategoryName} onChange={handleInputChange} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} onFocus={(e) => {setProjectCategoryFocused(true); handleInputChange(e);}} onBlur={() => setProjectCategoryFocused(false)} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
             {projectCategoryFocused && filteredSuggestion.length > 0 && (
-              <div className='w-[40%] h-[92.7vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[327px] top-0'>
+              <div className='w-[40%] h-[92.7vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0'>
                 <div className='text-left bg-[#003285] text-[13.5px] text-white pl-2'>
                   <p>List of Cost Categories</p>
                 </div>
-                <ul className='suggestions w-full h-[87vh] text-left text-sm mt-2 overflow-y-scroll' ref={optionsRef}>
+                <ul className='suggestions w-full h-[87vh] text-left text-sm mt-2' ref={optionsRef}>
                   {filteredSuggestion.map((projectCategory, index) => (
                     <li key={index} tabIndex={0} className={`pl-2 capitalize cursor-pointer hover:bg-yellow-200 ${highlightedSuggestionProjectCategory === index ? 'bg-yellow-200' : ''}`} onClick={() => handleSuggestionClick(projectCategory)} onMouseDown={(e) => e.preventDefault()}>
                       {projectCategory.projectCategoryName}

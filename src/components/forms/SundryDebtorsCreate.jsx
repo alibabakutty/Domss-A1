@@ -135,7 +135,7 @@ const SundryDebtorsCreate = () => {
     <>
       <div className='flex'>
         <LeftSideMenu />
-        <form action="" className='border border-slate-500 w-[47%] h-[65vh]'>
+        <form action="" className='border border-slate-500 w-[48.5%] h-[92.7vh]'>
           <div className='text-sm p-1 flex mt-3'>
             <label htmlFor="sundryDebtorName" className='w-[35%] ml-2'>Sundry Debtor's Name</label>
             <span>:</span>

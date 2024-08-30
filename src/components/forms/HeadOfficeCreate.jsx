@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton';
 import { createHeadOfficeMaster } from '../services/MasterService';
 import { useNavigate } from 'react-router-dom';
+import LeftSideMenu from '../left-side-menu/LeftSideMenu';
 
 const HeadOfficeCreate = () => {
   const [headOffice, setHeadOffice] = useState({
@@ -63,12 +64,12 @@ const HeadOfficeCreate = () => {
   return (
     <>
       <div className='flex'>
-        <div className='bg-slate-400 w-[57.62%] h-[92.9vh] border border-r-blue-400'></div>
-        <form action="" className='border border-slate-500 w-[36%] h-[10vh] absolute left-[54%]' onSubmit={handleSubmit}>
+        <LeftSideMenu />
+        <form action="" className='border border-slate-500 w-[45.5%] h-[10vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
           <div className='text-sm p-3 flex'>
-            <label htmlFor="headOfficeName" className='w-[30%]'>Head Office Name</label>
+            <label htmlFor="headOfficeName" className='w-[25%]'>Head Office Name</label>
             <span>:</span>
-            <input type="text" id='headOfficeName' name='headOfficeName' value={headOffice.headOfficeName} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 0)} ref={el => inputRefs.current[0] = el} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+            <input type="text" id='headOfficeName' name='headOfficeName' value={headOffice.headOfficeName} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 0)} ref={el => inputRefs.current[0] = el} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
         </form>
         <RightSideButton />

@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 
 const HeaderText = () => {
     const location = useLocation();
-    let headerText = "Gateway of Domss";
+    let headerText = "Gateway of Great AI";
 
     if (location.pathname === '/companyCreateForm'){
         headerText = "Company Creation";
@@ -44,6 +44,10 @@ const HeaderText = () => {
       headerText = "Project Category Creation";
     } else if (location.pathname === '/menu/projectName'){
       headerText = "Project Name Creation";
+    } else if (location.pathname === '/menu/sundryCreditor'){
+      headerText = "Sundry Creditor Creation";
+    } else if (location.pathname === '/menu/sundryDebtor'){
+      headerText = "Sundry Debtor Creation";
     }
   return (
     <>

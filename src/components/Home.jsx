@@ -159,8 +159,8 @@ const Home = () => {
     return (
         <>
         <div className="container flex">
-            <div className='w-[96%] h-[92.9vh] flex'>
-                 <div className='w-1/2 bg-gradient-to-t to-blue-500 from-[#ccc]'></div>
+            <div className='w-[97%] h-[92.9vh] flex'>
+                 <div className='w-[49%] bg-gradient-to-t to-blue-500 from-[#ccc]'></div>
                  <div className='w-1/2 bg-slate-100 border border-l-blue-400 flex justify-center flex-col items-center'>
                     <div className="w-[50%] h-16 flex flex-col justify-center items-center border border-black bg-white border-b-0 ">
                         <p className="text-[13px] font-semibold underline underline-offset-4 decoration-gray-400">

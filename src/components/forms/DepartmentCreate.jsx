@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { createDepartmentMaster } from '../services/MasterService';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useNavigate } from 'react-router-dom';
+import LeftSideMenu from '../left-side-menu/LeftSideMenu';
 // import { useLocation } from 'react-router-dom';
 
 const DepartmentCreate = () => {
@@ -67,12 +68,12 @@ const DepartmentCreate = () => {
   return (
     <>
       <div className='flex'>
-        <div className='bg-slate-400 w-[57.65%] h-[92.9vh] border border-r-blue-400'></div>
-        <form className='border border-slate-500 w-[36%] h-[10vh] absolute left-[54%]' onSubmit={handleSubmit}>
+        <LeftSideMenu />
+        <form className='border border-slate-500 w-[45.5%] h-[10vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
           <div className='text-sm p-3 flex'>
-            <label htmlFor="departmentName" className='w-[30%]'>Department Name</label>
+            <label htmlFor="departmentName" className='w-[25%]'>Department Name</label>
             <span>:</span>
-            <input type="text" id='departmentName' name='departmentName' value={department.departmentName} ref={el => (inputRefs.current[0] = el)} onKeyDown={e => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+            <input type="text" id='departmentName' name='departmentName' value={department.departmentName} ref={el => (inputRefs.current[0] = el)} onKeyDown={e => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
         </form>
         <RightSideButton />

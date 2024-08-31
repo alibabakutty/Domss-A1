@@ -9,6 +9,14 @@ const SundryCreditorsCreate = () => {
     sundryCreditorName: '',
     underGroup: 'Sundry Creditors',
     billWiseStatus: 'No',
+    provideBankDetails: 'No',
+    accountName: '',
+    accountNumber: '',
+    bankName: '',
+    branchName: '',
+    ifscCode: '',
+    accountType: '',
+    swiftCode: '',
     addressOne: '',
     addressTwo: '',
     addressThree: '',
@@ -18,7 +26,6 @@ const SundryCreditorsCreate = () => {
     state: '',
     country: '',
     pincode: '',
-    provideBankDetails: 'No',
     panOrItNumber: '',
     gstinOrUinNumber: '',
     msmeNumber: '',
@@ -32,18 +39,24 @@ const SundryCreditorsCreate = () => {
     billWiseBreakOf: '',
     uptoOpeningBalanceAmount: '',
     uptoCreditOrDebit: '',
-    billDetails: '',
-    date: '',
-    baseCurrency: '',
-    addOnCurrency: '',
+    forexDate: '',
+    referenceName: '',
+    dueDate: '',
+    forexCurrencyType: '',
+    forexAmount: '',
     exchangeRate: '',
-    controlForexBills: '',
-    noOfDaysOrDueDate: '',
-    creditControlAmount: ''
+    referenceAmount: '',
+    referenceCreditOrDebit: '',
+    totalAmount: '',
+    totalCreditOrDebit: '',
+    onAccountAmount: '',
+    onAccountCreditOrDebit: '',
+    controlAmount: '',
+    controlCreditOrDebit: ''
   })
 
   const [bankSubFormModal, setBankSubFormModal] = useState(false);
-  const [forexSubFormModal, setForexSubFormModal] = useState(false);
+  const [forexSubFormModal, setForexSubFormModal] = useState(true);
   const inputRefs = useRef([]);
 
   useEffect(() =>{
@@ -52,15 +65,12 @@ const SundryCreditorsCreate = () => {
     }
   },[]);
 
-  const formatNumberWithCommas = (value) => {
-    const [integerPart, decimalPart] = value.split('.');
-    const formattedInteger = integerPart.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
-    return decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger;
-  };
-  
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+  
+    // Define a new value for `sundryCreditor` based on the name of the field
+    let newValue = value;
+  
     if (name === 'openingBalance') {
       // Remove non-numeric characters except for '.' and handle the decimal places
       const cleanedValue = value.replace(/[^0-9.]/g, '');
@@ -72,11 +82,27 @@ const SundryCreditorsCreate = () => {
         formattedValue += '.' + decimalPart.slice(0, 2);
       }
   
-      setSundryCreditor({ ...sundryCreditor, [name]: formattedValue });
-    } else {
-      setSundryCreditor({ ...sundryCreditor, [name]: value });
+      newValue = formattedValue;
     }
+  
+    // Update state based on the field name
+    setSundryCreditor((prevState) => {
+      const updatedState = { ...prevState, [name]: newValue };
+  
+      // Update related fields based on the input field name
+      if (name === 'sundryCreditorName') {
+        updatedState.billWiseBreakOf = newValue;
+      } else if (name === 'openingBalance') {
+        updatedState.uptoOpeningBalanceAmount = newValue;
+        updatedState.controlAmount = newValue;
+      } else if (name === 'creditOrDebit') {
+        updatedState.uptoCreditOrDebit = newValue;
+        updatedState.controlCreditOrDebit = newValue;
+      }
+      return updatedState;
+    });
   };
+  
 
   const handleKeyDown = (e,index) => {
     const key = e.key;
@@ -90,7 +116,7 @@ const SundryCreditorsCreate = () => {
         if (nextField < inputRefs.current.length){
           inputRefs.current[nextField].focus();
           inputRefs.current[nextField].setSelectionRange(0,0);   // Set the cursor at the beginning
-        } else if (e.target.name === 'creditControlAmount'){
+        } else if (e.target.name === 'referenceCreditOrDebit'){
           const userConfirmed = window.confirm('Do you want to confirm this submit!');
           if (userConfirmed) {
             if (index === inputRefs.current.length - 1){
@@ -124,6 +150,10 @@ const SundryCreditorsCreate = () => {
         ...sundryCreditor,
         provideBankDetails: value,
       })
+      // Handle opening of the bank details subform modal if 'Yes' is selected
+      if (value === 'Yes'){
+        setBankSubFormModal(true);
+      }
     } else if ((key === 'c' || key === 'd' || key === 'c' || key === 'D') && e.target.name === 'creditOrDebit') {
       e.preventDefault();
       const value = key.toLowerCase() === 'c' ? 'Cr' : 'Dr';
@@ -131,6 +161,8 @@ const SundryCreditorsCreate = () => {
         ...sundryCreditor,
         creditOrDebit: value,
       })
+      // Open the forexSubFormModal when a value is entered in creditOrDebit input
+      setForexSubFormModal(true);
     }
   };
 
@@ -150,6 +182,14 @@ const SundryCreditorsCreate = () => {
         sundryCreditorName: '',
         underGroup: 'Sundry Creditors',
         billWiseStatus: 'No',
+        provideBankDetails: 'No',
+        accountName: '',
+        accountNumber: '',
+        bankName: '',
+        branchName: '',
+        ifscCode: '',
+        accountType: '',
+        swiftCode: '',
         addressOne: '',
         addressTwo: '',
         addressThree: '',
@@ -159,7 +199,6 @@ const SundryCreditorsCreate = () => {
         state: '',
         country: '',
         pincode: '',
-        provideBankDetails: 'No',
         panOrItNumber: '',
         gstinOrUinNumber: '',
         msmeNumber: '',
@@ -173,14 +212,21 @@ const SundryCreditorsCreate = () => {
         billWiseBreakOf: '',
         uptoOpeningBalanceAmount: '',
         uptoCreditOrDebit: '',
-        billDetails: '',
-        date: '',
-        baseCurrency: '',
-        addOnCurrency: '',
+        forexDate: '',
+        referenceName: '',
+        dueDate: '',
+        forexCurrencyType: '',
+        forexAmount: '',
         exchangeRate: '',
-        controlForexBills: '',
-        noOfDaysOrDueDate: '',
-        creditControlAmount: ''
+        referenceAmount: '',
+        referenceCreditOrDebit: '',
+        totalAmount: '',
+        totalCreditOrDebit: '',
+        onAccountAmount: '',
+        onAccountCreditOrDebit: '',
+        controlAmount: '',
+        controlCreditOrDebit: ''
+
       })
 
       if (inputRefs.current[0]){
@@ -220,37 +266,42 @@ const SundryCreditorsCreate = () => {
 
           {bankSubFormModal && (
             <div className='fixed top-[44px] left-0 bottom-0 right-[138px] bg-slate-300 bg-opacity-90 flex justify-center items-center z-10' >
-              <div className='w-[550px] bg-white h-[400px] border border-black' >
+              <div className='w-[550px] bg-white h-[250px] border border-black' >
                 <h2 className='text-sm font-medium underline text-center'>Bank Details</h2>
-                <div className='text-sm mb-1 flex'>
-                  <label htmlFor="" className='pl-3 w-[30%]'>Account Name</label>
+                <div className='text-sm mb-1 flex mt-5'>
+                  <label htmlFor="accountName" className='pl-3 w-[30%]'>Account Name</label>
                   <span>:</span>
-                  <input type="text" className='w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+                  <input type="text" id='accountName' name='accountName' value={sundryCreditor.accountName} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
-                  <label htmlFor="" className='pl-3 w-[30%]'>Account Number</label>
+                  <label htmlFor="accountNumber" className='pl-3 w-[30%]'>Account Number</label>
                   <span>:</span>
-                  <input type="text" className='w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+                  <input type="text" id='accountNumber' name='accountNumber' value={sundryCreditor.accountNumber} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
-                  <label htmlFor="" className='pl-3 w-[30%]'>Bank Name</label>
+                  <label htmlFor="bankName" className='pl-3 w-[30%]'>Bank Name</label>
                   <span>:</span>
-                  <input type="text" className='w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+                  <input type="text" id='bankName' name='bankName' value={sundryCreditor.bankName} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
-                  <label htmlFor="" className='pl-3 w-[30%]'>Branch Name</label>
+                  <label htmlFor="branchName" className='pl-3 w-[30%]'>Branch Name</label>
                   <span>:</span>
-                  <input type="text" className='w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+                  <input type="text" id='branchName' name='branchName' value={sundryCreditor.branchName} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
-                  <label htmlFor="" className='pl-3 w-[30%]'>IFSC Code</label>
+                  <label htmlFor="ifscCode" className='pl-3 w-[30%]'>IFSC Code</label>
                   <span>:</span>
-                  <input type="text" className='w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+                  <input type="text" id='ifscCode' name='ifscCode' value={sundryCreditor.ifscCode} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
-                  <label htmlFor="" className='pl-3 w-[30%]'>Account Type</label>
+                  <label htmlFor="accountType" className='pl-3 w-[30%]'>Account Type</label>
                   <span>:</span>
-                  <input type="text" className='w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+                  <input type="text" id='accountType' name='accountType' value={sundryCreditor.accountType} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                </div>
+                <div className='text-sm mb-1 flex'>
+                  <label htmlFor="swiftCode" className='pl-3 w-[30%]'>Swift Code</label>
+                  <span>:</span>
+                  <input type="text" id='swiftCode' name='swiftCode' value={sundryCreditor.swiftCode} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
               </div>
             </div>
@@ -338,36 +389,58 @@ const SundryCreditorsCreate = () => {
           </div>
           <div className='text-sm pl-1 mb-1 flex'>
             <label htmlFor="openingBalance" className='w-[21%] ml-2'>Opening Balance</label>
-            (<input type="text" id='dateForOpening' name='dateForOpening' value={sundryCreditor.dateForOpening} className='w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />)
+            (<input type="text" id='dateForOpening' name='dateForOpening' value={sundryCreditor.dateForOpening} className='w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />)
             <span className='ml-3'>:</span>
-            <input type="text" id='openingBalance' name='openingBalance' ref={(input) => (inputRefs.current[19] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 19)} className='w-[150px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
-            <input type="text" id='creditOrDebit' name='creditOrDebit' value={sundryCreditor.creditOrDebit} ref={(input) => (inputRefs.current[20] = input)} onKeyDown={(e) => handleKeyDown(e,20)} onChange={handleInputChange} className='w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+            <input type="text" id='openingBalance' name='openingBalance' ref={(input) => (inputRefs.current[19] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 19)} className='w-[150px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+            <input type="text" id='creditOrDebit' name='creditOrDebit' value={sundryCreditor.creditOrDebit} ref={(input) => (inputRefs.current[20] = input)} onKeyDown={(e) => handleKeyDown(e,20)} onChange={handleInputChange} className='w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
 
 
           {forexSubFormModal && (
             <div className='fixed top-[44px] left-0 bottom-0 right-[138px] bg-slate-300 bg-opacity-90 flex justify-center items-center z-10' >
-              <div className='w-[1000px] bg-white h-[400px]'>
-                <h2 className='text-sm font-medium underline text-center'>Forex Details</h2>
+              <div className='w-[1100px] bg-white h-[400px] border border-black'>
+                <div className='flex text-sm ml-[150px] mt-1'>
+                  <label htmlFor="billWiseBreakOf" className='w-[16%]'>Bill-wise Breakup of</label>
+                  <span>:</span>
+                  <input type="text" id='billWiseBreakOf' name='billWiseBreakOf' value={sundryCreditor.billWiseBreakOf} onChange={handleInputChange} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                </div>
+                <div className='flex text-sm mb-1 ml-[150px]'>
+                  <label htmlFor="uptoOpeningBalanceAmount" className='w-[16%]'>Upto</label>
+                  <span>:</span>₹
+                  <input type="text" id='uptoOpeningBalanceAmount' name='uptoOpeningBalanceAmount' value={sundryCreditor.uptoOpeningBalanceAmount} className='w-[150px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='uptoCreditOrDebit' name='uptoCreditOrDebit' value={sundryCreditor.uptoCreditOrDebit} onChange={handleInputChange} className='w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                </div>
                 <div className='flex border border-t-slate-400 border-b-slate-400 justify-between'>
-                  <p className='w-[60px]'>Date</p>
-                  <p className='w-[60px]'>Reference Name</p>
-                  <p>Due Date</p>
-                  <p>Forex Currency Type</p>
-                  <p>Forex Amount</p>
-                  <p>Exchange Rate</p>
-                  <p>Amount (Dr/Cr)</p>
+                  <p className='w-[60px] text-sm'>Date</p>
+                  <p className='w-[150px] text-sm'>Reference Name</p>
+                  <p className='text-sm'>Due Date</p>
+                  <p className='text-sm'>Forex Currency Type</p>
+                  <p className='text-sm'>Forex Amount</p>
+                  <p className='text-sm'>Exchange Rate</p>
+                  <p className='text-sm'>Amount</p>
+                  <p>Cr/Dr</p>
                 </div>
-                <div>
-                  <input type="text" className='w-[70px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" className='w-[150px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" className='w-[150px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                <div className='flex justify-between'>
+                  <input type="text" id='forexDate' name='forexDate' value={sundryCreditor.forexDate} className='w-[90px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='referenceName' name='referenceName' value={sundryCreditor.referenceName} className='w-[150px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='dueDate' name='dueDate' value={sundryCreditor.dueDate} className='w-[90px] ml-10 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='forexCurrencyType' name='forexCurrencyType' value={sundryCreditor.forexCurrencyType} className='w-[150px] ml-3 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='forexAmount' name='forexAmount' value={sundryCreditor.forexAmount} className='w-[100px] ml-3 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='exchangeRate' name='exchangeRate' value={sundryCreditor.exchangeRate} className='w-[100px] ml-3 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='referenceAmount' name='referenceAmount' value={sundryCreditor.referenceAmount} className='w-[120px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='referenceCreditOrDebit' name='referenceCreditOrDebit' value={sundryCreditor.referenceCreditOrDebit} className='w-[50px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
+                <div className='absolute left-[980px] top-[400px]'>
+                  <div className='flex justify-end'>
+                    <label htmlFor=""></label>
+                    <span></span>
+                    <div className='border border-t-slate-400 border-b-slate-400'>
+                      <input type="text" id='controlAmount' name='controlAmount' value={sundryCreditor.controlAmount} className='w-[120px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                      <input type="text" id='controlCreditOrDebit' name='controlCreditOrDebit' value={sundryCreditor.controlCreditOrDebit} onChange={handleInputChange} className='w-[50px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                    </div>
+                  </div>
                 </div>
+              </div>
                 
             </div>
           )}

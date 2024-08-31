@@ -32,9 +32,11 @@ const CurrencyCreate = () => {
 
   const handleInputChange = e => {
     const {name,value} = e.target;
+    // Check if the input is a rate field and format it to two decimal places
+    const formattedValue = ['rateForPerSalesCurrency', 'rateForSalesInvoice', 'rateForPerPurchaseCurrency', 'rateForPurchaseInvoice', 'rateForPerPaymentCurrency', 'rateForPaymentInvoice', 'rateForPerReceiptCurrency', 'rateForReceiptInvoice'].includes(name) ? parseFloat(value).toFixed(2) : value
     setCurrency(prevCurrency => ({
       ...prevCurrency,
-      [name]: value,
+      [name]: formattedValue,
       // If the field is forexcurrencysymbol, also update currencysymbol input
       ...(name === 'forexCurrencySymbol' && { currencySymbol: value }),
     }));
@@ -170,7 +172,7 @@ const CurrencyCreate = () => {
               <div className='w-[160px] h-[75.6vh] border border-r-slate-500'>
                 <div>
                   <div className='flex justify-center border border-b-slate-500'>
-                    <p className='text-sm'>Rate for Sales Invoice</p>
+                    <p className='text-sm'>Rate for Sales</p>
                   </div>
                   <div className='flex justify-between'>
                     <div>
@@ -190,7 +192,7 @@ const CurrencyCreate = () => {
               <div className='w-[160px] h-[75.6vh] border border-r-slate-500'>
                 <div>
                   <div className='flex justify-center border border-b-slate-500'>
-                    <p className='text-sm'>Rate for Purchase Invoice</p>
+                    <p className='text-sm'>Rate for Purchase</p>
                   </div>
                   <div className='flex justify-between'>
                   <div>
@@ -209,7 +211,7 @@ const CurrencyCreate = () => {
               <div className='w-[160px] h-[75.6vh] border border-r-slate-500'>
                 <div>
                   <div className='flex justify-center border border-b-slate-500'>
-                    <p className='text-sm'>Rate for Payment Invoice</p>
+                    <p className='text-sm'>Rate for Payment</p>
                   </div>
                   <div className='flex justify-between'>
                   <div>
@@ -228,7 +230,7 @@ const CurrencyCreate = () => {
               <div className='w-[160px] h-[75.6vh] border border-r-slate-500'>
                 <div>
                   <div className='flex justify-center border border-b-slate-500'>
-                    <p className='text-sm'>Rate for Receipt Invoice</p>
+                    <p className='text-sm'>Rate for Receipt</p>
                   </div>
                   <div className='flex justify-between'>
                   <div>

@@ -105,4 +105,6 @@ export default [
   { id: 34, value: 'Sales Invoice', label: 'Sales Invoice', alias: 'Sales Invoice' },
   { id: 35, value: 'Sales Order', label: 'Sales Order', alias: 'Sales Order' },
   { id: 36, value: 'Sales Return', label: 'Sales Return', alias: 'Sales Return' },
+  { id: 37, value: 'Stock Transfer Purchase', label: 'Stock Transfer Purchase', alias: 'Stock Transfer Purchase'},
+  { id: 38, value: 'Stock Transfer Sales', label: 'Stock Transfer Sales', alias: 'Stock Transfer Sales'}
 ];

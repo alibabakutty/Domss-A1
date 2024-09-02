@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames } from '../services/MasterService';
+import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const DisplayFilter = () => {
@@ -23,6 +23,8 @@ const DisplayFilter = () => {
     const [batchSizeSuggestions, setBatchSizeSuggestions] = useState([]);
     const [projectCategorySuggestions, setProjectCategorySuggestions] = useState([]);
     const [projectNameSuggestions, setProjectNameSuggestions] = useState([]);
+    const [supplierSuggestions, setSupplierSuggestions] = useState([]);
+    const [customerSuggestions, setCustomerSuggestions] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
@@ -44,7 +46,9 @@ const DisplayFilter = () => {
         batchColor: 'Batch Colors',
         batchSize: 'Batch Sizes',
         projectCategory: 'Project Categories',
-        projectName: 'Projects'
+        projectName: 'Projects',
+        sundryCreditor: 'Sundry Creditors',
+        sundryDebtor: 'Sundry Debtors'
       };
 
     const formatType = (str) => {
@@ -107,6 +111,12 @@ const DisplayFilter = () => {
                 } else if (type === 'projectName'){
                     const response = await listsOfProjectNames();
                     setProjectNameSuggestions(response.data);
+                } else if (type === 'sundryCreditor'){
+                    const response = await listsOfSundryCreditors();
+                    setSupplierSuggestions(response.data);
+                } else if (type === 'sundryDebtor'){
+                    const response = await listsOfSundryDebtors();
+                    setCustomerSuggestions(response.data);
                 }
             } catch (error) {
                 console.error(error);
@@ -190,6 +200,14 @@ const DisplayFilter = () => {
         project.projectName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
+    const filteredSuppliers = supplierSuggestions.filter(supplier =>
+        supplier.sundryCreditorName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredCustomers = customerSuggestions.filter(customer =>
+        customer.sundryDebtorName.toLowerCase().includes(filterInput.toLowerCase())
+    )
+
     // Determine if the scrollbar should be shown based on the type
   const shouldShowScroll = (() => {
     const countMap = {
@@ -208,7 +226,9 @@ const DisplayFilter = () => {
       batchColor: filteredBatchColors.length,
       batchSize: filteredBatchSizes.length,
       projectCategory: filteredProjectCategories.length,
-      projectName: filteredProjectNames.length
+      projectName: filteredProjectNames.length,
+      sundryCreditor: filteredSuppliers.length,
+      sundryDebtor: filteredCustomers.length
     };
     return countMap[type] > 20;
   })();
@@ -250,6 +270,10 @@ const DisplayFilter = () => {
                 totalItems = filteredProjectCategories.length;
             } else if (type === 'projectName'){
                 totalItems = filteredProjectNames.length;
+            } else if (type === 'sundryCreditor'){
+                totalItems = filteredSuppliers.length;
+            } else if (type === 'sundryDebtor'){
+                totalItems = filteredCustomers.length;
             }
 
             if (e.key === 'ArrowDown') {
@@ -386,6 +410,20 @@ const DisplayFilter = () => {
                             navigate(`/projectNameMasterApi/displayProjectName/${selectedProject.projectName}`);
                         }
                     }
+                } else if (type === 'sundryCreditor'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredSundryCreditor.length){
+                        const selectedSundryCreditor = filteredSuppliers[selectedIndex - 2];
+                        if (selectedSundryCreditor) {
+                            navigate(`/sundryCreditorMasterApi/displaySundryCreditor/${selectedSundry}`);
+                        }
+                    }
+                } else if (type === 'sundryDebtor'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredSundryDebtor.length){
+                        const selectedSundryDebtor = filteredCustomers[selectedIndex - 2];
+                        if (selectedSundryDebtor){
+                            navigate(`/sundryDebtorMasterApi/displaySundryDebtor/${selectedSundry}`);
+                        }
+                    }
                 }
             } else if (e.key === 'Escape') {
                 navigate(`/menu/${type}`);
@@ -394,7 +432,7 @@ const DisplayFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -653,6 +691,28 @@ const DisplayFilter = () => {
                                                 ref={el => listItemRefs.current[index + 2] = el}>
                                                     <Link to={`/projectNameMasterApi/displayProjectName/${project.projectName}`}>
                                                         {project.projectName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'sundryCreditor' && (
+                                        <ul>
+                                            {filteredSuppliers.map((supplier,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/sundryCreditorMasterApi/displaySundryCreditor/${supplier.sundryCreditorName}`}>
+                                                        {supplier.sundryCreditorName}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'sundryDebtor' && (
+                                        <ul>
+                                            {filteredCustomers.map((customer,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    <Link to={`/sundryDebtorMasterApi/displaySundryDebtor/${customer.sundryDebtorName}`}>
+                                                        {customer.sundryDebtorName}
                                                     </Link>
                                                 </li>
                                             ))}

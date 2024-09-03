@@ -411,17 +411,17 @@ const DisplayFilter = () => {
                         }
                     }
                 } else if (type === 'sundryCreditor'){
-                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredSundryCreditor.length){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredSuppliers.length){
                         const selectedSundryCreditor = filteredSuppliers[selectedIndex - 2];
                         if (selectedSundryCreditor) {
-                            navigate(`/sundryCreditorMasterApi/displaySundryCreditor/${selectedSundry}`);
+                            navigate(`/sundryCreditorMasterApi/displaySundryCreditor/${selectedSundryCreditor.sundryCreditorName}`);
                         }
                     }
                 } else if (type === 'sundryDebtor'){
-                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredSundryDebtor.length){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredCustomers.length){
                         const selectedSundryDebtor = filteredCustomers[selectedIndex - 2];
                         if (selectedSundryDebtor){
-                            navigate(`/sundryDebtorMasterApi/displaySundryDebtor/${selectedSundry}`);
+                            navigate(`/sundryDebtorMasterApi/displaySundryDebtor/${selectedSundryDebtor.sundryDebtorName}`);
                         }
                     }
                 }

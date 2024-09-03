@@ -39,6 +39,12 @@ import BatchColorAlter from "./components/forms/BatchColorAlter"
 import BatchSizeAlter from "./components/forms/BatchSizeAlter"
 import ProjectCategoryAlter from "./components/forms/ProjectCategoryAlter"
 import ProjectNameAlter from "./components/forms/ProjectNameAlter"
+import SundryCreditorsDisplay from "./components/forms/SundryCreditorsDisplay"
+import SundryDebtorsDisplay from "./components/forms/SundryDebtorsDisplay"
+import SundryDebtorsAlter from "./components/forms/SundryDebtorsAlter"
+import SundryCreditorsAlter from "./components/forms/SundryCreditorsAlter"
+import SundryCreditorForm from "./components/forms/SundryCreditorForm"
+import SundryCreditorSubForm from "./components/forms/SundryCreditorSubForm"
 
 function App() {
   
@@ -72,6 +78,8 @@ function App() {
           <Route path="/batchSizeMasterApi/displayBatchSize/:datas" element={<BatchSizeDisplay />} />
           <Route path="/projectCategoryMasterApi/displayProjectCategory/:datas" element={<ProjectCategoryDisplay />} />
           <Route path="/projectNameMasterApi/displayProjectName/:datas" element={<ProjectNameDisplay />} />
+          <Route path="/sundryCreditorMasterApi/displaySundryCreditor/:datas" element={<SundryCreditorsDisplay />} />
+          <Route path="/sundryDebtorMasterApi/displaySundryDebtor/:datas" element={<SundryDebtorsDisplay />} />
           <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:datas" element={<VoucherTypeAlter />} />
           <Route path="/currencyMasterApi/alterCurrencyMaster/:datas" element={<CurrencyAlter />} />
           <Route path="/departmentMasterApi/alterDepartmentMaster/:datas" element={<DepartmentAlter />} />
@@ -88,6 +96,10 @@ function App() {
           <Route path="/batchSizeMasterApi/alterBatchSizeMaster/:datas" element={<BatchSizeAlter />} />
           <Route path="/projectCategoryMasterApi/alterProjectCategoryMaster/:datas" element={<ProjectCategoryAlter />} />
           <Route path="/projectNameMasterApi/alterProjectNameMaster/:datas" element={<ProjectNameAlter />} />
+          <Route path="/sundryCreditorMasterApi/alterSundryCreditorMaster/:datas" element={<SundryCreditorsAlter />} />
+          <Route path="/sundryDebtorMasterApi/alterSundryDebtorMaster/:datas" element={<SundryDebtorsAlter />} />
+          <Route path="/sk" element={<SundryCreditorForm />} />
+          <Route path="/skm" element={<SundryCreditorSubForm />} />
         </Routes>
       </BrowserRouter>
     </>

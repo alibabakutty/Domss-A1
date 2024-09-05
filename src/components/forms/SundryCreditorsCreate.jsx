@@ -10,13 +10,6 @@ const SundryCreditorsCreate = () => {
     underGroup: 'sundry creditors',
     billWiseStatus: 'No',
     provideBankDetails: 'No',
-    accountName: '',
-    accountNumber: '',
-    bankName: '',
-    branchName: '',
-    ifscCode: '',
-    accountType: '',
-    swiftCode: '',
     addressOne: '',
     addressTwo: '',
     addressThree: '',
@@ -35,7 +28,22 @@ const SundryCreditorsCreate = () => {
     emailId: '',
     dateForOpening: '1-Apr-2024',
     openingBalance: '',
-    creditOrDebit: '',
+    creditOrDebit: ''
+  });
+
+  const[Bank, setBank] = useState(
+    {
+      accountName: '',
+    accountNumber: '',
+    bankName: '',
+    branchName: '',
+    ifscCode: '',
+    accountType: '',
+    swiftCode: '',
+    },
+  );
+
+  const [forexSubForm, setForexSubForm] = useState([{
     billWiseBreakOf: '',
     uptoOpeningBalanceAmount: '',
     uptoCreditOrDebit: '',
@@ -47,8 +55,21 @@ const SundryCreditorsCreate = () => {
     exchangeRate: '',
     referenceAmount: '',
     referenceCreditOrDebit: ''
-  });
+  }])
 
+  
+  const handleInputBankChange = (e) => {
+    const {name, value} = e.target;
+    setBank((prevBank) => ({...prevBank, [name]: value}));
+  };
+
+  const handleInputForexChange = (e) => {
+    const {name, value} = e.target;
+    setForexSubForm({
+      ...forexSubForm,
+      [name]: value
+    });
+  }
   const [bankSubFormModal, setBankSubFormModal] = useState(false);
   const [forexSubFormModal, setForexSubFormModal] = useState(false);
   const inputRefs = useRef([]);

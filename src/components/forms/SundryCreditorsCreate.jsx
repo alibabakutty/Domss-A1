@@ -3,6 +3,7 @@ import RightSideButton from '../right-side-button/RightSideButton'
 import { createSundryCreditorMaster } from '../services/MasterService';
 import LeftSideMenu from '../left-side-menu/LeftSideMenu';
 
+
 const SundryCreditorsCreate = () => {
 
   const [sundryCreditor, setSundryCreditor] = useState({
@@ -67,16 +68,20 @@ const handleInputChange = (e) => {
   setSundryCreditor((prevState) => {
     const updatedState = { ...prevState, [name]: formattedValue };
 
-    // Conditional updates for dependent fields
+    // Update forexSubForm based on the input field changes
+    const updatedForexSubForm = [...prevState.forexSubForm];
     if (name === 'sundryCreditorName') {
-      updatedState.forexSubForm[0].billWiseBreakOf = formattedValue;
+      updatedForexSubForm[0].billWiseBreakOf = formattedValue;
     } else if (name === 'openingBalance') {
-      updatedState.forexSubForm[0].uptoOpeningBalanceAmount = formattedValue;
+      updatedForexSubForm[0].uptoOpeningBalanceAmount = formattedValue;
     } else if (name === 'creditOrDebit') {
-      updatedState.forexSubForm[0].uptoCreditOrDebit = formattedValue;
+      updatedForexSubForm[0].uptoCreditOrDebit = formattedValue;
     }
 
-    return updatedState;
+    // Calculate totals after updating forexSubForm
+    calculateTotals();
+
+    return { ...updatedState, forexSubForm: updatedForexSubForm };
   });
 };
   
@@ -90,24 +95,69 @@ const handleInputBankChange = (e) => {
   }));
 };
 
-const handleInputForexChange = (e, index = 0) => {
-  const { name, value } = e.target;
-  
-  setSundryCreditor((prevState) => ({
+const calculateTotals = () => {
+  let totalForexAmount = 0;
+  let totalAmount = 0;
+
+  // Calculate totals by iterating over each row in forexSubForm
+  sundryCreditor.forexSubForm.forEach(row => {
+    const forexAmount = parseFloat(row.forexAmount) || 0;
+    const referenceAmount = parseFloat(row.referenceAmount) || 0;
+
+    totalForexAmount += forexAmount;
+    totalAmount += referenceAmount;
+  });
+
+  console.log("Calculated Totals:", {
+    totalForexAmount: totalForexAmount.toFixed(2),
+    totalAmount: totalAmount.toFixed(2)
+  });
+
+  // Update the state with the calculated totals
+  setSundryCreditor(prevState => ({
     ...prevState,
-    forexSubForm: prevState.forexSubForm.map((item, idx) => {
-      if (idx === index) {
-        // Update the specific object at the given index
-        return {
-          ...item,
-          [name]: value
-        };
-      }
-      // Return unchanged object for all other indices
-      return item;
-    })
+    totalForexAmount: totalForexAmount.toFixed(2),
+    totalAmount: totalAmount.toFixed(2)
   }));
 };
+
+
+const handleInputForexChange = (e, index) => {
+  const { name, value } = e.target;
+
+  setSundryCreditor(prevState => {
+    const updatedForexSubForm = [...prevState.forexSubForm];
+    updatedForexSubForm[index] = {
+      ...updatedForexSubForm[index],
+      [name]: value
+    };
+
+    // Check if the last input field is filled and add a new row
+    if (name === 'referenceCreditOrDebit' && value !== '' && index === updatedForexSubForm.length - 1) {
+      updatedForexSubForm.push({
+        billWiseBreakOf: '',
+        uptoOpeningBalanceAmount: '',
+        uptoCreditOrDebit: '',
+        forexDate: '',
+        referenceName: '',
+        dueDate: '',
+        forexCurrencyType: '',
+        forexAmount: '',
+        exchangeRate: '',
+        referenceAmount: '',
+        referenceCreditOrDebit: '',
+      });
+    }
+
+    // Calculate totals after updating forexSubForm
+    calculateTotals();
+
+    return { ...prevState, forexSubForm: updatedForexSubForm };
+  });
+};
+
+
+
   
   
   const [bankSubFormModal, setBankSubFormModal] = useState(false);
@@ -122,72 +172,86 @@ const handleInputForexChange = (e, index = 0) => {
   },[]);
   
 
-  const handleKeyDown = (e,index) => {
+  const handleKeyDown = (e, index) => {
     const key = e.key;
+    
     if (key === 'Enter') {
-      e.preventDefault();   // Prevents the default form submission behavior
+      e.preventDefault(); // Prevents the default form submission behavior
+  
       // If the current input has a non-empty value
-      if (e.target.value.trim() !== ''){
-        const nextField = index + 1;    // Determine the next field index
-
+      if (e.target.value.trim() !== '') {
+        const nextField = index + 1; // Determine the next field index
+  
         // Focus on the next field if it exists
-        if (nextField < inputRefs.current.length){
+        if (nextField < inputRefs.current.length) {
           inputRefs.current[nextField]?.focus();
-          inputRefs.current[nextField].setSelectionRange(0,0);   // Set the cursor at the beginning
-        } else if (e.target.name === 'referenceCreditOrDebit'){
-          const userConfirmed = window.confirm('Do you want to confirm this submit!');
+          inputRefs.current[nextField].setSelectionRange(0, 0); // Set the cursor at the beginning
+        } else if (e.target.name === 'referenceCreditOrDebit') {
+          const userConfirmed = window.confirm('Do you want to confirm this submit?');
           if (userConfirmed) {
-            if (index === inputRefs.current.length - 1){
+            if (index === inputRefs.current.length - 1) {
               handleSubmit(e);
               setForexSubFormModal(false);
-            } else{
+            } else {
               // Hide the forexSubFormModal if not the last field
               setForexSubFormModal(false);
-              
             }
           } else {
-            // Hide the forexSubFormModal if canceled
             e.preventDefault();
-            if (inputRefs.current[28]){
+            if (inputRefs.current[28]) {
               inputRefs.current[28].focus();
             }
           }
         }
-      }
-    } else if (key === 'Backspace'){
-      if (e.target.value.trim() === '' && index > 0){
-        e.preventDefault();
-        const prevField = index - 1;
-        if (inputRefs.current[prevField]){
-          inputRefs.current[prevField]?.focus();
-          inputRefs.current[prevField].setSelectionRange(0,0);
+      } else if (e.target.name === 'forexDate') {
+        // If forexDate input is empty, ask for confirmation
+        const confirmEmpty = window.confirm('Forex Date is empty. Do you still want to proceed?');
+        if (confirmEmpty) {
+          handleSubmit(e);
+          setForexSubFormModal(false);
+        } else {
+          e.preventDefault();
+          if (inputRefs.current[28]) {
+            inputRefs.current[28].focus();
+          }
         }
       }
-    } else if ((key === 'y' || key === 'n' || key === 'Y' || key === 'N') && e.target.name === 'billWiseStatus'){
+    } else if (key === 'Backspace') {
+      if (e.target.value.trim() === '' && index > 0) {
+        e.preventDefault();
+        const prevField = index - 1;
+        if (inputRefs.current[prevField]) {
+          inputRefs.current[prevField]?.focus();
+          inputRefs.current[prevField].setSelectionRange(0, 0);
+        }
+      }
+    } else if ((key === 'y' || key === 'n' || key === 'Y' || key === 'N') && e.target.name === 'billWiseStatus') {
       e.preventDefault();
       const value = key.toLowerCase() === 'y' ? 'Yes' : 'No';
       setSundryCreditor({
         ...sundryCreditor,
         billWiseStatus: value,
-      })
-    } else if ((key === 'y' || key === 'n' || key === 'Y' || key === 'N') && e.target.name === 'provideBankDetails'){
+      });
+    } else if ((key === 'y' || key === 'n' || key === 'Y' || key === 'N') && e.target.name === 'provideBankDetails') {
       e.preventDefault();
       const value = key.toLowerCase() === 'y' ? 'Yes' : 'No';
       setSundryCreditor({
         ...sundryCreditor,
         provideBankDetails: value,
-      })
+      });
+  
       // Handle opening of the bank details subform modal if 'Yes' is selected
-      if (value === 'Yes'){
+      if (value === 'Yes') {
         setBankSubFormModal(true);
       }
-    } else if ((key === 'c' || key === 'd' || key === 'c' || key === 'D') && e.target.name === 'creditOrDebit') {
+    } else if ((key === 'c' || key === 'd' || key === 'C' || key === 'D') && e.target.name === 'creditOrDebit') {
       e.preventDefault();
       const value = key.toLowerCase() === 'c' ? 'Cr' : 'Dr';
       setSundryCreditor({
         ...sundryCreditor,
         creditOrDebit: value,
-      })
+      });
+  
       // Open the forexSubFormModal when a value is entered in creditOrDebit input
       setForexSubFormModal(true);
     }
@@ -480,13 +544,13 @@ const formatWithCommasAndDecimals = (value) => {
           {forexSubFormModal && (
             <div className='fixed top-[44px] left-0 bottom-0 right-[138px] bg-slate-300 bg-opacity-90 flex justify-center items-center z-10'>
               <div className='w-[1100px] bg-white h-[500px] border border-black overflow-auto'>
-                <div className='p-4'>
-                  <div className='flex text-sm mb-2'>
+                <div className={`h-[${sundryCreditor.forexSubForm.length > 11 ? '470px' : 'auto'}] overflow-y-${sundryCreditor.forexSubForm.length > 11 ? 'scroll' : 'hidden'}`}>
+                  <div className='flex text-sm mb-2 mt-2 ml-5'>
                     <label htmlFor="billWiseBreakOf" className='w-[16%]'>Bill-wise Reference</label>
                     <span>:</span>
                     <input type="text" id='billWiseBreakOf' name='billWiseBreakOf' value={sundryCreditor.forexSubForm.billWiseBreakOf} onChange={handleInputForexChange} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                   </div>
-                  <div className='flex text-sm mb-4'>
+                  <div className='flex text-sm mb-4 mt-2 ml-5'>
                     <label htmlFor="uptoOpeningBalanceAmount" className='w-[16%]'>Upto</label>
                     <span>:</span>₹
                     <input type="text" id='uptoOpeningBalanceAmount' name='uptoOpeningBalanceAmount' value={sundryCreditor.forexSubForm.uptoOpeningBalanceAmount} onChange={handleInputForexChange} className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
@@ -497,37 +561,41 @@ const formatWithCommasAndDecimals = (value) => {
                       <tr className='border-t border-b border-slate-400'>
                         <th className='w-[10%]'>Date</th>
                         <th className='w-[20%]'>Bill Ref. Name</th>
-                        <th className='w-[15%]'>Due Date</th>
+                        <th className='w-[10%]'>Due Date</th>
                         <th className='w-[20%]'>Forex Currency Type</th>
-                        <th className='w-[15%]'><span>($)</span> Forex Amount</th>
+                        <th className='w-[20%]'><span>($)</span> Forex Amount</th>
                         <th className='w-[15%]'><span>(₹)</span> Exchange Rate</th>
-                        <th className='w-[15%]'><span>(₹)</span> Amount</th>
-                        <th className='w-[10%]'>Cr/Dr</th>
+                        <th className='w-[25%]'><span>(₹)</span> Amount</th>
+                        <th className='w-[5%]'>Cr/Dr</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td><input type="text" id='forexDate' name='forexDate' value={sundryCreditor.forexSubForm.forexDate} onChange={handleInputForexChange} ref={(input) => (inputRefs.current[28] = input)} onKeyDown={(e) => handleKeyDown(e, 28)} className='w-full h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
-                        <td><input type="text" id='referenceName' name='referenceName' value={sundryCreditor.forexSubForm.referenceName} onChange={handleInputForexChange} ref={(input) => (inputRefs.current[29] = input)} onKeyDown={(e) => handleKeyDown(e, 29)} className='w-full h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
-                        <td><input type="text" id='dueDate' name='dueDate' value={sundryCreditor.forexSubForm.dueDate} onChange={handleInputForexChange} ref={(input) => (inputRefs.current[30] = input)} onKeyDown={(e) => handleKeyDown(e, 30)} className='w-full h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
-                        <td><input type="text" id='forexCurrencyType' name='forexCurrencyType' value={sundryCreditor.forexSubForm.forexCurrencyType} onChange={handleInputForexChange} ref={(input) => (inputRefs.current[31] = input)} onKeyDown={(e) => handleKeyDown(e, 31)} className='w-full h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
-                        <td><input type="text" id='forexAmount' name='forexAmount' value={sundryCreditor.forexSubForm.forexAmount} onChange={handleInputForexChange} ref={(input) => (inputRefs.current[32] = input)} onKeyDown={(e) => handleKeyDown(e, 32)} className='w-full h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
-                        <td><input type="text" id='exchangeRate' name='exchangeRate' value={sundryCreditor.forexSubForm.exchangeRate} onChange={handleInputForexChange} ref={(input) => (inputRefs.current[33] = input)} onKeyDown={(e) => handleKeyDown(e, 33)} className='w-full h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
-                        <td><input type="text" id='referenceAmount' name='referenceAmount' value={sundryCreditor.forexSubForm.referenceAmount} onChange={handleInputForexChange} ref={(input) => (inputRefs.current[34] = input)} onKeyDown={(e) => handleKeyDown(e, 34)} className='w-full h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
-                        <td><input type="text" id='referenceCreditOrDebit' name='referenceCreditOrDebit' value={sundryCreditor.forexSubForm.referenceCreditOrDebit} onChange={handleInputForexChange} ref={(input) => (inputRefs.current[35] = input)} onKeyDown={(e) => handleKeyDown(e, 35)} className='w-full h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
-                      </tr>
+                      {sundryCreditor.forexSubForm.map((row, index) => (
+                        <tr key={index}>
+                          <td><input type="text" id='forexDate' name='forexDate' value={row.forexDate} onChange={(e) => handleInputForexChange(e, index)} ref={(input) => (inputRefs.current[28 + index * 8] = input)} onKeyDown={(e) => handleKeyDown(e, 28 + index * 8)} className='w-full h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
+                          <td><input type="text" id='referenceName' name='referenceName' value={row.referenceName} onChange={(e) => handleInputForexChange(e, index)} ref={(input) => (inputRefs.current[29 + index * 8] = input)} onKeyDown={(e) => handleKeyDown(e, 29 + index * 8)} className='w-[80%] h-5 pl-1 ml-8 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
+                          <td><input type="text" id='dueDate' name='dueDate' value={row.dueDate} onChange={(e) => handleInputForexChange(e, index)} ref={(input) => (inputRefs.current[30 + index * 8] = input)} onKeyDown={(e) => handleKeyDown(e, 30 + index * 8)} className='w-full h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
+                          <td><input type="text" id='forexCurrencyType' name='forexCurrencyType' value={row.forexCurrencyType} onChange={(e) => handleInputForexChange(e, index)} ref={(input) => (inputRefs.current[31 + index * 8] = input)} onKeyDown={(e) => handleKeyDown(e, 31 + index * 8)} className='w-full h-5 pl-1 ml-5 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
+                          <td><input type="text" id='forexAmount' name='forexAmount' value={row.forexAmount} onChange={(e) => handleInputForexChange(e, index)} ref={(input) => (inputRefs.current[32 + index * 8] = input)} onKeyDown={(e) => handleKeyDown(e, 32 + index * 8)} className='w-[60%] h-5 pl-1 ml-5 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
+                          <td><input type="text" id='exchangeRate' name='exchangeRate' value={row.exchangeRate} onChange={(e) => handleInputForexChange(e, index)} ref={(input) => (inputRefs.current[33 + index * 8] = input)} onKeyDown={(e) => handleKeyDown(e, 33 + index * 8)} className='w-[40%] h-5 pl-1 ml-5 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
+                          <td><input type="text" id='referenceAmount' name='referenceAmount' value={row.referenceAmount} onChange={(e) => handleInputForexChange(e, index)} ref={(input) => (inputRefs.current[34 + index * 8] = input)} onKeyDown={(e) => handleKeyDown(e, 34 + index * 8)} className='w-[60%] h-5 pl-1 ml-5 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
+                          <td><input type="text" id='referenceCreditOrDebit' name='referenceCreditOrDebit' value={row.referenceCreditOrDebit} onChange={(e) => handleInputForexChange(e, index)} ref={(input) => (inputRefs.current[35 + index * 8] = input)} onKeyDown={(e) => handleKeyDown(e, 35 + index * 8)} className='w-full h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' /></td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                   <div className=' mt-4'>
-                    <div className='flex absolute left-[630px] top-[500px]'>
-                      <label htmlFor='totalForexAmount' className='text-sm mr-2'>Total</label>
-                      <span>:</span>
-                      <input type="text" id='totalForexAmount' name='totalForexAmount' value={sundryCreditor.forexSubForm.totalForexAmount} onChange={handleInputForexChange} className='w-[120px] h-5 pl-1 ml-2 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                    <div className='flex absolute left-[560px] top-[500px]'>
+                      <label htmlFor='totalForexAmount' className='text-sm mr-1'>Total</label>
+                      <span className='text-sm'>($)</span>
+                      <span className='absolute left-[60px] bottom-0'>:</span>
+                      <input type="text" id='totalForexAmount' name='totalForexAmount' value={sundryCreditor.totalForexAmount || ''} onChange={handleInputForexChange} className='w-[100px] h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' readOnly />
                     </div>
-                    <div className='flex absolute left-[930px] top-[500px]'>
-                      <label htmlFor='totalAmount' className='text-sm mr-2'>Total</label>
-                      <span>:</span>
-                      <input type="text" id='totalAmount' name='totalAmount' value={sundryCreditor.forexSubForm.totalAmount} className='w-[120px] h-5 pl-1 ml-2 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                    <div className='flex absolute left-[880px] top-[500px]'>
+                      <label htmlFor='totalAmount' className='text-sm mr-1'>Total</label>
+                      <span className='text-sm'>(₹)</span>
+                      <span className='absolute left-[60px] bottom-0'>:</span>
+                      <input type="text" id='totalAmount' name='totalAmount' value={sundryCreditor.totalAmount || ''} onChange={handleInputForexChange} className='w-[120px] h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' readOnly />
                       <input type="text" id='totalAmountCreditOrDebit' name='totalAmountCreditOrDebit' value={sundryCreditor.forexSubForm.totalAmountCreditOrDebit} onChange={handleInputForexChange} className='w-[30px] h-5 pl-1 ml-2 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                     </div>
                   </div>

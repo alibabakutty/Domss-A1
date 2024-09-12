@@ -10,13 +10,15 @@ const SundryDebtorsCreate = () => {
     underGroup: 'sundry debtors',
     billWiseStatus: 'No',
     provideBankDetails: 'No',
-    accountName: '',
-    accountNumber: '',
-    bankName: '',
-    branchName: '',
-    ifscCode: '',
-    accountType: '',
-    swiftCode: '',
+    bank: {
+      accountName: '',
+      accountNumber: '',
+      bankName: '',
+      branchName: '',
+      ifscCode: '',
+      accountType: '',
+      swiftCode: ''
+    },
     addressOne: '',
     addressTwo: '',
     addressThree: '',
@@ -36,17 +38,22 @@ const SundryDebtorsCreate = () => {
     dateForOpening: '1-Apr-2024',
     openingBalance: '',
     creditOrDebit: '',
-    billWiseBreakOf: '',
-    uptoOpeningBalanceAmount: '',
-    uptoCreditOrDebit: '',
-    forexDate: '',
-    referenceName: '',
-    dueDate: '',
-    forexCurrencyType: '',
-    forexAmount: '',
-    exchangeRate: '',
-    referenceAmount: '',
-    referenceCreditOrDebit: ''
+    forexSubForm: [{
+      billWiseBreakOf: '',
+      uptoOpeningBalanceAmount: '',
+      uptoCreditOrDebit: '',
+      forexDate: '',
+      referenceName: '',
+      dueDate: '',
+      forexCurrencyType: '',
+      forexAmount: '',
+      exchangeRate: '',
+      referenceAmount: '',
+      referenceCreditOrDebit: '',
+      totalForexAmount: '',
+      totalAmount: '',
+      totalAmountCreditOrDebit: ''
+    }]
   })
 
   const inputRefs = useRef([]);

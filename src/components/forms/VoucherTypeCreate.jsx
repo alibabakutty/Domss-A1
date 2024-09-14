@@ -288,7 +288,7 @@ const VoucherTypeCreate = () => {
 
   return (
     <>
-      <div className="#FFF5E1 w-[90%] h-[80vh]">
+      <div className="#FFF5E1 w-[88%] h-[80vh]">
         <form action="" onSubmit={handleSubmit}>
           <div className="bg-white">
             <div className="mt-2 w-[1100px] h-[80vh]">
@@ -415,7 +415,7 @@ const VoucherTypeCreate = () => {
                 </div>
               </div>
 
-              <div className="flex justify-evenly text-center border border-gray-400 w-[1228px] h-[78.4vh] ml-[1px]">
+              <div className="flex justify-evenly text-center border border-gray-400 w-[1228px] h-[78.2vh] ml-[1px]">
                 <div className="w-[400px] border border-r-slate-400">
                   <div className="border border-b-slate-400">
                     <p className='text-sm'>Restart Numbering</p>

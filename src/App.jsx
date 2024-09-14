@@ -43,8 +43,6 @@ import SundryCreditorsDisplay from "./components/forms/SundryCreditorsDisplay"
 import SundryDebtorsDisplay from "./components/forms/SundryDebtorsDisplay"
 import SundryDebtorsAlter from "./components/forms/SundryDebtorsAlter"
 import SundryCreditorsAlter from "./components/forms/SundryCreditorsAlter"
-import SundryCreditorForm from "./components/forms/SundryCreditorForm"
-import SundryCreditorSubForm from "./components/forms/SundryCreditorSubForm"
 
 function App() {
   
@@ -98,8 +96,7 @@ function App() {
           <Route path="/projectNameMasterApi/alterProjectNameMaster/:datas" element={<ProjectNameAlter />} />
           <Route path="/sundryCreditorMasterApi/alterSundryCreditorMaster/:datas" element={<SundryCreditorsAlter />} />
           <Route path="/sundryDebtorMasterApi/alterSundryDebtorMaster/:datas" element={<SundryDebtorsAlter />} />
-          <Route path="/sk" element={<SundryCreditorForm />} />
-          <Route path="/skm" element={<SundryCreditorSubForm />} />
+      
         </Routes>
       </BrowserRouter>
     </>

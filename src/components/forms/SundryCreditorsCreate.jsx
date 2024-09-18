@@ -49,10 +49,7 @@ const SundryCreditorsCreate = () => {
         forexAmount: '',
         exchangeRate: '',
         referenceAmount: '',
-        referenceCreditOrDebit: '',
-        totalForexAmount: '',
-        totalAmount: '',
-        totalAmountCreditOrDebit: '',
+        referenceCreditOrDebit: ''
       },
     ],
   });
@@ -178,35 +175,62 @@ const SundryCreditorsCreate = () => {
         const selectedCurrency = currencySuggestion.find(
           (currency) => currency.forexCurrencyName.toLowerCase() === value.toLowerCase()
         );
-  
         const currencySymbol = selectedCurrency ? selectedCurrency.forexCurrencySymbol : '';
   
         updatedForexSubForm = updatedForexSubForm.map((row, i) => {
-          // Skip the first row, it's already updated
-          if (i === 0) return row;
+          if (i === 0) return row; // Skip the first row
   
           return {
             ...row,
-            forexCurrencyType: value, // Propagate forexCurrencyType to other rows
-            forexCurrencySymbol: currencySymbol, // Propagate the selected currency symbol
+            forexCurrencyType: value, // Propagate forexCurrencyType
+            forexCurrencySymbol: currencySymbol, // Propagate forexCurrencySymbol
           };
         });
       }
   
-      // Add a new row if the last row's referenceCreditOrDebit is filled
-      if (
-        name === 'referenceCreditOrDebit' &&
-        value.trim() !== '' &&
-        index === updatedForexSubForm.length - 1
-      ) {
+      // Propagate exchangeRate from the first row to all other rows and add only one additional row
+      if (name === 'exchangeRate' && index === 0) {
+        updatedForexSubForm = updatedForexSubForm.map((row, i) => {
+          if (i === 0) return row; // Skip the first row
+  
+          return {
+            ...row,
+            exchangeRate: value, // Propagate exchangeRate from the first row
+          };
+        });
+  
+        // Add only one additional row after entering exchangeRate in the first row
+        if (updatedForexSubForm.length === 1) {
+          const forexCurrencyType = updatedForexSubForm[0].forexCurrencyType;
+          const selectedCurrency = currencySuggestion.find(
+            (currency) => currency.forexCurrencyName.toLowerCase() === forexCurrencyType.toLowerCase()
+          );
+          const forexCurrencySymbol = selectedCurrency ? selectedCurrency.forexCurrencySymbol : '';
+  
+          // Add a new row with default values
+          updatedForexSubForm.push({
+            forexDate: '',
+            referenceName: '',
+            dueDate: '',
+            forexCurrencyType, // Use the first row's forexCurrencyType
+            forexCurrencySymbol, // Use the first row's forexCurrencySymbol
+            forexAmount: '',
+            exchangeRate: value, // Use the first row's exchangeRate
+            referenceAmount: '',
+            referenceCreditOrDebit: prevState.creditOrDebit, // Propagate creditOrDebit from the main form
+          });
+        }
+      }
+  
+      // Add a new row when the forexAmount is filled in the last row
+      if (name === 'forexAmount' && value.trim() !== '' && index === updatedForexSubForm.length - 1) {
         const forexCurrencyType = updatedForexSubForm[0].forexCurrencyType;
         const selectedCurrency = currencySuggestion.find(
           (currency) => currency.forexCurrencyName.toLowerCase() === forexCurrencyType.toLowerCase()
         );
-  
         const forexCurrencySymbol = selectedCurrency ? selectedCurrency.forexCurrencySymbol : '';
   
-        // Add a new empty row with default values and the propagated forexCurrencyType and forexCurrencySymbol
+        // Add a new row with default values and the propagated forexCurrencyType, forexCurrencySymbol, and creditOrDebit
         updatedForexSubForm.push({
           forexDate: '',
           referenceName: '',
@@ -214,9 +238,9 @@ const SundryCreditorsCreate = () => {
           forexCurrencyType, // Use the first row's forexCurrencyType
           forexCurrencySymbol, // Use the first row's forexCurrencySymbol
           forexAmount: '',
-          exchangeRate: '',
+          exchangeRate: updatedForexSubForm[0].exchangeRate, // Use the first row's exchangeRate
           referenceAmount: '',
-          referenceCreditOrDebit: '',
+          referenceCreditOrDebit: prevState.creditOrDebit, // Propagate creditOrDebit from the main form
         });
       }
   
@@ -228,7 +252,7 @@ const SundryCreditorsCreate = () => {
         forexSubForm: updatedForexSubForm,
       };
     });
-  };  
+  };     
   
 
   const handleSuggestionClick = (suggestion, index) => {
@@ -252,14 +276,14 @@ const SundryCreditorsCreate = () => {
 
   const handleKeyDown = (e, index) => {
     const key = e.key;
-
+  
     if (key === 'Enter') {
       e.preventDefault(); // Prevents the default form submission behavior
-
+  
       // If the current input has a non-empty value
       if (e.target.value.trim() !== '') {
         const nextField = index + 1; // Determine the next field index
-
+  
         // Focus on the next field if it exists
         if (nextField < inputRefs.current.length) {
           inputRefs.current[nextField]?.focus();
@@ -289,7 +313,7 @@ const SundryCreditorsCreate = () => {
         ...sundryCreditor,
         provideBankDetails: value,
       });
-
+  
       // Handle opening of the bank details subform modal if 'Yes' is selected
       if (value === 'Yes') {
         setBankSubFormModal(true);
@@ -297,18 +321,26 @@ const SundryCreditorsCreate = () => {
     } else if (['c', 'd', 'C', 'D'].includes(key) && e.target.name === 'creditOrDebit') {
       e.preventDefault();
       const value = key.toLowerCase() === 'c' ? 'Cr' : 'Dr';
-      setSundryCreditor({
-        ...sundryCreditor,
-        creditOrDebit: value,
+      setSundryCreditor(prevState => {
+        const updatedForexSubForm = prevState.forexSubForm.map(row => ({
+          ...row,
+          referenceCreditOrDebit: value, // Update referenceCreditOrDebit in all rows
+        }));
+  
+        return {
+          ...prevState,
+          creditOrDebit: value,
+          forexSubForm: updatedForexSubForm,
+        };
       });
-
+  
       // Open the forexSubFormModal when a value is entered in creditOrDebit input
       setForexSubFormModal(true);
     } else if (key === 'Escape') {
       e.preventDefault();
       navigate(-1);
     }
-  };
+  };  
 
   const handleKeyDownForex = (e, index) => {
     const key = e.key;
@@ -367,7 +399,7 @@ const SundryCreditorsCreate = () => {
       e.preventDefault();
       setCurrencyFocused(false);
     }
-  };    
+  };
 
   // Utility function to parse numbers and remove commas
   const parseNumber = value => {

@@ -35,7 +35,19 @@ const CurrencyDisplay = () => {
         try{
             const result = await getSpecificCurrency(datas);
             console.log(result.data);
-            setCurrency(result.data);
+            // Format the rates to 2 decimal places
+            const formattedData = {
+              ...result.data,
+              rateForPerSalesCurrency: result.data.rateForPerSalesCurrency.toFixed(2),
+              rateForSalesInvoice: result.data.rateForSalesInvoice.toFixed(2),
+              rateForPerPurchaseCurrency: result.data.rateForPerPurchaseCurrency.toFixed(2),
+              rateForPurchaseInvoice: result.data.rateForPurchaseInvoice.toFixed(2),
+              rateForPerPaymentCurrency: result.data.rateForPerPaymentCurrency.toFixed(2),
+              rateForPaymentInvoice: result.data.rateForPaymentInvoice.toFixed(2),
+              rateForPerReceiptCurrency: result.data.rateForPerReceiptCurrency.toFixed(2),
+              rateForReceiptInvoice: result.data.rateForReceiptInvoice.toFixed(2),
+            };
+            setCurrency(formattedData);
 
         }catch(error){
             console.log(error);

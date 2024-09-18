@@ -301,26 +301,26 @@ const SundryCreditorsCreate = () => {
       }
     } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'billWiseStatus') {
       e.preventDefault();
-      const value = key.toLowerCase() === 'y' ? 'Yes' : 'No';
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
       setSundryCreditor({
         ...sundryCreditor,
         billWiseStatus: value,
       });
     } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'provideBankDetails') {
       e.preventDefault();
-      const value = key.toLowerCase() === 'y' ? 'Yes' : 'No';
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
       setSundryCreditor({
         ...sundryCreditor,
         provideBankDetails: value,
       });
   
       // Handle opening of the bank details subform modal if 'Yes' is selected
-      if (value === 'Yes') {
+      if (value === 'yes') {
         setBankSubFormModal(true);
       }
     } else if (['c', 'd', 'C', 'D'].includes(key) && e.target.name === 'creditOrDebit') {
       e.preventDefault();
-      const value = key.toLowerCase() === 'c' ? 'Cr' : 'Dr';
+      const value = key.toLowerCase() === 'c' ? 'cr' : 'dr';
       setSundryCreditor(prevState => {
         const updatedForexSubForm = prevState.forexSubForm.map(row => ({
           ...row,

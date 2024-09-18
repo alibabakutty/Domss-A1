@@ -33,7 +33,7 @@ const CurrencyCreate = () => {
   const handleInputChange = e => {
     const {name,value} = e.target;
     // Check if the input is a rate field and format it to two decimal places
-    const formattedValue = ['rateForPerSalesCurrency', 'rateForSalesInvoice', 'rateForPerPurchaseCurrency', 'rateForPurchaseInvoice', 'rateForPerPaymentCurrency', 'rateForPaymentInvoice', 'rateForPerReceiptCurrency', 'rateForReceiptInvoice'].includes(name) ? parseFloat(value).toFixed(2) : value
+    const formattedValue = ['rateForPerSalesCurrency', 'rateForSalesInvoice', 'rateForPerPurchaseCurrency', 'rateForPurchaseInvoice', 'rateForPerPaymentCurrency', 'rateForPaymentInvoice', 'rateForPerReceiptCurrency', 'rateForReceiptInvoice'].includes(name) ? value.replace(/,/g, '') : value;
     setCurrency(prevCurrency => ({
       ...prevCurrency,
       [name]: formattedValue,
@@ -118,7 +118,24 @@ const CurrencyCreate = () => {
         console.error(error);
       }
     }
-  }
+  };
+
+  const numberFormat = (e) => {
+    // Remove existing commas and parse the value
+    const rawValue = e.target.value.replace(/,/g, "");
+    // Check if the value is a valid number
+    if (isNaN(rawValue) || rawValue === ''){
+      return;
+    };
+    // Format the value with commas
+    const formattedValue = new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
+    }).format(rawValue);
+    // Update the input field's value to the formatted result
+    e.target.value = formattedValue;
+    // Update the state with the formatted value
+    handleInputChange({ target: { name: e.target.name, value: formattedValue } });
+  };
   return (
     <>
       <div>
@@ -177,14 +194,14 @@ const CurrencyCreate = () => {
                   <div className='flex justify-between'>
                     <div>
                       <label htmlFor="rateForPerSalesCurrency"></label>
-                      <input type="text" id='rateForPerSalesCurrency' name='rateForPerSalesCurrency' value={currency.rateForPerSalesCurrency} onChange={handleInputChange} ref={(input) => (inputRefs.current[5] = input)} onKeyDown={e => handleKeyDown(e, 5)} className='w-[35px] h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
+                      <input type="text" id='rateForPerSalesCurrency' name='rateForPerSalesCurrency' value={currency.rateForPerSalesCurrency} onChange={handleInputChange} ref={(input) => (inputRefs.current[5] = input)} onKeyDown={e => handleKeyDown(e, 5)} onBlur={(e) => {numberFormat(e)}} className='w-[35px] h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
                       <span className='font-medium'>{currency.forexCurrencySymbol.toUpperCase() || '$'}</span>
                     </div>
                     
                     <div>
                       <label htmlFor="rateForSalesInvoice"></label>
                       <span className='font-medium'>₹</span>
-                      <input type="text" id='rateForSalesInvoice' name='rateForSalesInvoice' value={currency.rateForSalesInvoice} onChange={handleInputChange} ref={(input) => (inputRefs.current[6] = input)} onKeyDown={e => handleKeyDown(e, 6)} className='w-[50px] h-5 font-medium text-right pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
+                      <input type="text" id='rateForSalesInvoice' name='rateForSalesInvoice' value={currency.rateForSalesInvoice} onChange={handleInputChange} ref={(input) => (inputRefs.current[6] = input)} onKeyDown={e => handleKeyDown(e, 6)} onBlur={(e) => {numberFormat(e)}} className='w-[50px] h-5 font-medium text-right pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
                     </div>
                   </div>
                 </div>
@@ -197,13 +214,13 @@ const CurrencyCreate = () => {
                   <div className='flex justify-between'>
                   <div>
                       <label htmlFor="rateForPerPurchaseCurrency"></label>
-                      <input type="text" id='rateForPerPurchaseCurrency' name='rateForPerPurchaseCurrency' value={currency.rateForPerPurchaseCurrency} onChange={handleInputChange} ref={(input) => (inputRefs.current[7] = input)} onKeyDown={e => handleKeyDown(e, 7)} className='w-[35px] h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
+                      <input type="text" id='rateForPerPurchaseCurrency' name='rateForPerPurchaseCurrency' value={currency.rateForPerPurchaseCurrency} onChange={handleInputChange} ref={(input) => (inputRefs.current[7] = input)} onKeyDown={e => handleKeyDown(e, 7)} onBlur={(e) => {numberFormat(e)}} className='w-[35px] h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
                       <span className='font-medium'>{currency.forexCurrencySymbol.toUpperCase() || '$'}</span>
                     </div>
                     <div>
                       <label htmlFor="rateForPurchaseInvoice"></label>
                       <span className='font-medium'>₹</span>
-                      <input type="text" id='rateForPurchaseInvoice' name='rateForPurchaseInvoice' value={currency.rateForPurchaseInvoice} onChange={handleInputChange} ref={(input) => (inputRefs.current[8] = input)} onKeyDown={e => handleKeyDown(e, 8)} className='w-[50px] h-5 font-medium text-right pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
+                      <input type="text" id='rateForPurchaseInvoice' name='rateForPurchaseInvoice' value={currency.rateForPurchaseInvoice} onChange={handleInputChange} ref={(input) => (inputRefs.current[8] = input)} onKeyDown={e => handleKeyDown(e, 8)} onBlur={(e) => {numberFormat(e)}} className='w-[50px] h-5 font-medium text-right pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
                     </div>
                   </div>
                 </div>
@@ -216,13 +233,13 @@ const CurrencyCreate = () => {
                   <div className='flex justify-between'>
                   <div>
                       <label htmlFor="rateForPerPaymentCurrency"></label>
-                      <input type="text" id='rateForPerPaymentCurrency' name='rateForPerPaymentCurrency' value={currency.rateForPerPaymentCurrency} onChange={handleInputChange} ref={(input) => (inputRefs.current[9] = input)} onKeyDown={e => handleKeyDown(e, 9)} className='w-[35px] h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
+                      <input type="text" id='rateForPerPaymentCurrency' name='rateForPerPaymentCurrency' value={currency.rateForPerPaymentCurrency} onChange={handleInputChange} ref={(input) => (inputRefs.current[9] = input)} onKeyDown={e => handleKeyDown(e, 9)} onBlur={(e) => {numberFormat(e)}} className='w-[35px] h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
                       <span className='font-medium'>{currency.forexCurrencySymbol.toUpperCase() || '$'}</span>
                     </div>
                     <div>
                       <label htmlFor="rateForPaymentInvoice"></label>
                       <span className='font-medium'>₹</span>
-                      <input type="text" id='rateForPaymentInvoice' name='rateForPaymentInvoice' value={currency.rateForPaymentInvoice} onChange={handleInputChange} ref={(input) => (inputRefs.current[10] = input)} onKeyDown={e => handleKeyDown(e, 10)} className='w-[50px] h-5 font-medium text-right pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
+                      <input type="text" id='rateForPaymentInvoice' name='rateForPaymentInvoice' value={currency.rateForPaymentInvoice} onChange={handleInputChange} ref={(input) => (inputRefs.current[10] = input)} onKeyDown={e => handleKeyDown(e, 10)} onBlur={(e) => {numberFormat(e)}} className='w-[50px] h-5 font-medium text-right pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
                     </div>
                   </div>
                 </div>
@@ -235,13 +252,13 @@ const CurrencyCreate = () => {
                   <div className='flex justify-between'>
                   <div>
                       <label htmlFor="rateForPerReceiptCurrency"></label> 
-                      <input type="text" id='rateForPerReceiptCurrency' name='rateForPerReceiptCurrency' value={currency.rateForPerReceiptCurrency} onChange={handleInputChange} ref={(input) => (inputRefs.current[11] = input)} onKeyDown={e => handleKeyDown(e, 11)} className='w-[35px] h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
+                      <input type="text" id='rateForPerReceiptCurrency' name='rateForPerReceiptCurrency' value={currency.rateForPerReceiptCurrency} onChange={handleInputChange} ref={(input) => (inputRefs.current[11] = input)} onKeyDown={e => handleKeyDown(e, 11)} onBlur={(e) => {numberFormat(e)}} className='w-[35px] h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
                       <span className='font-medium'>{currency.forexCurrencySymbol.toUpperCase() || '$'}</span>
                     </div>
                     <div>
                       <label htmlFor="rateForReceiptInvoice"></label>
                       <span className='font-medium'>₹</span>
-                      <input type="text" id='rateForReceiptInvoice' name='rateForReceiptInvoice' value={currency.rateForReceiptInvoice} onChange={handleInputChange} ref={(input) => (inputRefs.current[12] = input)} onKeyDown={e => handleKeyDown(e, 12)} className='w-[50px] h-5 font-medium text-right pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
+                      <input type="text" id='rateForReceiptInvoice' name='rateForReceiptInvoice' value={currency.rateForReceiptInvoice} onChange={handleInputChange} onBlur={(e) => {numberFormat(e)}} ref={(input) => (inputRefs.current[12] = input)} onKeyDown={e => handleKeyDown(e, 12)} className='w-[50px] h-5 font-medium text-right pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' />
                     </div>
                   </div>
                 </div>

@@ -153,13 +153,26 @@ const SundryDebtorsAlter = () => {
       setBankSubFormModal(false);
     }
   };
+
+  // Utility function to format numbers in Indian decimal format
+  const formatIndianNumber = (value) => {
+    // Convert the value to a number, handle edge cases for NaN or empty strings
+    const numberValue = Number(value);
+    if (isNaN(numberValue)) return value; // Return as is if not a valid number
+    
+    // Format the number in Indian format with two decimal places
+    return new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(numberValue);
+  };
   return (
     <>
       <div className='flex'>
         <div className='bg-slate-400 w-[44.9%] h-[92.9vh]'></div>
         <form action="" className='border border-slate-500 w-[48.5%] h-[92.7vh]'>
           <div className='text-sm pl-1 mb-1 flex mt-3'>
-            <label htmlFor="sundryDebtorName" className='w-[38%] ml-2'>Sundry Creditor's Name</label>
+            <label htmlFor="sundryDebtorName" className='w-[38%] ml-2'>Sundry Debtor's Name</label>
             <span>:</span>
             <input type="text" id='sundryDebtorName' name='sundryDebtorName' ref={(input) => (inputRefs.current[0] = input)} value={sundryDebtor.sundryDebtorName} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[330px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
@@ -308,7 +321,7 @@ const SundryDebtorsAlter = () => {
             <label htmlFor="openingBalance" className='w-[22%] ml-2'>Opening Balance</label>
             (<input type="text" id='dateForOpening' name='dateForOpening' value={sundryDebtor.dateForOpening} className='w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />)
             <span className='ml-3'>:</span>
-            <input type="text" id='openingBalance' name='openingBalance' value={sundryDebtor.openingBalance} ref={(input) => (inputRefs.current[26] = input)} onKeyDown={(e) => handleKeyDown(e, 26)} className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+            <input type="text" id='openingBalance' name='openingBalance' value={formatIndianNumber(sundryDebtor.openingBalance)} ref={(input) => (inputRefs.current[26] = input)} onKeyDown={(e) => handleKeyDown(e, 26)} className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
             <input type="text" id='creditOrDebit' name='creditOrDebit' value={sundryDebtor.creditOrDebit} ref={(input) => (inputRefs.current[27] = input)} onKeyDown={(e) => handleKeyDown(e,27)} className='w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
           </div>
 

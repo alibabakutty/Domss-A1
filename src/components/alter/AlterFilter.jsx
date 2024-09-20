@@ -6,25 +6,27 @@ import NameValues from '../../assets/NameValues';
 
 const AlterFilter = () => {
     const { type } = useParams();
-    const [voucherTypeSuggestions, setVoucherTypeSuggestions] = useState([]);
-    const [preDefinedVoucherTypeSuggestions, setPreDefinedVoucherTypeSuggestions] = useState([]);
-    const [currencySuggestions, setCurrencySuggestions] = useState([]);
-    const [departmentSuggestions, setDepartmentSuggestions] = useState([]);
-    const [locationSuggestions, setLocationSuggestions] = useState([]);
-    const [headOfficeSuggestions, setHeadOfficeSuggestions] = useState([]);
-    const [branchOfficeSuggestions, setBranchOfficeSuggestions] = useState([]);
-    const [revenueCategorySuggestions, setRevenueCategorySuggestions] = useState([]);
-    const [revenueCenterSuggestions, setRevenueCenterSuggestions] = useState([]);
-    const [costCategorySuggestions, setCostCategorySuggestions] = useState([]);
-    const [costCenterSuggestions, setCostCenterSuggestions] = useState([]);
-    const [batchCategorySuggestions, setBatchCategorySuggestions] = useState([]);
-    const [batchSerialNumberSuggestions, setBatchSerialNumberSuggestions] = useState([]);
-    const [batchColorSuggestions, setBatchColorSuggestions] = useState([]);
-    const [batchSizeSuggestions, setBatchSizeSuggestions] = useState([]);
-    const [projectCategorySuggestions, setProjectCategorySuggestions] = useState([]);
-    const [projectNameSuggestions, setProjectNameSuggestions] = useState([]);
-    const [supplierSuggestions, setSupplierSuggestions] = useState([]);
-    const [customerSuggestions, setCustomerSuggestions] = useState([]);
+    const [suggestions, setSuggestions] = useState({
+        voucherType: [],
+        preDefinedVoucherType: [],
+        currency: [],
+        department: [],
+        godown: [],
+        headOffice: [],
+        branchOffice: [],
+        revenueCategory: [],
+        revenueCenter: [],
+        costCategory: [],
+        costCenter: [],
+        batchCategory: [],
+        batchSerialNumber: [],
+        batchColor: [],
+        batchSize: [],
+        projectCategory: [],
+        projectName: [],
+        sundryCreditor: [],
+        sundryDebtor: []
+    });
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
     const inputRef = useRef(null);
@@ -62,61 +64,92 @@ const AlterFilter = () => {
 
         const fetchData = async () => {
             try {
-                if (type === 'voucher') {
-                    const [customResponse, predefinedResponse] = await Promise.all([listOfVouchers(), listOfPreDefinedVouchers()]);
-                    setVoucherTypeSuggestions(customResponse.data);
-                    setPreDefinedVoucherTypeSuggestions(predefinedResponse.data);
-                } else if (type === 'currency') {
-                    const response = await listOfCurrencies();
-                    setCurrencySuggestions(response.data);
-                } else if (type === 'department') {
-                    const response = await listOfDepartments();
-                    setDepartmentSuggestions(response.data);
-                } else if (type === 'godown') {
-                    const response = await listOfLocations();
-                    setLocationSuggestions(response.data);
-                } else if (type === 'headOffice') {
-                    const response = await listOfHeadOffices();
-                    setHeadOfficeSuggestions(response.data);
-                } else if (type === 'branchOffice') {
-                    const response = await listOfBranchOffices();
-                    setBranchOfficeSuggestions(response.data);
-                } else if (type === 'revenueCategory'){
-                    const response = await listOfRevenueCategories();
-                    setRevenueCategorySuggestions(response.data);
-                } else if (type === 'revenueCenter'){
-                    const response = await listOfRevenueCenters();
-                    setRevenueCenterSuggestions(response.data);
-                } else if (type === 'costCategory'){
-                    const response = await listOfCostCategories();
-                    setCostCategorySuggestions(response.data);
-                } else if (type === 'costCenter'){
-                    const response = await listsOfCostCenters();
-                    setCostCenterSuggestions(response.data);
-                } else if (type === 'batchCategory'){
-                    const response = await listsOfBatchCategories();
-                    setBatchCategorySuggestions(response.data);
-                } else if (type === 'batchSerialNumber'){
-                    const response = await listOfBatchSerialNumbers();
-                    setBatchSerialNumberSuggestions(response.data);
-                } else if (type === 'batchColor'){
-                    const response = await listOfBatchColorNames();
-                    setBatchColorSuggestions(response.data);
-                } else if (type === 'batchSize'){
-                    const response = await listOfBatchSizes();
-                    setBatchSizeSuggestions(response.data);
-                } else if (type === 'projectCategory'){
-                    const response = await listsOfProjectCategories();
-                    setProjectCategorySuggestions(response.data);
-                } else if (type === 'projectName'){
-                    const response = await listsOfProjectNames();
-                    setProjectNameSuggestions(response.data);
-                } else if (type === 'sundryCreditor'){
-                    const response = await listsOfSundryCreditors();
-                    setSupplierSuggestions(response.data);
-                } else if (type === 'sundryDebtor'){
-                    const response = await listsOfSundryDebtors();
-                    setCustomerSuggestions(response.data);
+                const fetchFunctions = {
+                    voucher: async () => {
+                        const [customResponse, preDefinedResponse] = await Promise.all([
+                            listOfVouchers(),
+                            listOfPreDefinedVouchers()
+                        ]);
+                        setSuggestions(prev => ({
+                            ...prev,
+                            voucherType: customResponse.data,
+                            preDefinedVoucherType: preDefinedResponse.data
+                        }));
+                    },
+                    currency: async () => {
+                        const response = await listOfCurrencies();
+                        setSuggestions(prev => ({ ...prev, currency: response.data }));
+                    },
+                    department: async () => {
+                        const response = await listOfDepartments();
+                        setSuggestions(prev => ({ ...prev, department: response.data }));
+                    },
+                    godown: async () => {
+                        const response = await listOfLocations();
+                        setSuggestions(prev => ({ ...prev, godown: response.data }));
+                    },
+                    headOffice: async () => {
+                        const response = await listOfHeadOffices();
+                        setSuggestions(prev => ({ ...prev, headOffice: response.data }));
+                    },
+                    branchOffice: async () => {
+                        const response = await listOfBranchOffices();
+                        setSuggestions(prev => ({ ...prev, branchOffice: response.data }));
+                    },
+                    revenueCategory: async () => {
+                        const response = await listOfRevenueCategories();
+                        setSuggestions(prev => ({ ...prev, revenueCategory: response.data }));
+                    },
+                    revenueCenter: async () => {
+                        const response = await listOfRevenueCenters();
+                        setSuggestions(prev => ({ ...prev, revenueCenter: response.data }));
+                    },
+                    costCategory: async () => {
+                        const response = await listOfCostCategories();
+                        setSuggestions(prev => ({ ...prev, costCategory: response.data }));
+                    },
+                    costCenter: async () => {
+                        const response = await listsOfCostCenters();
+                        setSuggestions(prev => ({ ...prev, costCenter: response.data }));
+                    },
+                    batchCategory: async () => {
+                        const response = await listsOfBatchCategories();
+                        setSuggestions(prev => ({ ...prev, batchCategory: response.data }));
+                    },
+                    batchSerialNumber: async () => {
+                        const response = await listOfBatchSerialNumbers();
+                        setSuggestions(prev => ({ ...prev, batchSerialNumber: response.data }));
+                    },
+                    batchColor: async () => {
+                        const response = await listOfBatchColorNames();
+                        setSuggestions(prev => ({ ...prev, batchColor: response.data }));
+                    },
+                    batchSize: async () => {
+                        const response = await listOfBatchSizes();
+                        setSuggestions(prev => ({ ...prev, batchSize: response.data }));
+                    },
+                    projectCategory: async () => {
+                        const response = await listsOfProjectCategories();
+                        setSuggestions(prev => ({ ...prev, projectCategory: response.data }));
+                    },
+                    projectName: async () => {
+                        const response = await listsOfProjectNames();
+                        setSuggestions(prev => ({ ...prev, projectName: response.data }));
+                    },
+                    sundryCreditor: async () => {
+                        const response = await listsOfSundryCreditors();
+                        setSuggestions(prev => ({ ...prev, sundryCreditor: response.data }));
+
+                        console.log(response.data)
+                    },
+                    sundryDebtor: async () => {
+                        const response = await listsOfSundryDebtors();
+                        setSuggestions(prev => ({ ...prev, sundryDebtor: response.data }));
+                    }
+                };
+
+                if (fetchFunctions[type]) {
+                    await fetchFunctions[type]();
                 }
             } catch (error) {
                 console.error(error);
@@ -131,79 +164,80 @@ const AlterFilter = () => {
         setSelectedIndex(2); // Reset focus to the first item on input change
     };
 
-    const filteredVoucherTypes = voucherTypeSuggestions.filter(voucher =>
+    // Filter the suggestions based on user input
+    const filteredVoucherTypes = suggestions.voucherType.filter(voucher =>
         voucher.voucherTypeName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredPreDefinedVoucherTypes = preDefinedVoucherTypeSuggestions.filter(voucher =>
+    const filteredPreDefinedVoucherTypes = suggestions.preDefinedVoucherType.filter(voucher =>
         voucher.voucherType.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredCurrencies = currencySuggestions.filter(currency =>
+    const filteredCurrencies = suggestions.currency.filter(currency =>
         currency.forexCurrencyName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredDepartments = departmentSuggestions.filter(department => 
+    const filteredDepartments = suggestions.department.filter(department => 
         department.departmentName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredLocations = locationSuggestions.filter(location => 
+    const filteredLocations = suggestions.godown.filter(location =>
         location.godownName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredHeadOffices = headOfficeSuggestions.filter(headOffice => 
+    const filteredHeadOffices = suggestions.headOffice.filter(headOffice =>
         headOffice.headOfficeName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredBranchOffices = branchOfficeSuggestions.filter(branchOffice => 
+    const filteredBranchOffices = suggestions.branchOffice.filter(branchOffice => 
         branchOffice.branchOfficeName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredRevenueCategories = revenueCategorySuggestions.filter(revenueCategory => 
+    const filteredRevenueCategories = suggestions.revenueCategory.filter(revenueCategory => 
         revenueCategory.revenueCategoryName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredRevenueCenters = revenueCenterSuggestions.filter(revenueCenter => 
+    const filteredRevenueCenters = suggestions.revenueCenter.filter(revenueCenter => 
         revenueCenter.revenueCenterName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredCostCategories = costCategorySuggestions.filter(costCategory =>
+    const filteredCostCategories = suggestions.costCategory.filter(costCategory =>
         costCategory.costCategoryName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredCostCenters = costCenterSuggestions.filter(costCenter =>
+    const filteredCostCenters = suggestions.costCenter.filter(costCenter =>
         costCenter.costCenterName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredBatchCategories = batchCategorySuggestions.filter(batchCategory =>
+    const filteredBatchCategories = suggestions.batchCategory.filter(batchCategory =>
         batchCategory.batchCategoryName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredBatchSerialNumbers = batchSerialNumberSuggestions.filter(batchSerial =>
+    const filteredBatchSerialNumbers = suggestions.batchSerialNumber.filter(batchSerial =>
         batchSerial.batchSerialNumber.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredBatchColors = batchColorSuggestions.filter(batchColor =>
+    const filteredBatchColors = suggestions.batchColor.filter(batchColor =>
         batchColor.batchColorName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredBatchSizes = batchSizeSuggestions.filter(batchSize =>
+    const filteredBatchSizes = suggestions.batchSize.filter(batchSize =>
         batchSize.batchSizeName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredProjectCategories = projectCategorySuggestions.filter(projectCategory =>
+    const filteredProjectCategories = suggestions.projectCategory.filter(projectCategory =>
         projectCategory.projectCategoryName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredProjectNames = projectNameSuggestions.filter(project =>
+    const filteredProjectNames = suggestions.projectName.filter(project =>
         project.projectName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredSuppliers = supplierSuggestions.filter(supplier =>
+    const filteredSuppliers = suggestions.sundryCreditor.filter( supplier => 
         supplier.sundryCreditorName.toLowerCase().includes(filterInput.toLowerCase())
     );
 
-    const filteredCustomers = customerSuggestions.filter(customer =>
+    const filteredCustomers = suggestions.sundryDebtor.filter(customer =>
         customer.sundryDebtorName.toLowerCase().includes(filterInput.toLowerCase())
     )
 

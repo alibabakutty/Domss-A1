@@ -53,7 +53,7 @@ const SundryCreditorsCreate = () => {
       },
     ],
   });
-
+console.log(sundryCreditor)
   const [bankSubFormModal, setBankSubFormModal] = useState(false);
   const [forexSubFormModal, setForexSubFormModal] = useState(false);
   const [currencySuggestion, setCurrencySuggestion] = useState([]);
@@ -61,6 +61,7 @@ const SundryCreditorsCreate = () => {
   const [currencyFocused, setCurrencyFocused] = useState(false);
   const [highlightedSuggestionCurrency, setHighlightedSuggestionCurrency] = useState(0);
   const inputRefs = useRef([]);
+  const inputRefsBank = useRef([]);
   const inputRefsForex = useRef([]);
   const optionsRef = useRef(null);
   const navigate = useNavigate();
@@ -70,6 +71,10 @@ const SundryCreditorsCreate = () => {
     // Focus the first input in the main form
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
+    }
+
+    if (bankSubFormModal && inputRefsBank.current[0]){
+      inputRefsBank.current[0].focus();
     }
   
     // If forexSubFormModal is active, focus the first input in that form
@@ -86,7 +91,7 @@ const SundryCreditorsCreate = () => {
       .catch(error => {
         console.error('Error fetching currencies:', error); // Log any errors
       });
-  }, [forexSubFormModal]); // Add forexSubFormModal to the dependency array  
+  }, [bankSubFormModal, forexSubFormModal]); // Add forexSubFormModal to the dependency array  
 
  // Handling input changes in sundryCreditor form
  const handleInputChange = e => {
@@ -342,6 +347,39 @@ const SundryCreditorsCreate = () => {
     }
   };  
 
+  const handleKeyDownBank = (e, index) => {
+    const key = e.key;
+
+    if (key === 'Enter'){
+      e.preventDefault();
+
+      if (e.target.value.trim() !== ''){
+        const nextField = index + 1;
+
+        if (nextField < inputRefsBank.current.length){
+          inputRefsBank.current[nextField].focus();
+          inputRefsBank.current[nextField].setSelectionRange(0, 0);
+        }
+
+        // Check if the current field is swiftCode and call handleBankSubFormBlur
+        if (e.target.name === 'swiftCode'){
+          handleBankSubFormBlur(); // Call your blur handler here
+        }
+      }
+    } else if (key === 'Backspace'){
+
+      if (e.target.value.trim() === '' && index > 0){
+        e.preventDefault();
+
+        const prevField = index - 1;
+        if (inputRefsBank.current[prevField]){
+          inputRefsBank.current[prevField].focus();
+          inputRefsBank.current[prevField].setSelectionRange(0, 0);
+        }
+      }
+    }
+  }
+
   const handleKeyDownForex = (e, index) => {
     const key = e.key;
   
@@ -365,16 +403,6 @@ const SundryCreditorsCreate = () => {
           e.preventDefault();
           inputRefsForex.current[0].focus();
         }
-      } else if (currencyFocused && filteredSuggestion.length > 0) {
-        // If a value is entered in creditOrDebit input, open the forexSubFormModal
-        const selectedItem = filteredSuggestion[highlightedSuggestionCurrency];
-        setSundryCreditor(prevState => ({
-          ...prevState,
-          forexSubForm: prevState.forexSubForm.map((item, i) =>
-            i === index ? { ...item, forexCurrencyType: selectedItem.forexCurrencyName } : item
-          ),
-        }));
-        setCurrencyFocused(false);
       }
     } else if (key === 'Backspace') {
       if (e.target.value.trim() === '' && index > 0) {
@@ -696,9 +724,9 @@ const SundryCreditorsCreate = () => {
                     id="accountName"
                     name="accountName"
                     value={sundryCreditor.bank.accountName}
-                    ref={input => (inputRefs.current[3] = input)}
+                    ref={input => (inputRefsBank.current[0] = input)}
                     onChange={handleInputBankChange}
-                    onKeyDown={e => handleKeyDown(e, 3)}
+                    onKeyDown={e => handleKeyDownBank(e, 0)}
                     className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                     autoComplete="off"
                   />
@@ -713,9 +741,9 @@ const SundryCreditorsCreate = () => {
                     id="accountNumber"
                     name="accountNumber"
                     value={sundryCreditor.bank.accountNumber}
-                    ref={input => (inputRefs.current[4] = input)}
+                    ref={input => (inputRefsBank.current[1] = input)}
                     onChange={handleInputBankChange}
-                    onKeyDown={e => handleKeyDown(e, 4)}
+                    onKeyDown={e => handleKeyDownBank(e, 1)}
                     className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                     autoComplete="off"
                   />
@@ -730,9 +758,9 @@ const SundryCreditorsCreate = () => {
                     id="bankName"
                     name="bankName"
                     value={sundryCreditor.bank.bankName}
-                    ref={input => (inputRefs.current[5] = input)}
+                    ref={input => (inputRefsBank.current[2] = input)}
                     onChange={handleInputBankChange}
-                    onKeyDown={e => handleKeyDown(e, 5)}
+                    onKeyDown={e => handleKeyDownBank(e, 2)}
                     className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                     autoComplete="off"
                   />
@@ -747,9 +775,9 @@ const SundryCreditorsCreate = () => {
                     id="branchName"
                     name="branchName"
                     value={sundryCreditor.bank.branchName}
-                    ref={input => (inputRefs.current[6] = input)}
+                    ref={input => (inputRefsBank.current[3] = input)}
                     onChange={handleInputBankChange}
-                    onKeyDown={e => handleKeyDown(e, 6)}
+                    onKeyDown={e => handleKeyDownBank(e, 3)}
                     className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                     autoComplete="off"
                   />
@@ -764,9 +792,9 @@ const SundryCreditorsCreate = () => {
                     id="ifscCode"
                     name="ifscCode"
                     value={sundryCreditor.bank.ifscCode}
-                    ref={input => (inputRefs.current[7] = input)}
+                    ref={input => (inputRefsBank.current[4] = input)}
                     onChange={handleInputBankChange}
-                    onKeyDown={e => handleKeyDown(e, 7)}
+                    onKeyDown={e => handleKeyDownBank(e, 4)}
                     className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                     autoComplete="off"
                   />
@@ -781,9 +809,9 @@ const SundryCreditorsCreate = () => {
                     id="accountType"
                     name="accountType"
                     value={sundryCreditor.bank.accountType}
-                    ref={input => (inputRefs.current[8] = input)}
+                    ref={input => (inputRefsBank.current[5] = input)}
                     onChange={handleInputBankChange}
-                    onKeyDown={e => handleKeyDown(e, 8)}
+                    onKeyDown={e => handleKeyDownBank(e, 5)}
                     className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                     autoComplete="off"
                   />
@@ -798,12 +826,11 @@ const SundryCreditorsCreate = () => {
                     id="swiftCode"
                     name="swiftCode"
                     value={sundryCreditor.bank.swiftCode}
-                    ref={input => (inputRefs.current[9] = input)}
+                    ref={input => (inputRefsBank.current[6] = input)}
                     onChange={handleInputBankChange}
-                    onKeyDown={e => handleKeyDown(e, 9)}
+                    onKeyDown={e => handleKeyDownBank(e, 6)}
                     className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                     autoComplete="off"
-                    onBlur={handleBankSubFormBlur}
                   />
                 </div>
               </div>
@@ -820,9 +847,9 @@ const SundryCreditorsCreate = () => {
               id="addressOne"
               name="addressOne"
               value={sundryCreditor.addressOne}
-              ref={input => (inputRefs.current[10] = input)}
+              ref={input => (inputRefs.current[3] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 10)}
+              onKeyDown={e => handleKeyDown(e, 3)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -835,9 +862,9 @@ const SundryCreditorsCreate = () => {
               id="addressTwo"
               name="addressTwo"
               value={sundryCreditor.addressTwo}
-              ref={input => (inputRefs.current[11] = input)}
+              ref={input => (inputRefs.current[4] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 11)}
+              onKeyDown={e => handleKeyDown(e, 4)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -850,9 +877,9 @@ const SundryCreditorsCreate = () => {
               id="addressThree"
               name="addressThree"
               value={sundryCreditor.addressThree}
-              ref={input => (inputRefs.current[12] = input)}
+              ref={input => (inputRefs.current[5] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 12)}
+              onKeyDown={e => handleKeyDown(e, 5)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -865,9 +892,9 @@ const SundryCreditorsCreate = () => {
               id="addressFour"
               name="addressFour"
               value={sundryCreditor.addressFour}
-              ref={input => (inputRefs.current[13] = input)}
+              ref={input => (inputRefs.current[6] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 13)}
+              onKeyDown={e => handleKeyDown(e, 6)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -880,9 +907,9 @@ const SundryCreditorsCreate = () => {
               id="addressFive"
               name="addressFive"
               value={sundryCreditor.addressFive}
-              ref={input => (inputRefs.current[14] = input)}
+              ref={input => (inputRefs.current[7] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 14)}
+              onKeyDown={e => handleKeyDown(e, 7)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -897,9 +924,9 @@ const SundryCreditorsCreate = () => {
               id="landMarkOrArea"
               name="landMarkOrArea"
               value={sundryCreditor.landMarkOrArea}
-              ref={input => (inputRefs.current[15] = input)}
+              ref={input => (inputRefs.current[8] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 15)}
+              onKeyDown={e => handleKeyDown(e, 8)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -914,9 +941,9 @@ const SundryCreditorsCreate = () => {
               id="state"
               name="state"
               value={sundryCreditor.state}
-              ref={input => (inputRefs.current[16] = input)}
+              ref={input => (inputRefs.current[9] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 16)}
+              onKeyDown={e => handleKeyDown(e, 9)}
               className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -931,9 +958,9 @@ const SundryCreditorsCreate = () => {
               id="country"
               name="country"
               value={sundryCreditor.country}
-              ref={input => (inputRefs.current[17] = input)}
+              ref={input => (inputRefs.current[10] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 17)}
+              onKeyDown={e => handleKeyDown(e, 10)}
               className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -948,9 +975,9 @@ const SundryCreditorsCreate = () => {
               id="pincode"
               name="pincode"
               value={sundryCreditor.pincode}
-              ref={input => (inputRefs.current[18] = input)}
+              ref={input => (inputRefs.current[11] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 18)}
+              onKeyDown={e => handleKeyDown(e, 11)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -965,9 +992,9 @@ const SundryCreditorsCreate = () => {
               id="panOrItNumber"
               name="panOrItNumber"
               value={sundryCreditor.panOrItNumber}
-              ref={input => (inputRefs.current[19] = input)}
+              ref={input => (inputRefs.current[12] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 19)}
+              onKeyDown={e => handleKeyDown(e, 12)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -982,9 +1009,9 @@ const SundryCreditorsCreate = () => {
               id="gstinOrUinNumber"
               name="gstinOrUinNumber"
               value={sundryCreditor.gstinOrUinNumber}
-              ref={input => (inputRefs.current[20] = input)}
+              ref={input => (inputRefs.current[13] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 20)}
+              onKeyDown={e => handleKeyDown(e, 13)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -999,9 +1026,9 @@ const SundryCreditorsCreate = () => {
               id="msmeNumber"
               name="msmeNumber"
               value={sundryCreditor.msmeNumber}
-              ref={input => (inputRefs.current[21] = input)}
+              ref={input => (inputRefs.current[14] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 21)}
+              onKeyDown={e => handleKeyDown(e, 14)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1016,9 +1043,9 @@ const SundryCreditorsCreate = () => {
               id="contactPersonName"
               name="contactPersonName"
               value={sundryCreditor.contactPersonName}
-              ref={input => (inputRefs.current[22] = input)}
+              ref={input => (inputRefs.current[15] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 22)}
+              onKeyDown={e => handleKeyDown(e, 15)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1033,9 +1060,9 @@ const SundryCreditorsCreate = () => {
               id="mobileNumber"
               name="mobileNumber"
               value={sundryCreditor.mobileNumber}
-              ref={input => (inputRefs.current[23] = input)}
+              ref={input => (inputRefs.current[16] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 23)}
+              onKeyDown={e => handleKeyDown(e, 16)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1050,9 +1077,9 @@ const SundryCreditorsCreate = () => {
               id="landlineNumber"
               name="landlineNumber"
               value={sundryCreditor.landlineNumber}
-              ref={input => (inputRefs.current[24] = input)}
+              ref={input => (inputRefs.current[17] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 24)}
+              onKeyDown={e => handleKeyDown(e, 17)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1067,9 +1094,9 @@ const SundryCreditorsCreate = () => {
               id="emailId"
               name="emailId"
               value={sundryCreditor.emailId}
-              ref={input => (inputRefs.current[25] = input)}
+              ref={input => (inputRefs.current[18] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 25)}
+              onKeyDown={e => handleKeyDown(e, 18)}
               className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1094,10 +1121,10 @@ const SundryCreditorsCreate = () => {
               id="openingBalance"
               name="openingBalance"
               value={sundryCreditor.openingBalance}
-              ref={input => (inputRefs.current[26] = input)}
+              ref={input => (inputRefs.current[19] = input)}
               onChange={handleInputChange}
               onBlur={numberFormat}
-              onKeyDown={e => handleKeyDown(e, 26)}
+              onKeyDown={e => handleKeyDown(e, 19)}
               className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1106,8 +1133,8 @@ const SundryCreditorsCreate = () => {
               id="creditOrDebit"
               name="creditOrDebit"
               value={sundryCreditor.creditOrDebit}
-              ref={input => (inputRefs.current[27] = input)}
-              onKeyDown={e => handleKeyDown(e, 27)}
+              ref={input => (inputRefs.current[20] = input)}
+              onKeyDown={e => handleKeyDown(e, 20)}
               onChange={handleInputChange}
               className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
@@ -1257,6 +1284,15 @@ const SundryCreditorsCreate = () => {
                                       }`}
                                       onClick={() => handleSuggestionClick(currency, index)}
                                       onMouseDown={e => e.preventDefault()}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          handleSuggestionClick(currency, index);
+                                        }
+                                      }}
+                                      onMouseEnter={() => {
+                                        setHighlightedSuggestionCurrency(suggestionIndex)
+                                      }}
                                     >
                                       {currency.forexCurrencyName}
                                     </li>

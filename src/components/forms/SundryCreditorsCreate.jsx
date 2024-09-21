@@ -8,8 +8,9 @@ const SundryCreditorsCreate = () => {
   const [sundryCreditor, setSundryCreditor] = useState({
     sundryCreditorName: '',
     underGroup: 'sundry creditors',
-    billWiseStatus: 'No',
-    provideBankDetails: 'No',
+    forexApplicable: 'no',
+    billWiseStatus: 'no',
+    provideBankDetails: 'no',
     bank: {
       accountName: '',
       accountNumber: '',
@@ -48,8 +49,14 @@ const SundryCreditorsCreate = () => {
         forexCurrencySymbol: '',
         forexAmount: '',
         exchangeRate: '',
-        referenceAmount: '',
-        referenceCreditOrDebit: ''
+        outwardReferenceAmount: '',
+        inwardReferenceAmount: '',
+        referenceCreditOrDebit: '',
+        totalForexAmount: '',
+        totalAmount: '',
+        totalAmountCreditOrDebit: '',
+        totalInwardReferenceAmount: '',
+        totalInwardReferenceAmountCreditOrDebit: ''
       },
     ],
   });
@@ -60,6 +67,7 @@ console.log(sundryCreditor)
   const [filteredSuggestion, setFilteredSuggestion] = useState([]);
   const [currencyFocused, setCurrencyFocused] = useState(false);
   const [highlightedSuggestionCurrency, setHighlightedSuggestionCurrency] = useState(0);
+  const prevBankSubFormModal = useRef(false); // Tracks the previous state of bankSubFormModal
   const inputRefs = useRef([]);
   const inputRefsBank = useRef([]);
   const inputRefsForex = useRef([]);
@@ -72,8 +80,8 @@ console.log(sundryCreditor)
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
-
-    if (bankSubFormModal && inputRefsBank.current[0]){
+  
+    if (bankSubFormModal && inputRefsBank.current[0]) {
       inputRefsBank.current[0].focus();
     }
   
@@ -91,7 +99,21 @@ console.log(sundryCreditor)
       .catch(error => {
         console.error('Error fetching currencies:', error); // Log any errors
       });
-  }, [bankSubFormModal, forexSubFormModal]); // Add forexSubFormModal to the dependency array  
+  
+    // Detect if the bankSubFormModal is closed
+    if (prevBankSubFormModal.current && !bankSubFormModal) {
+      // Focus on the addressOne input when bankSubFormModal closes
+      const addressOneInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'addressOne'
+      );
+      if (addressOneInputIndex !== -1 && inputRefs.current[addressOneInputIndex]) {
+        inputRefs.current[addressOneInputIndex].focus();
+      }
+    }
+  
+    // Update the previous state value
+    prevBankSubFormModal.current = bankSubFormModal;
+  }, [bankSubFormModal, forexSubFormModal]);  
 
  // Handling input changes in sundryCreditor form
  const handleInputChange = e => {
@@ -121,16 +143,16 @@ console.log(sundryCreditor)
         const exchangeRate = parseFloat(row.exchangeRate.replace(/,/g, "")) || 1; // Assume 1 if exchange rate is not provided
         
         // Calculate referenceAmount based on forexAmount * exchangeRate
-        const referenceAmount = forexAmount * exchangeRate;
+        const outwardReferenceAmount = forexAmount * exchangeRate;
   
         // Add to totals with more precision
         totalForexAmount += forexAmount;
-        totalAmount += referenceAmount;
+        totalAmount += outwardReferenceAmount;
   
         // Return the updated row with referenceAmount updated
         return {
           ...row,
-          referenceAmount: referenceAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) // Keep referenceAmount as a number with 2 decimal places
+          outwardReferenceAmount: outwardReferenceAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) // Keep referenceAmount as a number with 2 decimal places
         };
       });
   
@@ -151,7 +173,37 @@ console.log(sundryCreditor)
         totalAmount: formattedTotalAmount, // Update totalAmount
       };
     });
-  };    
+  };
+  
+  const calculateInwardTotals = () => {
+    let totalInwardReferenceAmount = 0;
+  
+    setSundryCreditor(prevState => {
+      const updatedForexSubForm = prevState.forexSubForm.map(row => {
+        // Parse inwardReferenceAmount as a float and remove any commas
+        const inwardReferenceAmount = parseFloat(row.inwardReferenceAmount.replace(/,/g, '')) || 0;
+  
+        // Accumulate the inward reference amount
+        totalInwardReferenceAmount += inwardReferenceAmount;
+  
+        // Return the updated row (if you need to modify any fields)
+        return row;
+      });
+  
+      // Format the total inward reference amount
+      const formattedTotalInwardReferenceAmount = totalInwardReferenceAmount.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+  
+      return {
+        ...prevState,
+        forexSubForm: updatedForexSubForm,
+        totalInwardReferenceAmount: formattedTotalInwardReferenceAmount // Update this field
+      };
+    });
+  }; 
+  
 
   const handleInputForexChange = (e, index) => {
     const { name, value } = e.target;
@@ -164,6 +216,12 @@ console.log(sundryCreditor)
         ...updatedForexSubForm[index],
         [name]: value,
       };
+
+      // Call calculateInwardTotals after updating the inwardReferenceAmount if that field is changed
+      if (name === 'inwardReferenceAmount') {
+        // You can call it directly here if you want to recalculate totals
+        calculateInwardTotals();
+    }
   
       // Apply filtering for forexCurrencyType in the first row
       if (name === 'forexCurrencyType' && index === 0) {
@@ -221,7 +279,7 @@ console.log(sundryCreditor)
             forexCurrencySymbol, // Use the first row's forexCurrencySymbol
             forexAmount: '',
             exchangeRate: value, // Use the first row's exchangeRate
-            referenceAmount: '',
+            outwardReferenceAmount: '',
             referenceCreditOrDebit: prevState.creditOrDebit, // Propagate creditOrDebit from the main form
           });
         }
@@ -244,7 +302,7 @@ console.log(sundryCreditor)
           forexCurrencySymbol, // Use the first row's forexCurrencySymbol
           forexAmount: '',
           exchangeRate: updatedForexSubForm[0].exchangeRate, // Use the first row's exchangeRate
-          referenceAmount: '',
+          outwardReferenceAmount: '',
           referenceCreditOrDebit: prevState.creditOrDebit, // Propagate creditOrDebit from the main form
         });
       }
@@ -304,6 +362,13 @@ console.log(sundryCreditor)
           inputRefs.current[prevField].setSelectionRange(0, 0);
         }
       }
+    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'forexApplicable') {
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
+      setSundryCreditor({
+        ...sundryCreditor,
+        forexApplicable: value,
+      });
     } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'billWiseStatus') {
       e.preventDefault();
       const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
@@ -378,56 +443,124 @@ console.log(sundryCreditor)
         }
       }
     }
-  }
+  };
 
-  const handleKeyDownForex = (e, index) => {
+  // Function to add a new row to the forexSubForm with conditional referenceCreditOrDebit value
+  const addNewRow = () => {
+    setSundryCreditor((prevState) => {
+      // Define the structure of a new row with conditional referenceCreditOrDebit based on forexApplicable
+      const newRow = {
+        forexDate: '',
+        referenceName: '',
+        dueDate: '',
+        forexCurrencyType: '',
+        forexCurrencySymbol: '',
+        forexAmount: '',
+        exchangeRate: '',
+        outwardReferenceAmount: '',
+        inwardReferenceAmount: '',
+        // Set referenceCreditOrDebit based on forexApplicable value
+        referenceCreditOrDebit: prevState.forexApplicable === 'no' ? prevState.creditOrDebit: '',
+      };
+      // Update the state to add the new row
+      return {
+        ...prevState,
+        forexSubForm: [...prevState.forexSubForm, newRow],
+      }
+    });
+  };
+
+  const handleKeyDownForex = (e, rowIndex, colIndex) => {
     const key = e.key;
-  
-    if (key === 'Enter') {
+
+    // Define the index of the first forexDate input field
+    const firstForexDateIndex = 0;
+
+    if(key === 'Enter'){
       e.preventDefault();
-  
-      if (e.target.value.trim() !== '') {
-        const nextField = index + 1;
-  
-        if (nextField < inputRefsForex.current.length) {
-          inputRefsForex.current[nextField].focus();
-          inputRefsForex.current[nextField].setSelectionRange(0, 0);
-        }
-      } else if (e.target.name === 'forexDate') {
-        // If forexDate input is empty, ask for confirmation
-        const confirmEmpty = window.confirm('Do you want to proceed submit?');
-        if (confirmEmpty) {
+
+      // Check if the current input is the first forexDate and ensure it has a value
+      if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === ''){
+        alert('The forexDate field must have a value before proceeding.');
+        // Refocus on the forexDate input if it's empty
+        inputRefsForex.current[rowIndex * 9 + colIndex]?.focus();
+        return;
+      }
+
+      // Check if the current field is forexDate and its value is empty to trigger submit logic
+      const isForexDateEmpty = e.target.name === 'forexDate' && e.target.value.trim() === '';
+
+      if (isForexDateEmpty){
+        const confirmSubmit = window.confirm('Do you want to proceed for submit?');
+        if (confirmSubmit) {
+          // Trigger submit logic here
           handleSubmit(e);
           setForexSubFormModal(false);
         } else {
-          e.preventDefault();
-          inputRefsForex.current[0].focus();
+          inputRefsForex.current[rowIndex * 9 + colIndex]?.focus();
         }
+        return;
       }
-    } else if (key === 'Backspace') {
-      if (e.target.value.trim() === '' && index > 0) {
+      // Proceed to the next cell if conditions are met
+      const nextCell = rowIndex * 9 + colIndex + 1;
+      
+      if(inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length){
+        inputRefsForex.current[nextCell]?.focus();
+      } else if(rowIndex === sundryCreditor.forexSubForm.length - 1){
+        console.log("new Row")
+        addNewRow();
+      } 
+    }
+    else if (key === 'Backspace') {
+      // If the current input is empty, move focus to the previous input
+      if (e.target.value.trim() === ''){
         e.preventDefault();
-        const prevField = index - 1;
-        if (inputRefsForex.current[prevField]) {
-          inputRefsForex.current[prevField].focus();
-          inputRefsForex.current[prevField].setSelectionRange(0, 0);
+
+        // Calculate the previous cell index
+        const prevCell = rowIndex * 9 + colIndex - 1;
+
+        if (prevCell >= 0 && inputRefsForex.current[prevCell]){
+          inputRefsForex.current[prevCell].focus();
+          inputRefsForex.current[prevCell].setSelectionRange(0,0);
         }
       }
-    } else if (key === 'ArrowDown' && currencyFocused) {
-      e.preventDefault();
-      setHighlightedSuggestionCurrency(prevIndex =>
-        prevIndex === filteredSuggestion.length - 1 ? 0 : prevIndex + 1
-      );
-    } else if (key === 'ArrowUp' && currencyFocused) {
-      e.preventDefault();
-      setHighlightedSuggestionCurrency(prevIndex =>
-        prevIndex === 0 ? filteredSuggestion.length - 1 : prevIndex - 1
-      );
     } else if (key === 'Tab') {
       e.preventDefault();
       setCurrencyFocused(false);
     }
   };
+
+  const handleKeyDownCurrency = (e, index) => {
+    const key = e.key;
+
+    // Prevent default behavior for Enter key and execute custom logic
+    if (key === 'Enter'){
+      (e).preventDefault();
+
+      // Check if any suggestion is highlighted
+      if (highlightedSuggestionCurrency >= 0 && highlightedSuggestionCurrency < filteredSuggestion.length){
+        // Select the highlighted suggestion
+        const selectedCurrency = filteredSuggestion[highlightedSuggestionCurrency];
+        setCurrency(selectedCurrency);  // Set the selected currency
+        setCurrencyFocused(false);
+      } else {
+        setCurrencyFocused(false);
+      }
+    } else if (key === 'ArrowDown' && currencyFocused){
+      e.preventDefault();
+      setHighlightedSuggestionCurrency(prevIndex =>
+        prevIndex === filteredSuggestion.length - 1 ? 0 : prevIndex + 1
+      );
+    } else if (key === 'ArrowUp'){
+      e.preventDefault();
+      setHighlightedSuggestionCurrency(prevIndex =>
+        prevIndex === 0 ? filteredSuggestion.length - 1 : prevIndex - 1
+      );
+    } else if (key === 'Tab'){
+      e.preventDefault();
+      setCurrencyFocused(false);
+    }
+  }
 
   // Utility function to parse numbers and remove commas
   const parseNumber = value => {
@@ -457,8 +590,9 @@ console.log(sundryCreditor)
         uptoOpeningBalanceAmount: parseNumber(forex.uptoOpeningBalanceAmount),
         forexAmount: parseNumber(forex.forexAmount),
         exchangeRate: parseNumber(forex.exchangeRate),
-        referenceAmount: parseNumber(forex.referenceAmount),
+        outwardReferenceAmount: parseNumber(forex.outwardReferenceAmount),
         totalForexAmount: parseNumber(forex.totalForexAmount),
+        inwardReferenceAmount: parseNumber(forex.inwardReferenceAmount),
         totalAmount: parseNumber(forex.totalAmount),
       })),
     };
@@ -488,8 +622,9 @@ console.log(sundryCreditor)
       setSundryCreditor({
         sundryCreditorName: '',
         underGroup: 'sundry creditors',
-        billWiseStatus: 'No',
-        provideBankDetails: 'No',
+        forexApplicable: 'no',
+        billWiseStatus: 'no',
+        provideBankDetails: 'no',
         bank: {
           accountName: '',
           accountNumber: '',
@@ -530,7 +665,8 @@ console.log(sundryCreditor)
             referenceAmount: '',
             referenceCreditOrDebit: '',
             totalForexAmount: '',
-            totalAmount: '',
+            outwardReferenceAmount: '',
+            inwardReferenceAmount: '',
             totalAmountCreditOrDebit: '',
           },
         ],
@@ -608,8 +744,6 @@ console.log(sundryCreditor)
           forexSubForm: updatedForexSubForm
         };
       });
-    } else {
-      console.log("Invalid date format. Please enter a valid date.");
     }
   };
   
@@ -658,20 +792,39 @@ console.log(sundryCreditor)
               autoComplete="off"
             />
           </div>
-          <div className="text-sm pl-1 mb-1 flex">
-            <label htmlFor="underGroup" className="w-[38%] ml-2">
-              Under
-            </label>
-            <span>:</span>
-            <input
-              type="text"
-              id="underGroup"
-              name="underGroup"
-              value={sundryCreditor.underGroup}
-              onChange={handleInputChange}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
-              autoComplete="off"
-            />
+          <div className='flex'>
+            <div className="text-sm pl-1 mb-1">
+              <label htmlFor="underGroup" className="mr-[194.9px] ml-2">
+                Under
+              </label>
+              <span>:</span>
+              <input
+                type="text"
+                id="underGroup"
+                name="underGroup"
+                value={sundryCreditor.underGroup}
+                onChange={handleInputChange}
+                className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                autoComplete="off"
+              />
+            </div>
+            <div className="text-sm pl-1 mb-1 absolute left-[990px]">
+              <label htmlFor="forexApplicable" className="ml-2 mr-5">
+                Forex Applicable
+              </label>
+              <span>:</span>
+              <input
+                type="text"
+                id="forexApplicable"
+                name="forexApplicable"
+                value={sundryCreditor.forexApplicable}
+                ref={input => (inputRefs.current[1] = input)}
+                onChange={handleInputChange}
+                onKeyDown={e => handleKeyDown(e, 1)}
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                autoComplete="off"
+              />
+            </div>
           </div>
           <div className="flex">
             <div className="text-sm pl-1 mb-1">
@@ -684,9 +837,9 @@ console.log(sundryCreditor)
                 id="billWiseStatus"
                 value={sundryCreditor.billWiseStatus}
                 name="billWiseStatus"
-                ref={input => (inputRefs.current[1] = input)}
+                ref={input => (inputRefs.current[2] = input)}
                 onChange={handleInputChange}
-                onKeyDown={e => handleKeyDown(e, 1)}
+                onKeyDown={e => handleKeyDown(e, 2)}
                 className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                 autoComplete="off"
               />
@@ -701,9 +854,9 @@ console.log(sundryCreditor)
                 id="provideBankDetails"
                 name="provideBankDetails"
                 value={sundryCreditor.provideBankDetails}
-                ref={input => (inputRefs.current[2] = input)}
+                ref={input => (inputRefs.current[3] = input)}
                 onChange={handleInputChange}
-                onKeyDown={e => handleKeyDown(e, 2)}
+                onKeyDown={e => handleKeyDown(e, 3)}
                 className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                 autoComplete="off"
               />
@@ -847,9 +1000,9 @@ console.log(sundryCreditor)
               id="addressOne"
               name="addressOne"
               value={sundryCreditor.addressOne}
-              ref={input => (inputRefs.current[3] = input)}
+              ref={input => (inputRefs.current[4] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 3)}
+              onKeyDown={e => handleKeyDown(e, 4)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -862,9 +1015,9 @@ console.log(sundryCreditor)
               id="addressTwo"
               name="addressTwo"
               value={sundryCreditor.addressTwo}
-              ref={input => (inputRefs.current[4] = input)}
+              ref={input => (inputRefs.current[5] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 4)}
+              onKeyDown={e => handleKeyDown(e, 5)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -877,9 +1030,9 @@ console.log(sundryCreditor)
               id="addressThree"
               name="addressThree"
               value={sundryCreditor.addressThree}
-              ref={input => (inputRefs.current[5] = input)}
+              ref={input => (inputRefs.current[6] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 5)}
+              onKeyDown={e => handleKeyDown(e, 6)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -892,9 +1045,9 @@ console.log(sundryCreditor)
               id="addressFour"
               name="addressFour"
               value={sundryCreditor.addressFour}
-              ref={input => (inputRefs.current[6] = input)}
+              ref={input => (inputRefs.current[7] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 6)}
+              onKeyDown={e => handleKeyDown(e, 7)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -907,9 +1060,9 @@ console.log(sundryCreditor)
               id="addressFive"
               name="addressFive"
               value={sundryCreditor.addressFive}
-              ref={input => (inputRefs.current[7] = input)}
+              ref={input => (inputRefs.current[8] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 7)}
+              onKeyDown={e => handleKeyDown(e, 8)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -924,9 +1077,9 @@ console.log(sundryCreditor)
               id="landMarkOrArea"
               name="landMarkOrArea"
               value={sundryCreditor.landMarkOrArea}
-              ref={input => (inputRefs.current[8] = input)}
+              ref={input => (inputRefs.current[9] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 8)}
+              onKeyDown={e => handleKeyDown(e, 9)}
               className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -941,9 +1094,9 @@ console.log(sundryCreditor)
               id="state"
               name="state"
               value={sundryCreditor.state}
-              ref={input => (inputRefs.current[9] = input)}
+              ref={input => (inputRefs.current[10] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 9)}
+              onKeyDown={e => handleKeyDown(e, 10)}
               className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -958,9 +1111,9 @@ console.log(sundryCreditor)
               id="country"
               name="country"
               value={sundryCreditor.country}
-              ref={input => (inputRefs.current[10] = input)}
+              ref={input => (inputRefs.current[11] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 10)}
+              onKeyDown={e => handleKeyDown(e, 11)}
               className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -975,9 +1128,9 @@ console.log(sundryCreditor)
               id="pincode"
               name="pincode"
               value={sundryCreditor.pincode}
-              ref={input => (inputRefs.current[11] = input)}
+              ref={input => (inputRefs.current[12] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 11)}
+              onKeyDown={e => handleKeyDown(e, 12)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -992,9 +1145,9 @@ console.log(sundryCreditor)
               id="panOrItNumber"
               name="panOrItNumber"
               value={sundryCreditor.panOrItNumber}
-              ref={input => (inputRefs.current[12] = input)}
+              ref={input => (inputRefs.current[13] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 12)}
+              onKeyDown={e => handleKeyDown(e, 13)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1009,9 +1162,9 @@ console.log(sundryCreditor)
               id="gstinOrUinNumber"
               name="gstinOrUinNumber"
               value={sundryCreditor.gstinOrUinNumber}
-              ref={input => (inputRefs.current[13] = input)}
+              ref={input => (inputRefs.current[14] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 13)}
+              onKeyDown={e => handleKeyDown(e, 14)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1026,9 +1179,9 @@ console.log(sundryCreditor)
               id="msmeNumber"
               name="msmeNumber"
               value={sundryCreditor.msmeNumber}
-              ref={input => (inputRefs.current[14] = input)}
+              ref={input => (inputRefs.current[15] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 14)}
+              onKeyDown={e => handleKeyDown(e, 15)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1043,9 +1196,9 @@ console.log(sundryCreditor)
               id="contactPersonName"
               name="contactPersonName"
               value={sundryCreditor.contactPersonName}
-              ref={input => (inputRefs.current[15] = input)}
+              ref={input => (inputRefs.current[16] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 15)}
+              onKeyDown={e => handleKeyDown(e, 16)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1060,9 +1213,9 @@ console.log(sundryCreditor)
               id="mobileNumber"
               name="mobileNumber"
               value={sundryCreditor.mobileNumber}
-              ref={input => (inputRefs.current[16] = input)}
+              ref={input => (inputRefs.current[17] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 16)}
+              onKeyDown={e => handleKeyDown(e, 17)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1077,9 +1230,9 @@ console.log(sundryCreditor)
               id="landlineNumber"
               name="landlineNumber"
               value={sundryCreditor.landlineNumber}
-              ref={input => (inputRefs.current[17] = input)}
+              ref={input => (inputRefs.current[18] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 17)}
+              onKeyDown={e => handleKeyDown(e, 18)}
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1094,9 +1247,9 @@ console.log(sundryCreditor)
               id="emailId"
               name="emailId"
               value={sundryCreditor.emailId}
-              ref={input => (inputRefs.current[18] = input)}
+              ref={input => (inputRefs.current[19] = input)}
               onChange={handleInputChange}
-              onKeyDown={e => handleKeyDown(e, 18)}
+              onKeyDown={e => handleKeyDown(e, 19)}
               className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1121,10 +1274,10 @@ console.log(sundryCreditor)
               id="openingBalance"
               name="openingBalance"
               value={sundryCreditor.openingBalance}
-              ref={input => (inputRefs.current[19] = input)}
+              ref={input => (inputRefs.current[20] = input)}
               onChange={handleInputChange}
               onBlur={numberFormat}
-              onKeyDown={e => handleKeyDown(e, 19)}
+              onKeyDown={e => handleKeyDown(e, 20)}
               className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
             />
@@ -1133,8 +1286,8 @@ console.log(sundryCreditor)
               id="creditOrDebit"
               name="creditOrDebit"
               value={sundryCreditor.creditOrDebit}
-              ref={input => (inputRefs.current[20] = input)}
-              onKeyDown={e => handleKeyDown(e, 20)}
+              ref={input => (inputRefs.current[21] = input)}
+              onKeyDown={e => handleKeyDown(e, 21)}
               onChange={handleInputChange}
               className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off"
@@ -1188,10 +1341,19 @@ console.log(sundryCreditor)
                         <th className="w-[10%]">Date</th>
                         <th className="w-[25%]">Bill Ref. Name</th>
                         <th className="w-[10%]">Due Date</th>
-                        <th className="w-[25%]">Forex Currency Type</th>
-                        <th className="w-[15%]">Forex Amount</th>
-                        <th className="w-[15%]">Exchange Rate</th>
-                        <th className="w-[25%]">Amount</th>
+                        {sundryCreditor.forexApplicable !== 'no' && (
+                          <>
+                            <th className="w-[25%]">Forex Currency Type</th>
+                            <th className="w-[15%]">Forex Amount</th>
+                            <th className="w-[15%]">Exchange Rate</th>
+                            <th className="w-[25%]">Amount</th>
+                          </>
+                        )}
+                        {sundryCreditor.forexApplicable !== 'yes' && (
+                          <>
+                            <th className='w-[35%]'>Amount</th>
+                          </>
+                        )}
                         <th className="w-[5%]">Cr/Dr</th>
                       </tr>
                     </thead>
@@ -1206,8 +1368,8 @@ console.log(sundryCreditor)
                               name="forexDate"
                               value={row.formattedForexDate}
                               onChange={(e) => handleFormattedDateChange(e, index, 'forexDate')}
-                              ref={input => (inputRefsForex.current[0 + index * 8] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, 0 + index * 8)}
+                              ref={input => (inputRefsForex.current[0 + index * 9] = input)}
+                              onKeyDown={e => handleKeyDownForex(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index)}}
                               className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                               autoComplete="off"
@@ -1222,8 +1384,8 @@ console.log(sundryCreditor)
                               name="referenceName"
                               value={row.referenceName}
                               onChange={e => handleInputForexChange(e, index)}
-                              ref={input => (inputRefsForex.current[1 + index * 8] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, 1 + index * 8)}
+                              ref={input => (inputRefsForex.current[1 + index * 9] = input)}
+                              onKeyDown={e => handleKeyDownForex(e, index, 1 )}
                               className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                               autoComplete="off"
                             />
@@ -1237,121 +1399,160 @@ console.log(sundryCreditor)
                               name="dueDate"
                               value={row.formattedDueDate}
                               onChange={(e) => handleFormattedDateChange(e, index, 'dueDate')}
-                              ref={input => (inputRefsForex.current[2 + index * 8] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, 2 + index * 8)}
+                              ref={input => (inputRefsForex.current[2 + index * 9] = input)}
+                              onKeyDown={e => {
+                                handleKeyDownForex(e, index, 2)
+                                if(e.key === 'Enter' && sundryCreditor.forexApplicable === 'no'){
+                                  inputRefsForex.current[index * 9 + 7].focus()
+                                }
+                              }}
                               onBlur={(e) => {dateConvert(e, index)}}
                               className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                               autoComplete="off"
                             />
                           </td>
 
-                          {/* Forex Currency Type Input */}
-                          <td>
-                            <input
-                              type="text"
-                              id="forexCurrencyType"
-                              name="forexCurrencyType"
-                              value={row.forexCurrencyType}
-                              onChange={e => handleInputForexChange(e, index)}
-                              ref={input => (inputRefsForex.current[3 + index * 8] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, 3 + index * 8)}
-                              onFocus={e => {
-                                setCurrencyFocused(true);
-                                handleInputForexChange(e, index);
-                              }}
-                              onBlur={() => setCurrencyFocused(false)}
-                              className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
-                              autoComplete="off"
-                            />
-                            {/* Currency Suggestion Dropdown */}
-                            {currencyFocused && filteredSuggestion.length > 0 && (
-                              <div className="w-[20%] h-[50vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[558px] top-[100px]">
-                                <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
-                                  <p>List of Currencies</p>
-                                </div>
-                                <ul
-                                  className="suggestions w-full h-[87vh] text-left text-[12px] mt-2"
-                                  ref={optionsRef}
-                                >
-                                  {filteredSuggestion.map((currency, suggestionIndex) => (
-                                    <li
-                                      key={suggestionIndex}
-                                      tabIndex={0}
-                                      className={`pl-2 uppercase cursor-pointer hover:bg-yellow-200 ${
-                                        highlightedSuggestionCurrency === suggestionIndex
-                                          ? 'bg-yellow-200'
-                                          : ''
-                                      }`}
-                                      onClick={() => handleSuggestionClick(currency, index)}
-                                      onMouseDown={e => e.preventDefault()}
-                                      onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                          e.preventDefault();
-                                          handleSuggestionClick(currency, index);
-                                        }
-                                      }}
-                                      onMouseEnter={() => {
-                                        setHighlightedSuggestionCurrency(suggestionIndex)
-                                      }}
+                          {/* Conditional Rendering of Forex Fields */}
+                          {sundryCreditor.forexApplicable !== 'no' && (
+                            <>
+                              {/* Forex Currency Type Input */}
+                              <td>
+                                <input
+                                  type="text"
+                                  id="forexCurrencyType"
+                                  name="forexCurrencyType"
+                                  value={row.forexCurrencyType}
+                                  onChange={e => handleInputForexChange(e, index)}
+                                  ref={input => (inputRefsForex.current[3 + index * 9] = input)}
+                                  onKeyDown={e => handleKeyDownForex(e, index, 3)}
+                                  onFocus={e => {
+                                    setCurrencyFocused(true);
+                                    handleInputForexChange(e, index);
+                                  }}
+                                  onBlur={() => setCurrencyFocused(false)}
+                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  autoComplete="off"
+                                />
+                                {/* Currency Suggestion Dropdown */}
+                                {currencyFocused && filteredSuggestion.length > 0 && (
+                                  <div className="w-[20%] h-[50vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[558px] top-[100px]">
+                                    <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
+                                      <p>List of Currencies</p>
+                                    </div>
+                                    <ul
+                                      className="suggestions w-full h-[87vh] text-left text-[12px] mt-2"
+                                      ref={optionsRef}
                                     >
-                                      {currency.forexCurrencyName}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </td>
+                                      {filteredSuggestion.map((currency, suggestionIndex) => (
+                                        <li
+                                          key={suggestionIndex}
+                                          tabIndex={0}
+                                          className={`pl-2 uppercase cursor-pointer hover:bg-yellow-200 ${
+                                            highlightedSuggestionCurrency === suggestionIndex
+                                              ? 'bg-yellow-200'
+                                              : ''
+                                          }`}
+                                          onClick={() => handleSuggestionClick(currency, index)}
+                                          onMouseDown={e => e.preventDefault()}
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                              e.preventDefault();
+                                              handleSuggestionClick(currency, index);
+                                            }
+                                          }}
+                                          onMouseEnter={() => {
+                                            setHighlightedSuggestionCurrency(suggestionIndex)
+                                          }}
+                                        >
+                                          {currency.forexCurrencyName}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </td>
 
-                          {/* Forex Amount Input */}
-                          <td>
-                            <span className='ml-7'>{row.forexCurrencySymbol}</span>
-                            <input
-                              type="text"
-                              id="forexAmount"
-                              name="forexAmount"
-                              value={row.forexAmount}
-                              onChange={e => handleInputForexChange(e, index)}
-                              ref={input => (inputRefsForex.current[4 + index * 8] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, 4 + index * 8)}
-                              onBlur={(e) => {numberFormat(e, index)}} 
-                              className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
-                              autoComplete="off"
-                            />
-                          </td>
+                              {/* Forex Amount Input */}
+                              <td>
+                                <span className='ml-7'>{row.forexCurrencySymbol}</span>
+                                <input
+                                  type="text"
+                                  id="forexAmount"
+                                  name="forexAmount"
+                                  value={row.forexAmount}
+                                  onChange={e => handleInputForexChange(e, index)}
+                                  ref={input => (inputRefsForex.current[4 + index * 9] = input)}
+                                  onKeyDown={e => handleKeyDownForex(e, index, 4)}
+                                  onBlur={(e) => {numberFormat(e, index)}} 
+                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  autoComplete="off"
+                                />
+                              </td>
 
-                          {/* Exchange Rate Input */}
-                          <td>
-                            <span className='ml-8'>₹</span>
-                            <input
-                              type="text"
-                              id="exchangeRate"
-                              name="exchangeRate"
-                              value={row.exchangeRate}
-                              onChange={e => handleInputForexChange(e, index)}
-                              ref={input => (inputRefsForex.current[5 + index * 8] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, 5 + index * 8)}
-                              onBlur={(e) => {numberFormat(e, index)}}
-                              className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
-                              autoComplete="off"
-                            />
-                          </td>
+                              {/* Exchange Rate Input */}
+                              <td>
+                                <span className='ml-8'>₹</span>
+                                <input
+                                  type="text"
+                                  id="exchangeRate"
+                                  name="exchangeRate"
+                                  value={row.exchangeRate}
+                                  onChange={e => handleInputForexChange(e, index)}
+                                  ref={input => (inputRefsForex.current[5 + index * 9] = input)}
+                                  onKeyDown={e => handleKeyDownForex(e, index, 5)}
+                                  onBlur={(e) => {numberFormat(e, index)}}
+                                  className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  autoComplete="off"
+                                />
+                              </td>
 
-                          {/* Reference Amount Input */}
-                          <td>
-                            <span className='ml-16'>₹</span>
-                            <input
-                              type="text"
-                              id="referenceAmount"
-                              name="referenceAmount"
-                              value={row.referenceAmount}
-                              onChange={e => handleInputForexChange(e, index)}
-                              ref={input => (inputRefsForex.current[6 + index * 8] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, 6 + index * 8)}
-                              onBlur={(e) => {numberFormat(e, index)}}
-                              className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
-                              autoComplete="off"
-                            />
-                          </td>
+                              {/* Reference Amount Input */}
+                              <td>
+                                <span className='ml-16'>₹</span>
+                                <input
+                                  type="text"
+                                  id="outwardReferenceAmount"
+                                  name="outwardReferenceAmount"
+                                  value={row.outwardReferenceAmount}
+                                  onChange={e => handleInputForexChange(e, index)}
+                                  ref={input => (inputRefsForex.current[6 + index * 9] = input)}
+                                  onKeyDown={e => 
+                                    {handleKeyDownForex(e, index, 6)
+                                    if(e.key === 'Enter'){
+                                      inputRefsForex.current[index * 9 + 8]?.focus()
+                                    }
+                                  }}
+                                  onBlur={(e) => {numberFormat(e, index)}}
+                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  autoComplete="off"
+                                />
+                              </td>
+                            </>
+                          )}
+
+                          {/* Conditional Rendering of Forex Fields */}
+                          {sundryCreditor.forexApplicable !== 'yes' && (
+                            <>
+                              {/* Inward Amount Input */}
+                              <td>
+                                <span className="ml-36">₹</span>
+                                <input
+                                  type="text"
+                                  id="inwardReferenceAmount"
+                                  name="inwardReferenceAmount"
+                                  value={row.inwardReferenceAmount}
+                                  onChange={(e) => handleInputForexChange(e, index)}
+                                  ref={(input) => (inputRefsForex.current[7 + index * 9] = input)}
+                                  onKeyDown={(e) => handleKeyDownForex(e, index,7)}
+                                  onBlur={(e) => {
+                                    numberFormat(e, index);
+                                  }}
+                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  autoComplete="off"
+                                />
+                              </td>
+                            </>
+                          )}
 
                           {/* Reference Credit Or Debit Input */}
                           <td>
@@ -1361,9 +1562,9 @@ console.log(sundryCreditor)
                               name="referenceCreditOrDebit"
                               value={row.referenceCreditOrDebit}
                               onChange={e => handleInputForexChange(e, index)}
-                              ref={input => (inputRefsForex.current[7 + index * 8] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, 7 + index * 8)}
-                              className="w-full h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              ref={input => (inputRefsForex.current[8 + index * 9] = input)}
+                              onKeyDown={e => handleKeyDownForex(e, index, 8)}
+                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                               autoComplete="off"
                             />
                           </td>
@@ -1371,53 +1572,85 @@ console.log(sundryCreditor)
                       ))}
                     </tbody>
                   </table>
-                  <div className=" mt-4">
-                    <div className="flex absolute left-[610px] top-[500px]">
-                      <label htmlFor="totalForexAmount" className="text-[12px] mr-1">
-                        Total
-                      </label>
-                      <span className="text-sm">($)</span>
-                      <span className="absolute left-[60px] bottom-0">:</span>
-                      <input
-                        type="text"
-                        id="totalForexAmount"
-                        name="totalForexAmount"
-                        value={sundryCreditor.totalForexAmount}
-                        // onChange={handleInputForexChange}
-                        onBlur={(e) => numberFormat(e, 0)}
-                        className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
-                        autoComplete="off"
-                        readOnly
-                      />
-                    </div>
-                    <div className="flex absolute left-[900px] top-[500px]">
-                      <label htmlFor="totalAmount" className="text-[12px] mr-1">
-                        Total
-                      </label>
-                      <span className="text-sm">(₹)</span>
-                      <span className="absolute left-[60px] bottom-0">:</span>
-                      <input
-                        type="text"
-                        id="totalAmount"
-                        name="totalAmount"
-                        value={sundryCreditor.totalAmount}
-                        // onChange={handleInputForexChange}
-                        onBlur={(e) => numberFormat(e, 1)}
-                        className="w-[120px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
-                        autoComplete="off"
-                        readOnly
-                      />
-                      <input
-                        type="text"
-                        id="totalAmountCreditOrDebit"
-                        name="totalAmountCreditOrDebit"
-                        value={sundryCreditor.forexSubForm.totalAmountCreditOrDebit}
-                        onChange={handleInputForexChange}
-                        className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
-                        autoComplete="off"
-                      />
-                    </div>
-                  </div>
+                  
+                  {sundryCreditor.forexApplicable !== 'no' && (
+                    <>
+                      <div className=" mt-4">
+                        <div className="flex absolute left-[610px] top-[500px]">
+                          <label htmlFor="totalForexAmount" className="text-[12px] mr-1">
+                            Total
+                          </label>
+                          <span className="text-sm">($)</span>
+                          <span className="absolute left-[60px] bottom-0">:</span>
+                          <input
+                            type="text"
+                            id="totalForexAmount"
+                            name="totalForexAmount"
+                            value={sundryCreditor.totalForexAmount}
+                            // onChange={handleInputForexChange}
+                            onBlur={(e) => numberFormat(e, 0)}
+                            className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            autoComplete="off"
+                            readOnly
+                          />
+                        </div>
+                        <div className="flex absolute left-[900px] top-[500px]">
+                          <label htmlFor="totalAmount" className="text-[12px] mr-1">
+                            Total
+                          </label>
+                          <span className="text-sm">(₹)</span>
+                          <span className="absolute left-[60px] bottom-0">:</span>
+                          <input
+                            type="text"
+                            id="totalAmount"
+                            name="totalAmount"
+                            value={sundryCreditor.totalAmount}
+                            // onChange={handleInputForexChange}
+                            onBlur={(e) => numberFormat(e, 1)}
+                            className="w-[120px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            autoComplete="off"
+                            readOnly
+                          />
+                          <input
+                            type="text"
+                            id="totalAmountCreditOrDebit"
+                            name="totalAmountCreditOrDebit"
+                            value={sundryCreditor.forexSubForm.totalAmountCreditOrDebit}
+                            onChange={handleInputForexChange}
+                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            autoComplete="off"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {sundryCreditor.forexApplicable !== 'yes' && (
+                    <>
+                      <div className='flex absolute left-[900px] top-[500px] text-sm'>
+                        <label htmlFor="" className=''>Total</label>
+                        <span>:</span>
+                        <input
+                            type="text"
+                            id="totalInwardReferenceAmount"
+                            name="totalInwardReferenceAmount"
+                            value={sundryCreditor.totalInwardReferenceAmount}
+                            onBlur={(e) => numberFormat(e, 1)}
+                            className="w-[120px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            autoComplete="off"
+                            readOnly
+                          />
+                          <input
+                            type="text"
+                            id="totalInwardAmountCreditOrDebit"
+                            name="totalInwardAmountCreditOrDebit"
+                            value={sundryCreditor.totalInwardReferenceAmountCreditOrDebit}
+                            onChange={handleInputForexChange}
+                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            autoComplete="off"
+                          />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

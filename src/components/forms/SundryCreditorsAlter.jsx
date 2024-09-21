@@ -82,10 +82,6 @@ const SundryCreditorsAlter = () => {
       if(inputRefsBank.current[0]){
         inputRefsBank.current[0].focus();
       }
-    } else {
-      if (inputRefs.current[3]){
-        inputRefs.current[3].focus();
-      }
     }
 
     // If forexSubFormModal is active, focus the first input in that form
@@ -1260,7 +1256,7 @@ const SundryCreditorsAlter = () => {
                       type="text"
                       id="uptoOpeningBalanceAmount"
                       name="uptoOpeningBalanceAmount"
-                      value={sundryCreditor.openingBalance}
+                      value={formatIndianNumber(sundryCreditor.openingBalance)}
                       className="w-[100px] h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                       autoComplete="off"
                     />

@@ -135,13 +135,17 @@ console.log(sundryCreditor)
   const calculateTotals = () => {
     let totalForexAmount = 0;
     let totalAmount = 0;
+    let rowIndexToClear = -1; // Variable to keep track of the index of the row that exceeds the limit
   
     // Iterate over each row in forexSubForm to calculate totals
     setSundryCreditor(prevState => {
-      const updatedForexSubForm = prevState.forexSubForm.map(row => {
+      // Parse openingBalance as a float and remove any commas
+      const openingBalance = parseFloat(prevState.openingBalance.replace(/,/g, '')) || 0;
+  
+      const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
         const forexAmount = parseFloat(row.forexAmount.replace(/,/g, "")) || 0;
         const exchangeRate = parseFloat(row.exchangeRate.replace(/,/g, "")) || 1; // Assume 1 if exchange rate is not provided
-        
+  
         // Calculate referenceAmount based on forexAmount * exchangeRate
         const outwardReferenceAmount = forexAmount * exchangeRate;
   
@@ -149,16 +153,45 @@ console.log(sundryCreditor)
         totalForexAmount += forexAmount;
         totalAmount += outwardReferenceAmount;
   
+        // Check if the totalAmount exceeds the openingBalance
+        if (totalAmount > openingBalance && rowIndexToClear === -1) {
+          rowIndexToClear = index; // Store the index of the first row that exceeds the limit
+        }
+  
         // Return the updated row with referenceAmount updated
         return {
           ...row,
-          outwardReferenceAmount: outwardReferenceAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) // Keep referenceAmount as a number with 2 decimal places
+          outwardReferenceAmount: outwardReferenceAmount.toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }) // Keep referenceAmount as a number with 2 decimal places
         };
       });
   
+      // Ensure the calculated totalAmount does not exceed the openingBalance
+      if (totalAmount > openingBalance) {
+        // Show an alert with the remaining expected amount
+        window.alert(`The calculated total amount exceeds the opening balance!`);
+  
+        // Clear the forexAmount and outwardReferenceAmount of the row that caused the issue
+        if (rowIndexToClear !== -1) {
+          updatedForexSubForm[rowIndexToClear].forexAmount = '0'; // Set forexAmount to zero
+          updatedForexSubForm[rowIndexToClear].outwardReferenceAmount = '0'; // Set outwardReferenceAmount to zero
+          
+          // Set focus to the specific forexAmount input
+          inputRefsForex.current[rowIndexToClear * 9]?.focus(); // Adjust the index based on your input layout
+        }
+      }
+  
       // Format totals to 2 decimal places
-      const formattedTotalForexAmount = totalForexAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2 }) // Keeps 2 decimal places
-      const formattedTotalAmount = totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); // Keeps 2 decimal places
+      const formattedTotalForexAmount = totalForexAmount.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }); // Keeps 2 decimal places
+      const formattedTotalAmount = totalAmount.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      }); // Keeps 2 decimal places
   
       console.log('Calculated Totals:', {
         totalForexAmount: formattedTotalForexAmount,
@@ -173,22 +206,45 @@ console.log(sundryCreditor)
         totalAmount: formattedTotalAmount, // Update totalAmount
       };
     });
-  };
+  };    
   
   const calculateInwardTotals = () => {
     let totalInwardReferenceAmount = 0;
+    let rowIndexToClear = -1; // Variable to keep track of the index of the row that exceeds the limit
   
     setSundryCreditor(prevState => {
-      const updatedForexSubForm = prevState.forexSubForm.map(row => {
+      // Parse openingBalance as a float and remove any commas
+      const openingBalance = parseFloat(prevState.openingBalance.replace(/,/g, '')) || 0;
+  
+      const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
         // Parse inwardReferenceAmount as a float and remove any commas
         const inwardReferenceAmount = parseFloat(row.inwardReferenceAmount.replace(/,/g, '')) || 0;
   
         // Accumulate the inward reference amount
         totalInwardReferenceAmount += inwardReferenceAmount;
   
+        // Check if the totalInwardReferenceAmount exceeds the openingBalance
+        if (totalInwardReferenceAmount > openingBalance) {
+          rowIndexToClear = index; // Store the index of the row that causes the alert
+        }
+  
         // Return the updated row (if you need to modify any fields)
         return row;
       });
+  
+      // Ensure the calculated totalInwardReferenceAmount does not exceed the openingBalance
+      if (totalInwardReferenceAmount > openingBalance) {
+        // Show an alert with the remaining expected amount
+        window.alert(`The total inward reference amount exceeds the opening balance!`);
+  
+        // Clear the inwardReferenceAmount of the row that caused the issue
+        if (rowIndexToClear !== -1) {
+          updatedForexSubForm[rowIndexToClear].inwardReferenceAmount = '0'; // Set inwardReferenceAmount to zero
+        }
+  
+        // Set focus to the totalAmount input after the alert is dismissed
+        inputRefsForex.current[rowIndexToClear * 9]?.focus();
+      }
   
       // Format the total inward reference amount
       const formattedTotalInwardReferenceAmount = totalInwardReferenceAmount.toLocaleString('en-IN', {
@@ -202,7 +258,7 @@ console.log(sundryCreditor)
         totalInwardReferenceAmount: formattedTotalInwardReferenceAmount // Update this field
       };
     });
-  }; 
+  };   
   
 
   const handleInputForexChange = (e, index) => {
@@ -216,12 +272,6 @@ console.log(sundryCreditor)
         ...updatedForexSubForm[index],
         [name]: value,
       };
-
-      // Call calculateInwardTotals after updating the inwardReferenceAmount if that field is changed
-      if (name === 'inwardReferenceAmount') {
-        // You can call it directly here if you want to recalculate totals
-        calculateInwardTotals();
-    }
   
       // Apply filtering for forexCurrencyType in the first row
       if (name === 'forexCurrencyType' && index === 0) {
@@ -230,7 +280,7 @@ console.log(sundryCreditor)
         );
         setFilteredSuggestion(filtered);
         setCurrencyFocused(true);
-        setHighlightedSuggestionCurrency(0); // Reset suggestion index
+        setHighlightedSuggestionCurrency(0);
       }
   
       // Propagate forexCurrencyType and forexCurrencySymbol from the first row to all other rows
@@ -238,6 +288,7 @@ console.log(sundryCreditor)
         const selectedCurrency = currencySuggestion.find(
           (currency) => currency.forexCurrencyName.toLowerCase() === value.toLowerCase()
         );
+  
         const currencySymbol = selectedCurrency ? selectedCurrency.forexCurrencySymbol : '';
   
         updatedForexSubForm = updatedForexSubForm.map((row, i) => {
@@ -251,91 +302,44 @@ console.log(sundryCreditor)
         });
       }
   
-      // Propagate exchangeRate from the first row to all other rows and add only one additional row
-      if (name === 'exchangeRate' && index === 0) {
+      // Propagate exchangeRate from the first row to all other rows
+      if (
+        (name === 'exchangeRate' && index === 0) ||
+        (index !== 0 && updatedForexSubForm[index].exchangeRate === '')
+      ) {
+        const defaultExchangeRate = updatedForexSubForm[0].exchangeRate || value;
         updatedForexSubForm = updatedForexSubForm.map((row, i) => {
           if (i === 0) return row; // Skip the first row
   
           return {
             ...row,
-            exchangeRate: value, // Propagate exchangeRate from the first row
+            exchangeRate: defaultExchangeRate, // Propagate exchangeRate
           };
         });
-  
-        // Add only one additional row after entering exchangeRate in the first row
-        if (updatedForexSubForm.length === 1) {
-          const forexCurrencyType = updatedForexSubForm[0].forexCurrencyType;
-          const selectedCurrency = currencySuggestion.find(
-            (currency) => currency.forexCurrencyName.toLowerCase() === forexCurrencyType.toLowerCase()
-          );
-          const forexCurrencySymbol = selectedCurrency ? selectedCurrency.forexCurrencySymbol : '';
-  
-          // Add a new row with default values
-          updatedForexSubForm.push({
-            forexDate: '',
-            referenceName: '',
-            dueDate: '',
-            forexCurrencyType, // Use the first row's forexCurrencyType
-            forexCurrencySymbol, // Use the first row's forexCurrencySymbol
-            forexAmount: '',
-            exchangeRate: value, // Use the first row's exchangeRate
-            outwardReferenceAmount: '',
-            referenceCreditOrDebit: prevState.creditOrDebit, // Propagate creditOrDebit from the main form
-          });
-        }
       }
   
-      // Add a new row when the forexAmount is filled in the last row
-      if (name === 'forexAmount' && value.trim() !== '' && index === updatedForexSubForm.length - 1) {
-        const forexCurrencyType = updatedForexSubForm[0].forexCurrencyType;
-        const selectedCurrency = currencySuggestion.find(
-          (currency) => currency.forexCurrencyName.toLowerCase() === forexCurrencyType.toLowerCase()
-        );
-        const forexCurrencySymbol = selectedCurrency ? selectedCurrency.forexCurrencySymbol : '';
-  
-        // Add a new row with default values and the propagated forexCurrencyType, forexCurrencySymbol, and creditOrDebit
-        updatedForexSubForm.push({
-          forexDate: '',
-          referenceName: '',
-          dueDate: '',
-          forexCurrencyType, // Use the first row's forexCurrencyType
-          forexCurrencySymbol, // Use the first row's forexCurrencySymbol
-          forexAmount: '',
-          exchangeRate: updatedForexSubForm[0].exchangeRate, // Use the first row's exchangeRate
-          outwardReferenceAmount: '',
-          referenceCreditOrDebit: prevState.creditOrDebit, // Propagate creditOrDebit from the main form
-        });
+      // Propagate creditorDebit to referenceCreditorDebit for all rows
+      if (name === 'creditOrDebit') {
+        updatedForexSubForm = updatedForexSubForm.map((row) => ({
+          ...row,
+          referenceCreditorDebit: value, // Set referenceCreditorDebit from creditorDebit
+        }));
       }
   
       // Recalculate totals after updating the forexSubForm
-      calculateTotals(updatedForexSubForm);
+      calculateTotals();
+  
+      // Call calculateInwardTotals after updating the inwardReferenceAmount if that field is changed
+      if (name === 'inwardReferenceAmount') {
+        calculateInwardTotals();
+      }
   
       return {
         ...prevState,
         forexSubForm: updatedForexSubForm,
       };
     });
-  };     
-  
-
-  const handleSuggestionClick = (suggestion, index) => {
-    setSundryCreditor(prevState => {
-      // Clone the existing forexSubForm array
-      const updatedForexSubForm = [...prevState.forexSubForm];
-
-      // Update the selected forexCurrencyType and forexCurrencySymbol
-      updatedForexSubForm[index] = {
-        ...updatedForexSubForm[index],
-        forexCurrencyType: suggestion.forexCurrencyName,
-        forexCurrencySymbol: suggestion.forexCurrencySymbol, // Assuming this field exists in the suggestion object
-      };
-
-      return { ...prevState, forexSubForm: updatedForexSubForm };
-    });
-
-    // Close the suggestion dropdown after selecting
-    setCurrencyFocused(false);
-  };
+  };  
 
   const handleKeyDown = (e, index) => {
     const key = e.key;
@@ -448,52 +452,46 @@ console.log(sundryCreditor)
   // Function to add a new row to the forexSubForm with conditional referenceCreditOrDebit value
   const addNewRow = () => {
     setSundryCreditor((prevState) => {
-      // Define the structure of a new row with conditional referenceCreditOrDebit based on forexApplicable
+      // Define the structure of a new row with conditional referenceCreditOrDebit based on creditOrDebit value
       const newRow = {
         forexDate: '',
         referenceName: '',
         dueDate: '',
-        forexCurrencyType: '',
-        forexCurrencySymbol: '',
+        forexCurrencyType: prevState.forexSubForm[0]?.forexCurrencyType || '',
+        forexCurrencySymbol: prevState.forexSubForm[0]?.forexCurrencySymbol || '',
         forexAmount: '',
-        exchangeRate: '',
+        exchangeRate: prevState.forexSubForm[0]?.exchangeRate || '',
         outwardReferenceAmount: '',
         inwardReferenceAmount: '',
-        // Set referenceCreditOrDebit based on forexApplicable value
-        referenceCreditOrDebit: prevState.forexApplicable === 'no' ? prevState.creditOrDebit: '',
+        // Set referenceCreditOrDebit based on the value of creditOrDebit
+        referenceCreditOrDebit: prevState.creditOrDebit || '',
       };
-      // Update the state to add the new row
+  
       return {
         ...prevState,
         forexSubForm: [...prevState.forexSubForm, newRow],
-      }
+      };
     });
-  };
+  };  
 
   const handleKeyDownForex = (e, rowIndex, colIndex) => {
     const key = e.key;
-
-    // Define the index of the first forexDate input field
     const firstForexDateIndex = 0;
-
-    if(key === 'Enter'){
+  
+    if (key === 'Enter') {
       e.preventDefault();
-
+  
       // Check if the current input is the first forexDate and ensure it has a value
-      if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === ''){
+      if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === '') {
         alert('The forexDate field must have a value before proceeding.');
-        // Refocus on the forexDate input if it's empty
         inputRefsForex.current[rowIndex * 9 + colIndex]?.focus();
         return;
       }
-
+  
       // Check if the current field is forexDate and its value is empty to trigger submit logic
-      const isForexDateEmpty = e.target.name === 'forexDate' && e.target.value.trim() === '';
-
-      if (isForexDateEmpty){
-        const confirmSubmit = window.confirm('Do you want to proceed for submit?');
+      if (e.target.name === 'forexDate' && e.target.value.trim() === '') {
+        const confirmSubmit = window.confirm('Do you want to proceed with submit?');
         if (confirmSubmit) {
-          // Trigger submit logic here
           handleSubmit(e);
           setForexSubFormModal(false);
         } else {
@@ -501,33 +499,58 @@ console.log(sundryCreditor)
         }
         return;
       }
-      // Proceed to the next cell if conditions are met
-      const nextCell = rowIndex * 9 + colIndex + 1;
-      
-      if(inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length){
-        inputRefsForex.current[nextCell]?.focus();
-      } else if(rowIndex === sundryCreditor.forexSubForm.length - 1){
-        console.log("new Row")
+  
+      // Check if Enter key is pressed on the referenceCreditOrDebit field with a completed value
+      const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
+      const isLastRow = rowIndex === sundryCreditor.forexSubForm.length - 1;
+  
+      // Add a new row when Enter is pressed on the last row referenceCreditOrDebit with a value
+      if (isReferenceCreditOrDebit && e.target.value.trim() !== '' && isLastRow) {
         addNewRow();
-      } 
-    }
-    else if (key === 'Backspace') {
-      // If the current input is empty, move focus to the previous input
-      if (e.target.value.trim() === ''){
+        setTimeout(() => {
+          inputRefsForex.current[(rowIndex + 1) * 9]?.focus();
+        }, 0);
+        return;
+      }
+  
+      // Move to the next cell
+      const nextCell = rowIndex * 9 + colIndex + 1;
+      if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
+        inputRefsForex.current[nextCell]?.focus();
+      }
+    } else if (key === 'Backspace') {
+      // Move focus to the previous input if the current input is empty
+      if (e.target.value.trim() === '') {
         e.preventDefault();
-
-        // Calculate the previous cell index
         const prevCell = rowIndex * 9 + colIndex - 1;
-
-        if (prevCell >= 0 && inputRefsForex.current[prevCell]){
+        if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
           inputRefsForex.current[prevCell].focus();
-          inputRefsForex.current[prevCell].setSelectionRange(0,0);
+          inputRefsForex.current[prevCell].setSelectionRange(0, 0);
         }
       }
     } else if (key === 'Tab') {
       e.preventDefault();
       setCurrencyFocused(false);
     }
+  };  
+
+  const handleSuggestionClick = (suggestion, index) => {
+    setSundryCreditor(prevState => {
+      // Clone the existing forexSubForm array
+      const updatedForexSubForm = [...prevState.forexSubForm];
+
+      // Update the selected forexCurrencyType and forexCurrencySymbol
+      updatedForexSubForm[index] = {
+        ...updatedForexSubForm[index],
+        forexCurrencyType: suggestion.forexCurrencyName,
+        forexCurrencySymbol: suggestion.forexCurrencySymbol, // Assuming this field exists in the suggestion object
+      };
+
+      return { ...prevState, forexSubForm: updatedForexSubForm };
+    });
+
+    // Close the suggestion dropdown after selecting
+    setCurrencyFocused(false);
   };
 
   const handleKeyDownCurrency = (e, index) => {
@@ -541,8 +564,25 @@ console.log(sundryCreditor)
       if (highlightedSuggestionCurrency >= 0 && highlightedSuggestionCurrency < filteredSuggestion.length){
         // Select the highlighted suggestion
         const selectedCurrency = filteredSuggestion[highlightedSuggestionCurrency];
-        setCurrency(selectedCurrency);  // Set the selected currency
+        
+        // Update the forexCurrencyType in the forexSubForm
+        setSundryCreditor(prevState => {
+          const updatedForexSubForm = [...prevState.forexSubForm];
+
+          // Update the specific row
+          updatedForexSubForm[index] = {
+            ...updatedForexSubForm[index],
+            forexCurrencyType: selectedCurrency.forexCurrencyName,
+            forexCurrencySymbol: selectedCurrency.forexCurrencySymbol, // Assuming this field exists in the
+          };
+
+          return { ...prevState, forexSubForm: updatedForexSubForm };
+        });
+
         setCurrencyFocused(false);
+
+        // Set focus to the forexAmount input
+        inputRefsForex.current[4 + index * 9]?.focus();
       } else {
         setCurrencyFocused(false);
       }
@@ -1422,12 +1462,15 @@ console.log(sundryCreditor)
                                   id="forexCurrencyType"
                                   name="forexCurrencyType"
                                   value={row.forexCurrencyType}
-                                  onChange={e => handleInputForexChange(e, index)}
                                   ref={input => (inputRefsForex.current[3 + index * 9] = input)}
-                                  onKeyDown={e => handleKeyDownForex(e, index, 3)}
+                                  onChange={e => handleInputForexChange(e, index)}
+                                  onKeyDown={e => handleKeyDownCurrency(e, index)}
                                   onFocus={e => {
-                                    setCurrencyFocused(true);
-                                    handleInputForexChange(e, index);
+                                    // Set focus only for the first row
+                                    if (index === 0){
+                                      setCurrencyFocused(true);
+                                      handleInputForexChange(e, index);
+                                    }
                                   }}
                                   onBlur={() => setCurrencyFocused(false)}
                                   className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"

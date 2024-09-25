@@ -38,7 +38,7 @@ const SundryDebtorsCreate = () => {
     emailId: '',
     dateForOpening: '1-Apr-2024',
     openingBalance: '',
-    creditOrDebit: '',
+    creditOrDebit: 'dr',
     forexSubForm: [
       {
         

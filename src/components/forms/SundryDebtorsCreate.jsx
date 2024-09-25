@@ -356,6 +356,17 @@ console.log(sundryDebtor)
           inputRefs.current[nextField]?.focus();
           inputRefs.current[nextField].setSelectionRange(0, 0); // Set the cursor at the beginning
         }
+
+        // Specific handling for 'creditOrDebit' input
+        if (e.target.name === 'creditOrDebit') {
+          // Open the forexSubFormModal when a value is entered in creditOrDebit input
+          setForexSubFormModal(true);
+        }
+
+        // Specific handling for 'provideBankDetails' input
+        if (e.target.name === 'provideBankDetails' && e.target.value.trim() === 'yes'){
+          setBankSubFormModal(true);
+        }
       }
     } else if (key === 'Backspace') {
       if (e.target.value.trim() === '' && index > 0) {
@@ -387,11 +398,6 @@ console.log(sundryDebtor)
         ...sundryDebtor,
         provideBankDetails: value,
       });
-  
-      // Handle opening of the bank details subform modal if 'Yes' is selected
-      if (value === 'yes') {
-        setBankSubFormModal(true);
-      }
     } else if (['c', 'd', 'C', 'D'].includes(key) && e.target.name === 'creditOrDebit') {
       e.preventDefault();
       const value = key.toLowerCase() === 'c' ? 'cr' : 'dr';
@@ -446,6 +452,9 @@ console.log(sundryDebtor)
           inputRefsBank.current[prevField].setSelectionRange(0, 0);
         }
       }
+    } else if (key === 'Escape'){
+      e.preventDefault();
+      setBankSubFormModal(false);
     }
   };
 
@@ -531,6 +540,8 @@ console.log(sundryDebtor)
     } else if (key === 'Tab') {
       e.preventDefault();
       setCurrencyFocused(false);
+    } else if (key === 'Escape'){
+      setForexSubFormModal(false);
     }
   };  
 
@@ -661,7 +672,7 @@ console.log(sundryDebtor)
       // Reset form data
       setSundryDebtor({
         sundryDebtorName: '',
-        underGroup: 'sundry creditors',
+        underGroup: 'sundry debtors',
         forexApplicable: 'no',
         billWiseStatus: 'no',
         provideBankDetails: 'no',
@@ -692,7 +703,7 @@ console.log(sundryDebtor)
         emailId: '',
         dateForOpening: '1-Apr-2024',
         openingBalance: '',
-        creditOrDebit: '',
+        creditOrDebit: 'dr',
         forexSubForm: [
           {
             forexDate: '',

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton'
 import { useNavigate, useParams } from 'react-router-dom';
-import { getSpecificSundryCreditorName, updateSundryCreditorMaster } from '../services/MasterService';
+import { getSpecificSundryCreditorName, listOfCurrencies, updateSundryCreditorMaster } from '../services/MasterService';
 import LeftSideMenu from '../left-side-menu/LeftSideMenu';
 
 const SundryCreditorsAlter = () => {
@@ -97,6 +97,16 @@ const SundryCreditorsAlter = () => {
         if (forexSubFormModal && inputRefsForex.current[0]){
           inputRefsForex.current[0].focus();
         }
+
+        // Fetch the list of currencies
+        listOfCurrencies()
+        .then(response => {
+          console.log(response.data);
+          setCurrencySuggestion(response.data);
+        })
+        .catch(error =>
+          console.error('Error fetching currencies:',error)
+        )
 
         // Detect if the bankSubFormModal is closed
         if (prevBankSubFormModal.current && !bankSubFormModal){

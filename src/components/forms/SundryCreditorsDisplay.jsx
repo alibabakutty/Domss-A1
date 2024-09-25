@@ -251,7 +251,7 @@ const SundryCreditorsDisplay = () => {
         // Focus on the next input
         if (nextField < inputRefs.current.length){
           inputRefs.current[nextField]?.focus();
-          inputRefs.current[nextField].setSelectionRange(0,0);
+          inputRefs.current[nextField];
         }
 
         // Specific handling for 'creditOrDebit' input
@@ -270,7 +270,7 @@ const SundryCreditorsDisplay = () => {
         e.preventDefault();
         const prevField = index - 1;
         inputRefs.current[prevField]?.focus();
-        inputRefs.current[prevField].setSelectionRange(0, 0);
+        inputRefs.current[prevField];
       }
     } else if (key === 'Escape'){
       navigate(-1);
@@ -287,7 +287,7 @@ const SundryCreditorsDisplay = () => {
 
         if (nextField < inputRefsBank.current.length){
           inputRefsBank.current[nextField]?.focus();
-          inputRefsBank.current[nextField].setSelectionRange(0,0);
+          inputRefsBank.current[nextField];
         }
 
         // Check if the current field is swiftCode and call handleBankSubFormBlur
@@ -302,7 +302,7 @@ const SundryCreditorsDisplay = () => {
 
         if (inputRefsBank.current[prevField]){
           inputRefsBank.current[prevField]?.focus();
-          inputRefsBank.current[prevField].setSelectionRange(0, 0);
+          inputRefsBank.current[prevField];
         }
       }
     } else if (key === 'Escape'){
@@ -322,7 +322,9 @@ const SundryCreditorsDisplay = () => {
         // Focus the next field if within bounds
         if (nextField < inputRefsForex.current.length) {
           inputRefsForex.current[nextField]?.focus();
-          inputRefsForex.current[nextField].setSelectionRange(0, 0);
+        } else {
+          // If it is the last field, call handleFullFormBlur
+          handleFullFormBlur();
         }
       }
     } else if (key === 'Backspace') {
@@ -332,14 +334,13 @@ const SundryCreditorsDisplay = () => {
   
         if (inputRefsForex.current[prevField]) {
           inputRefsForex.current[prevField]?.focus();
-          inputRefsForex.current[prevField].setSelectionRange(0, 0);
+          inputRefsForex.current[prevField];
         }
       }
     } else if (key === 'Escape'){
       setForexSubFormModal(false);
     }
-  };  
-
+  };
 
   const handleBankSubFormBlur = () => {
     const confirmation = window.confirm('Are you want to proceed with this bank details?');
@@ -348,6 +349,14 @@ const SundryCreditorsDisplay = () => {
       setBankSubFormModal(false);
     }
   };
+
+  const handleFullFormBlur = () => {
+    const confirmation = window.confirm('Are you want to close this form?');
+    if(confirmation){
+      // Hide theform when "OK" is clicked
+      navigate(-1);
+    }
+  }
 
   // Utility function to format numbers in Indian decimal format
 const formatIndianNumber = (value) => {
@@ -966,7 +975,6 @@ const formatIndianNumber = (value) => {
                               
                               ref={input => (inputRefsForex.current[0 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, 0 + index * 9)}
-                              onBlur={(e) => {dateConvert(e, index)}}
                               className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                               autoComplete="off" readOnly
                             />
@@ -996,7 +1004,6 @@ const formatIndianNumber = (value) => {
                               value={row.formattedDueDate}
                               ref={input => (inputRefsForex.current[2 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, 2 + index * 9)}
-                              onBlur={(e) => {dateConvert(e, index)}}
                               className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                               autoComplete="off"
                               readOnly

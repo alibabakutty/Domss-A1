@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import RightSideButton from '../right-side-button/RightSideButton'
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getSpecificSundryDebtorName } from '../services/MasterService';
 
 const SundryDebtorsAlter = () => {
@@ -10,15 +10,18 @@ const SundryDebtorsAlter = () => {
   const [sundryDebtor, setSundryDebtor] = useState({
     sundryDebtorName: '',
     underGroup: '',
+    forexApplicable: '',
     billWiseStatus: '',
     provideBankDetails: '',
-    accountName: '',
-    accountNumber: '',
-    bankName: '',
-    branchName: '',
-    ifscCode: '',
-    accountType: '',
-    swiftCode: '',
+    bank: {
+      accountName: '',
+      accountNumber: '',
+      bankName: '',
+      branchName: '',
+      ifscCode: '',
+      accountType: '',
+      swiftCode: ''
+    },
     addressOne: '',
     addressTwo: '',
     addressThree: '',
@@ -38,33 +41,201 @@ const SundryDebtorsAlter = () => {
     dateForOpening: '',
     openingBalance: '',
     creditOrDebit: '',
-    billWiseBreakOf: '',
-    uptoOpeningBalanceAmount: '',
-    uptoCreditOrDebit: '',
-    forexDate: '',
-    referenceName: '',
-    dueDate: '',
-    forexCurrencyType: '',
-    forexAmount: '',
-    exchangeRate: '',
-    referenceAmount: '',
-    referenceCreditOrDebit: ''
-  })
+    forexSubForm: [
+      {
+        forexDate: '',
+        referenceName: '',
+        dueDate: '',
+        forexCurrencyType: '',
+        forexCurrencySymbol: '',
+        forexAmount: '',
+        exchangeRate: '',
+        outwardReferenceAmount: '',
+        inwardReferenceAmount: '',
+        referenceCreditOrDebit: '',
+        totalForexAmount: '',
+        totalAmount: '',
+        totalAmountCreditOrDebit: '',
+        totalInwardReferenceAmount: '',
+        totalInwardReferenceAmountCreditOrDebit: ''
+      },
+    ],
+  });
 
   const [bankSubFormModal, setBankSubFormModal] = useState(false);
   const [forexSubFormModal, setForexSubFormModal] = useState(false);
+  const [currencySuggestion, setCurrencySuggestion] = useState([]);
+  const [filteredSuggestion, setFilteredSuggestion] = useState([]);
+  const [currencyFocused, setCurrencyFocused] = useState(false);
+  const [highlightedSuggestionCurrency, setHighlightedSuggestionCurrency] = useState(0);
   const inputRefs = useRef([]);
+  const inputRefsBank = useRef([]);
+  const inputRefsForex = useRef([]);
+  const prevBankSubFormModal = useRef(false);      // Tracks the previous state of bankSubFormModal
+  const optionsRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() =>{
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
     }
 
+    if (bankSubFormModal && inputRefsBank.current[0]){
+      inputRefsBank.current[0].focus();
+    }
+
+    // If forexSubFormModal is active, focus the first input in that form
+    if (forexSubFormModal && inputRefsForex.current[0]){
+      inputRefsForex.current[0].focus();
+    }
+
+    // Detect if the bankSubFormModal is closed
+    if (prevBankSubFormModal.current && !bankSubFormModal){
+      // Focus on the addressOne input when bankSubFormModal closes
+      const addressOneInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'addressOne'
+      );
+      if (addressOneInputIndex !== -1 && inputRefs.current[addressOneInputIndex]){
+        inputRefs.current[addressOneInputIndex].focus();
+      }
+    }
+
+    // Update the previous state value
+    prevBankSubFormModal.current = bankSubFormModal;
+  },[bankSubFormModal, forexSubFormModal]);
+
+  useEffect(() => {
+    // Utility function to format dates from YYYY-MM-DD to DD-MMM-YYYY
+    const formateDateForDisplay = (date) => {
+      if (!date) return '';
+
+      const [year, month, day] = date.split('-');    // Change to '-' for typical date format
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      return `${day.padStart(2, '0')}-${monthNames[parseInt(month, 10) - 1]}-${year}`;
+    };
+
     const loadCustomers = async () => {
       try {
         const result = await getSpecificSundryDebtorName(datas);
-        console.log(result.data);
-        setSundryDebtor(result.data);      
+        console.log('API-Response',result.data);
+        const {
+          sundryDebtorName = '',
+          underGroup = '',
+          forexApplicable = '',
+          billWiseStatus = '',
+          provideBankDetails = '',
+          sundryDebtorBankDetails,
+          addressOne = '',
+          addressTwo = '',
+          addressThree = '',
+          addressFour = '',
+          addressFive = '',
+          landMarkOrArea = '',
+          state = '',
+          country = '',
+          pincode = '',
+          panOrItNumber = '',
+          gstinOrUinNumber = '',
+          msmeNumber = '',
+          contactPersonName = '',
+          mobileNumber = '',
+          landlineNumber = '',
+          emailId = '',
+          dateForOpening = '',
+          openingBalance = '',
+          creditOrDebit = '',
+          sundryDebtorForexDetails
+        } = result.data;   
+        
+        let fetchedBank = {
+          accountName: '',
+          accountNumber: '',
+          bankName: '',
+          branchName: '',
+          ifscCode: '',
+          accountType: '',
+          swiftCode: '',
+        };
+
+        let fetchedForexSubForm = [
+          {
+            forexDate: '',
+            referenceName: '',
+            dueDate: '',
+            forexCurrencyType: '',
+            forexCurrencySymbol: '',
+            forexAmount: '',
+            exchangeRate: '',
+            outwardReferenceAmount: '',
+            inwardReferenceAmount: '',
+            referenceCreditOrDebit: '',
+            totalForexAmount: '',
+            totalAmount: '',
+            totalAmountCreditOrDebit: '',
+            totalInwardReferenceAmount: '',
+            totalInwardReferenceAmountCreditOrDebit: ''
+          }
+        ];
+
+        if (sundryDebtorBankDetails && typeof sundryDebtorBankDetails === 'object'){
+          fetchedBank = {
+            accountName: sundryDebtorBankDetails.accountName || '',
+            accountNumber: sundryDebtorBankDetails.accountNumber || '',
+            bankName: sundryDebtorBankDetails.bankName || '',
+            branchName: sundryDebtorBankDetails.branchName || '',
+            ifscCode: sundryDebtorBankDetails.ifscCode || '',
+            accountType: sundryDebtorBankDetails.accountType || '',
+            swiftCode: sundryDebtorBankDetails.swiftCode || '',
+          };
+        }
+
+        if (Array.isArray(sundryDebtorForexDetails) && sundryDebtorForexDetails.length > 0){
+          fetchedForexSubForm = sundryDebtorForexDetails.map((forex) => ({
+            forexDate: forex.forexDate || '',
+            formattedForexDate: formateDateForDisplay(forex.forexDate),   // Format forexDate for display
+            referenceName: forex.referenceName || '',
+            dueDate: forex.dueDate || '',
+            formattedDueDate: formateDateForDisplay(forex.dueDate),   // Format duedate for display
+            forexCurrencyType: forex.forexCurrencyType || '',
+            forexCurrencySymbol: forex.forexCurrencySymbol || '',
+            forexAmount: forex.forexAmount || '',
+            exchangeRate: forex.exchangeRate || '',
+            outwardReferenceAmount: forex.outwardReferenceAmount || '',
+            inwardReferenceAmount: forex.inwardReferenceAmount || '',
+            referenceCreditOrDebit: forex.referenceCreditOrDebit || '',
+          }));
+        }
+
+        // Set the state with the updated values
+        setSundryDebtor({
+          sundryDebtorName,
+          underGroup,
+          forexApplicable,
+          billWiseStatus,
+          provideBankDetails,
+          bank: fetchedBank,
+          addressOne,
+          addressTwo,
+          addressThree,
+          addressFour,
+          addressFive,
+          landMarkOrArea,
+          state,
+          country,
+          pincode,
+          panOrItNumber,
+          gstinOrUinNumber,
+          msmeNumber,
+          contactPersonName,
+          mobileNumber,
+          landlineNumber,
+          emailId,
+          dateForOpening,
+          openingBalance,
+          creditOrDebit,
+          forexSubForm: fetchedForexSubForm
+        });
       } catch (error) {
         console.error(error);
       }
@@ -201,37 +372,37 @@ const SundryDebtorsAlter = () => {
                 <div className='text-sm mb-1 flex mt-5'>
                   <label htmlFor="accountName" className='pl-3 w-[30%]'>Account Name</label>
                   <span>:</span>
-                  <input type="text" id='accountName' name='accountName' value={sundryDebtor.accountName} ref={(input) => (inputRefs.current[3] = input)} onKeyDown={(e) => handleKeyDown(e, 3)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='accountName' name='accountName' value={sundryDebtor.bank.accountName} ref={(input) => (inputRefs.current[3] = input)} onKeyDown={(e) => handleKeyDown(e, 3)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
                   <label htmlFor="accountNumber" className='pl-3 w-[30%]'>Account Number</label>
                   <span>:</span>
-                  <input type="text" id='accountNumber' name='accountNumber' value={sundryDebtor.accountNumber} ref={(input) => (inputRefs.current[4] = input)} onKeyDown={(e) => handleKeyDown(e, 4)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='accountNumber' name='accountNumber' value={sundryDebtor.bank.accountNumber} ref={(input) => (inputRefs.current[4] = input)} onKeyDown={(e) => handleKeyDown(e, 4)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
                   <label htmlFor="bankName" className='pl-3 w-[30%]'>Bank Name</label>
                   <span>:</span>
-                  <input type="text" id='bankName' name='bankName' value={sundryDebtor.bankName} ref={(input) => (inputRefs.current[5] = input)} onKeyDown={(e) => handleKeyDown(e, 5)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='bankName' name='bankName' value={sundryDebtor.bank.bankName} ref={(input) => (inputRefs.current[5] = input)} onKeyDown={(e) => handleKeyDown(e, 5)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
                   <label htmlFor="branchName" className='pl-3 w-[30%]'>Branch Name</label>
                   <span>:</span>
-                  <input type="text" id='branchName' name='branchName' value={sundryDebtor.branchName} ref={(input) => (inputRefs.current[6] = input)} onKeyDown={(e) => handleKeyDown(e, 6)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='branchName' name='branchName' value={sundryDebtor.bank.branchName} ref={(input) => (inputRefs.current[6] = input)} onKeyDown={(e) => handleKeyDown(e, 6)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
                   <label htmlFor="ifscCode" className='pl-3 w-[30%]'>IFSC Code</label>
                   <span>:</span>
-                  <input type="text" id='ifscCode' name='ifscCode' value={sundryDebtor.ifscCode} ref={(input) => (inputRefs.current[7] = input)} onKeyDown={(e) => handleKeyDown(e, 7)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='ifscCode' name='ifscCode' value={sundryDebtor.bank.ifscCode} ref={(input) => (inputRefs.current[7] = input)} onKeyDown={(e) => handleKeyDown(e, 7)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
                   <label htmlFor="accountType" className='pl-3 w-[30%]'>Account Type</label>
                   <span>:</span>
-                  <input type="text" id='accountType' name='accountType' value={sundryDebtor.accountType} ref={(input) => (inputRefs.current[8] = input)} onKeyDown={(e) => handleKeyDown(e, 8)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+                  <input type="text" id='accountType' name='accountType' value={sundryDebtor.bank.accountType} ref={(input) => (inputRefs.current[8] = input)} onKeyDown={(e) => handleKeyDown(e, 8)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
                 </div>
                 <div className='text-sm mb-1 flex'>
                   <label htmlFor="swiftCode" className='pl-3 w-[30%]'>Swift Code</label>
                   <span>:</span>
-                  <input type="text" id='swiftCode' name='swiftCode' value={sundryDebtor.swiftCode} ref={(input) => (inputRefs.current[9] = input)} onKeyDown={(e) => handleKeyDown(e, 9)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' onBlur={handleBankSubFormBlur} />
+                  <input type="text" id='swiftCode' name='swiftCode' value={sundryDebtor.bank.swiftCode} ref={(input) => (inputRefs.current[9] = input)} onKeyDown={(e) => handleKeyDown(e, 9)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' onBlur={handleBankSubFormBlur} />
                 </div>
               </div>
             </div>
@@ -327,41 +498,10 @@ const SundryDebtorsAlter = () => {
 
 
           {forexSubFormModal && (
-            <div className='fixed top-[44px] left-0 bottom-0 right-[138px] bg-slate-300 bg-opacity-90 flex justify-center items-center z-10' >
-              <div className='w-[1100px] bg-white h-[400px] border border-black'>
-                <div className='flex text-sm ml-[150px] mt-1'>
-                  <label htmlFor="billWiseBreakOf" className='w-[16%]'>Bill-wise Breakup of</label>
-                  <span>:</span>
-                  <input type="text" id='billWiseBreakOf' name='billWiseBreakOf' value={sundryDebtor.billWiseBreakOf} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                </div>
-                <div className='flex text-sm mb-1 ml-[150px]'>
-                  <label htmlFor="uptoOpeningBalanceAmount" className='w-[16%]'>Upto</label>
-                  <span>:</span>₹
-                  <input type="text" id='uptoOpeningBalanceAmount' name='uptoOpeningBalanceAmount' value={sundryDebtor.uptoOpeningBalanceAmount} className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" id='uptoCreditOrDebit' name='uptoCreditOrDebit' value={sundryDebtor.uptoCreditOrDebit} className='w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                </div>
-                <div className='flex border border-t-slate-400 border-b-slate-400 justify-between'>
-                  <p className='w-[60px] text-sm'>Date</p>
-                  <p className='w-[150px] text-sm'>Reference Name</p>
-                  <p className='text-sm'>Due Date</p>
-                  <p className='text-sm'>Forex Currency Type</p>
-                  <p className='text-sm'>Forex Amount</p>
-                  <p className='text-sm'>Exchange Rate</p>
-                  <p className='text-sm'>Amount</p>
-                  <p>Cr/Dr</p>
-                </div>
-                <div className='flex justify-between'>
-                  <input type="text" id='forexDate' name='forexDate' value={sundryDebtor.forexDate} ref={(input) => (inputRefs.current[28] = input)} onKeyDown={(e) => handleKeyDown(e, 28)} className='w-[90px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" id='referenceName' name='referenceName' value={sundryDebtor.referenceName} ref={(input) => (inputRefs.current[29] = input)} onKeyDown={(e) => handleKeyDown(e, 29)} className='w-[150px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" id='dueDate' name='dueDate' value={sundryDebtor.dueDate} ref={(input) => (inputRefs.current[30] = input)} onKeyDown={(e) => handleKeyDown(e, 30)} className='w-[90px] ml-10 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" id='forexCurrencyType' name='forexCurrencyType' value={sundryDebtor.forexCurrencyType} ref={(input) => (inputRefs.current[31] = input)} onKeyDown={(e) => handleKeyDown(e, 31)} className='w-[150px] ml-3 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" id='forexAmount' name='forexAmount' value={sundryDebtor.forexAmount} ref={(input) => (inputRefs.current[32] = input)} onKeyDown={(e) => handleKeyDown(e, 32)} className='w-[100px] ml-3 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" id='exchangeRate' name='exchangeRate' value={sundryDebtor.exchangeRate} ref={(input) => (inputRefs.current[33] = input)} onKeyDown={(e) => handleKeyDown(e, 33)} className='w-[100px] ml-3 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" id='referenceAmount' name='referenceAmount' value={sundryDebtor.referenceAmount} ref={(input) => (inputRefs.current[34] = input)} onKeyDown={(e) => handleKeyDown(e, 34)} className='w-[120px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                  <input type="text" id='referenceCreditOrDebit' name='referenceCreditOrDebit' value={sundryDebtor.referenceCreditOrDebit} ref={(input) => (inputRefs.current[35] = input)} onKeyDown={(e) => handleKeyDown(e, 35)} className='w-[50px] h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
-                </div>
+            <div className='fixed top-[44px] left-0 right-[138px] bottom-0 bg-slate-300 bg-opacity-90 flex justify-center items-center z-10'>
+              <div className='bg-white w-[1100px] h-[500px]'>
+
               </div>
-                
             </div>
           )}
 

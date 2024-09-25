@@ -67,23 +67,23 @@ const SundryDebtorsDisplay = () => {
 
   useEffect(() =>{
     if (inputRefs.current[0]){
-      inputRefs.current[0].focus();
+      inputRefs.current[0]?.focus();
     }
 
     if (bankSubFormModal){
       if(inputRefsBank.current[0]){
-        inputRefsBank.current[0].focus();
+        inputRefsBank.current[0]?.focus();
       }
     }
 
     // If forexSubFormModal is active, focus the first input in that form
     if (forexSubFormModal && inputRefsForex.current[0]){
-      inputRefsForex.current[0].focus();
+      inputRefsForex.current[0]?.focus();
     }
 
         // If forexSubFormModal is active, focus the first input in that form
         if (forexSubFormModal && inputRefsForex.current[0]){
-          inputRefsForex.current[0].focus();
+          inputRefsForex.current[0]?.focus();
         }
 
         // Detect if the bankSubFormModal is closed
@@ -93,7 +93,7 @@ const SundryDebtorsDisplay = () => {
             ref => ref && ref.name === 'addressOne'
           );
           if (addressOneInputIndex !== -1 && inputRefs.current[addressOneInputIndex]){
-            inputRefs.current[addressOneInputIndex].focus();
+            inputRefs.current[addressOneInputIndex]?.focus();
           }
         }
 
@@ -111,7 +111,7 @@ const SundryDebtorsDisplay = () => {
     };
     
 
-    const loadCustomers = async () => {
+    const loadSuppliers = async () => {
       try {
         const result = await getSpecificSundryDebtorName(datas);
         console.log('API-Response',result.data);
@@ -238,7 +238,7 @@ const SundryDebtorsDisplay = () => {
       };
     }
 
-    loadCustomers();
+    loadSuppliers();
   },[bankSubFormModal, forexSubFormModal]);
 
   const handleKeyDown = (e, index) => {
@@ -253,6 +253,17 @@ const SundryDebtorsDisplay = () => {
           inputRefs.current[nextField]?.focus();
           inputRefs.current[nextField].setSelectionRange(0,0);
         }
+
+        // Specific handling for 'creditOrDebit' input
+        if (e.target.name === 'creditOrDebit'){
+          // Open the forexSubFormModal when a value is entered in creditOrDebit input
+          setForexSubFormModal(true);
+        }
+
+        // Specific handling for 'provideBankDetails' input
+        if (e.target.name === 'provideBankDetails' && e.target.value.trim() === 'yes'){
+          setBankSubFormModal(true);
+        }
       }
     } else if (key === 'Backspace'){
       if (e.target.value.trim() === '' && index > 0){
@@ -261,26 +272,6 @@ const SundryDebtorsDisplay = () => {
         inputRefs.current[prevField]?.focus();
         inputRefs.current[prevField].setSelectionRange(0, 0);
       }
-    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'provideBankDetails'){
-      e.preventDefault();
-      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
-      setSundryDebtor({
-        ...sundryDebtor,
-        provideBankDetails: value
-      });
-      // Handle opening of the bank details subform modal if 'Yes' is selected
-      if (value === 'yes'){
-        setBankSubFormModal(true);
-      }
-    } else if (['c', 'd', 'C', 'D'].includes(key) && e.target.name === 'creditOrDebit'){
-      e.preventDefault();
-      const value = key.toLowerCase() === 'c' ? 'cr' : 'dr';
-      setSundryDebtor(prevState => ({
-        ...prevState,
-        creditOrDebit: value
-      }));
-      // Open the forexSubFormModal when a value is entered in creditOrDebit input
-      setForexSubFormModal(true);
     } else if (key === 'Escape'){
       navigate(-1);
     }
@@ -295,7 +286,7 @@ const SundryDebtorsDisplay = () => {
         const nextField = index + 1;
 
         if (nextField < inputRefsBank.current.length){
-          inputRefsBank.current[nextField].focus();
+          inputRefsBank.current[nextField]?.focus();
           inputRefsBank.current[nextField].setSelectionRange(0,0);
         }
 
@@ -310,10 +301,12 @@ const SundryDebtorsDisplay = () => {
         const prevField = index - 1;
 
         if (inputRefsBank.current[prevField]){
-          inputRefsBank.current[prevField].focus();
+          inputRefsBank.current[prevField]?.focus();
           inputRefsBank.current[prevField].setSelectionRange(0, 0);
         }
       }
+    } else if (key === 'Escape'){
+      setBankSubFormModal(false);
     }
   }
 
@@ -321,42 +314,29 @@ const SundryDebtorsDisplay = () => {
     const key = e.key;
   
     if (key === 'Enter') {
-      e.preventDefault();
-  
-      // Determine the next index based on forexApplicable condition
-      let nextField = index + 1;
-  
-      // Check if forexApplicable affects the next field
-      if (sundryDebtor.forexApplicable === 'no' && nextField >= 4) {
-        // Skip the forex fields if forexApplicable is 'no'
-        nextField = 9; // Adjust this based on your table structure
-      } else if (sundryDebtor.forexApplicable === 'yes' && nextField >= 7) {
-        // Adjust for the case when forexApplicable is 'yes'
-        nextField = 9; // Adjust based on how many fields you want to skip
-      }
-  
-      // Focus the next field if within bounds
-      if (nextField < inputRefsForex.current.length) {
-        inputRefsForex.current[nextField].focus();
-        inputRefsForex.current[nextField].setSelectionRange(0, 0);
+      (e).preventDefault();
+
+      if (e.target.value.trim() !== ''){
+        const nextField = index + 1;
+
+        // Focus the next field if within bounds
+        if (nextField < inputRefsForex.current.length) {
+          inputRefsForex.current[nextField]?.focus();
+          inputRefsForex.current[nextField].setSelectionRange(0, 0);
+        }
       }
     } else if (key === 'Backspace') {
       if (e.target.value.trim() === '' && index > 0) {
         e.preventDefault();
         const prevField = index - 1;
   
-        // Check if forexApplicable affects the previous field
-        if (sundryDebtor.forexApplicable === 'no' && prevField >= 4) {
-          // Skip back to the first column if previous is a forex field
-          inputRefsForex.current[0].focus();
-        } else if (sundryDebtor.forexApplicable === 'yes' && prevField >= 7) {
-          // Skip back to the first column for inward amount
-          inputRefsForex.current[0].focus();
-        } else if (inputRefsForex.current[prevField]) {
-          inputRefsForex.current[prevField].focus();
+        if (inputRefsForex.current[prevField]) {
+          inputRefsForex.current[prevField]?.focus();
           inputRefsForex.current[prevField].setSelectionRange(0, 0);
         }
       }
+    } else if (key === 'Escape'){
+      setForexSubFormModal(false);
     }
   };  
 
@@ -1076,7 +1056,7 @@ const formatIndianNumber = (value) => {
                                   value={formatIndianNumber(row.exchangeRate)}
                                   
                                   ref={input => (inputRefsForex.current[5 + index * 9] = input)}
-                                  onKeyDown={e => handleKeyDownForex(e, 5 + index * 5)}
+                                  onKeyDown={e => handleKeyDownForex(e, 5 + index * 9)}
                                   className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                                   autoComplete="off" readOnly
                                 />
@@ -1093,8 +1073,8 @@ const formatIndianNumber = (value) => {
                                   
                                   ref={input => (inputRefsForex.current[6 + index * 9] = input)}
                                   onKeyDown={e => 
-                                    {handleKeyDownForex(e, 6 + index * 9)
-                                  }}
+                                    handleKeyDownForex(e, 6 + index * 9)
+                                  }
                                   className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                                   autoComplete="off" readOnly
                                 />

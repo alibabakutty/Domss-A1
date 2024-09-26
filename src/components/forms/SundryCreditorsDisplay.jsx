@@ -14,13 +14,15 @@ const SundryCreditorsDisplay = () => {
     forexApplicable: '',
     billWiseStatus: '',
     provideBankDetails: '',
-    accountName: '',
-    accountNumber: '',
-    bankName: '',
-    branchName: '',
-    ifscCode: '',
-    accountType: '',
-    swiftCode: '',
+    bank: {
+      accountName: '',
+      accountNumber: '',
+      bankName: '',
+      branchName: '',
+      ifscCode: '',
+      accountType: '',
+      swiftCode: '',
+    },
     addressOne: '',
     addressTwo: '',
     addressThree: '',
@@ -40,22 +42,26 @@ const SundryCreditorsDisplay = () => {
     dateForOpening: '',
     openingBalance: '',
     creditOrDebit: '',
-    forexDate: '',
-    referenceName: '',
-    dueDate: '',
-    forexCurrencyType: '',
     forexCurrencySymbol: '',
-    forexAmount: '',
-    exchangeRate: '',
-    outwardReferenceAmount: '',
-    inwardReferenceAmount: '',
-    referenceCreditOrDebit: '',
     totalForexAmount: '',
-    totalAmount: '',
-    totalAmountCreditOrDebit: '',
     totalInwardReferenceAmount: '',
-    totalInwardReferenceAmountCreditOrDebit: ''
-  })
+    totalOutwardReferenceAmount: '',
+    forexSubForm: [
+      {
+        
+        forexDate: '',
+        referenceName: '',
+        dueDate: '',
+        forexCurrencyType: '',
+        forexCurrencySymbol: '',
+        forexAmount: '',
+        exchangeRate: '',
+        outwardReferenceAmount: '',
+        inwardReferenceAmount: '',
+        referenceCreditOrDebit: ''
+      },
+    ],
+  });
 
   const [bankSubFormModal, setBankSubFormModal] = useState(false);
   const [forexSubFormModal, setForexSubFormModal] = useState(false);
@@ -142,6 +148,10 @@ const SundryCreditorsDisplay = () => {
           dateForOpening = '',
           openingBalance = '',
           creditOrDebit = '',
+          forexCurrencySymbol = '',    // Fetch the top-level forexCurrencySymbol
+          totalForexAmount = '',
+          totalInwardReferenceAmount = '',
+          totalOutwardReferenceAmount = '',
           sundryCreditorForexDetails
         } = result.data;
 
@@ -166,12 +176,7 @@ const SundryCreditorsDisplay = () => {
             exchangeRate: '',
             outwardReferenceAmount: '',
             inwardReferenceAmount: '',
-            referenceCreditOrDebit: '',
-            totalForexAmount: '',
-            totalAmount: '',
-            totalAmountCreditOrDebit: '',
-            totalInwardReferenceAmount: '',
-            totalInwardReferenceAmountCreditOrDebit: ''
+            referenceCreditOrDebit: ''
           }
         ];
 
@@ -186,6 +191,9 @@ const SundryCreditorsDisplay = () => {
             swiftCode: sundryCreditorBankDetails.swiftCode || '',
           };
         }
+
+        // Set default forexCurrencySymbol to avoid undefined error
+        let frontForexSymbol = '';
 
         if (Array.isArray(sundryCreditorForexDetails) && sundryCreditorForexDetails.length > 0){
           fetchedForexSubForm = sundryCreditorForexDetails.map((forex) => ({
@@ -202,6 +210,13 @@ const SundryCreditorsDisplay = () => {
             inwardReferenceAmount: forex.inwardReferenceAmount || '',
             referenceCreditOrDebit: forex.referenceCreditOrDebit || '',
           }));
+
+          // Debugging: check if fetched forex form has correct symbols
+          console.log('Fetched Forex SubForm:', fetchedForexSubForm);
+
+          // Assuming you want to set the first forexCurrencySymbol globally
+          frontForexSymbol = sundryCreditorForexDetails[0]?.forexCurrencySymbol || '';
+          console.log('Front side forex currency symbol:', frontForexSymbol);
         }
 
         // Set the state with the updated values
@@ -231,6 +246,10 @@ const SundryCreditorsDisplay = () => {
           dateForOpening,
           openingBalance,
           creditOrDebit,
+          forexCurrencySymbol: frontForexSymbol,
+          totalForexAmount,
+          totalInwardReferenceAmount,
+          totalOutwardReferenceAmount,
           forexSubForm: fetchedForexSubForm,
         });
       } catch (error) {
@@ -240,6 +259,7 @@ const SundryCreditorsDisplay = () => {
 
     loadSuppliers();
   },[bankSubFormModal, forexSubFormModal]);
+  console.log(sundryCreditor.forexCurrencySymbol);
 
   const handleKeyDown = (e, index) => {
     const key = e.key;
@@ -308,7 +328,147 @@ const SundryCreditorsDisplay = () => {
     } else if (key === 'Escape'){
       setBankSubFormModal(false);
     }
-  }
+  };
+
+  const calculateTotals = () => {
+    let totalForexAmount = 0;
+    let totalAmount = 0;
+    let rowIndexToClear = -1; // Variable to keep track of the row that exceeds the limit
+  
+    setSundryCreditor((prevState) => {
+      // Parse openingBalance as a float, removing commas
+      const openingBalance = parseFloat(prevState.openingBalance) || 0;
+  
+      const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
+        // Parse forexAmount and exchangeRate as floats, removing commas
+        const forexAmount = parseFloat(row.forexAmount) || 0;
+        const exchangeRate = parseFloat(row.exchangeRate) || 1; // Assume 1 if exchangeRate is not provided
+  
+        // Calculate outwardReferenceAmount
+        const outwardReferenceAmount = forexAmount * exchangeRate;
+  
+        // Accumulate totals
+        totalForexAmount += forexAmount;
+        totalAmount += outwardReferenceAmount;
+  
+        // Check if totalAmount exceeds openingBalance
+        if (totalAmount > openingBalance && rowIndexToClear === -1) {
+          rowIndexToClear = index; // Store the index of the row that caused the excess
+        }
+  
+        // Return the updated row with outwardReferenceAmount
+        return {
+          ...row,
+          outwardReferenceAmount: outwardReferenceAmount.toLocaleString('en-IN', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
+        };
+      });
+  
+      // Check if totalAmount exceeds the openingBalance
+      if (totalAmount > openingBalance) {
+        const remainingAmount = (openingBalance - (totalAmount - updatedForexSubForm[rowIndexToClear].outwardReferenceAmount)).toLocaleString('en-IN', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+  
+        // Display alert for exceeding balance
+        window.alert(`The total amount exceeds the opening balance! Remaining amount: ₹${remainingAmount}`);
+  
+        // Clear the forexAmount and outwardReferenceAmount of the row that caused the excess
+        if (rowIndexToClear !== -1) {
+          updatedForexSubForm[rowIndexToClear].forexAmount = '0'; // Reset forexAmount to zero
+          updatedForexSubForm[rowIndexToClear].outwardReferenceAmount = '0'; // Reset outwardReferenceAmount to zero
+  
+          // Set focus to the problematic forexAmount input
+          inputRefsForex.current[rowIndexToClear * 9]?.focus(); // Adjust index based on layout
+        }
+      }
+  
+      // Format totals to 2 decimal places
+      const formattedTotalForexAmount = totalForexAmount.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+      const formattedTotalAmount = totalAmount.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+  
+      // Log calculated totals for debugging
+      console.log('Calculated Totals:', {
+        totalForexAmount: formattedTotalForexAmount,
+        totalAmount: formattedTotalAmount,
+      });
+  
+      // Return the updated state with updated totals and forexSubForm
+      return {
+        ...prevState,
+        forexSubForm: updatedForexSubForm, // Update forexSubForm rows
+        totalForexAmount: formattedTotalForexAmount, // Update totalForexAmount
+        totalAmount: formattedTotalAmount, // Update totalAmount
+      };
+    });
+  };       
+  
+  const calculateInwardTotals = () => {
+    let totalInwardReferenceAmount = 0;
+    let rowIndexToClear = -1; // Variable to keep track of the row index that exceeds the limit
+  
+    setSundryCreditor((prevState) => {
+      // Parse openingBalance as a float, removing commas
+      const openingBalance = parseFloat(prevState.openingBalance) || 0;
+  
+      const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
+        // Parse inwardReferenceAmount as a float, removing commas
+        const inwardReferenceAmount = parseFloat(row.inwardReferenceAmount) || 0;
+  
+        // Accumulate the inward reference amount
+        totalInwardReferenceAmount += inwardReferenceAmount;
+  
+        // Check if the totalInwardReferenceAmount exceeds the openingBalance
+        if (totalInwardReferenceAmount > openingBalance && rowIndexToClear === -1) {
+          rowIndexToClear = index; // Store the index of the row that caused the excess
+        }
+  
+        // Return the row unchanged as no additional modifications are required
+        return row;
+      });
+  
+      // Ensure the total amount does not exceed the opening balance
+      if (totalInwardReferenceAmount > openingBalance) {
+        const remainingAmount = (openingBalance - (totalInwardReferenceAmount - updatedForexSubForm[rowIndexToClear].inwardReferenceAmount)).toLocaleString('en-IN', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+  
+        // Display alert with the remaining balance
+        window.alert(`The total inward reference amount exceeds the opening balance! Remaining amount: ₹${remainingAmount}`);
+  
+        // Clear the inwardReferenceAmount of the row that caused the excess
+        if (rowIndexToClear !== -1) {
+          updatedForexSubForm[rowIndexToClear].inwardReferenceAmount = '0'; // Reset the inwardReferenceAmount to zero
+        }
+  
+        // Set focus to the row input that caused the issue
+        inputRefsForex.current[rowIndexToClear * 9]?.focus();
+      }
+  
+      // Format the total inward reference amount
+      const formattedTotalInwardReferenceAmount = totalInwardReferenceAmount.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      });
+  
+      // Return the updated state
+      return {
+        ...prevState,
+        forexSubForm: updatedForexSubForm,
+        totalInwardReferenceAmount: formattedTotalInwardReferenceAmount, // Update total inward reference amount
+      };
+    });
+  };
 
   const handleKeyDownForex = (e, index) => {
     const key = e.key;
@@ -340,6 +500,57 @@ const SundryCreditorsDisplay = () => {
     } else if (key === 'Escape'){
       setForexSubFormModal(false);
     }
+  };
+
+  const handleInputForexChange = (e, index) => {
+    const { name, value } = e.target;
+  
+    setSundryCreditor((prevState) => {
+      let updatedForexSubForm = [...prevState.forexSubForm];
+  
+      // Update the current row's input field
+      updatedForexSubForm[index] = {
+        ...updatedForexSubForm[index],
+        [name]: value,
+      };
+  
+      // Propagate exchangeRate from the first row to all other rows
+      if (
+        (name === 'exchangeRate' && index === 0) ||
+        (index !== 0 && updatedForexSubForm[index].exchangeRate === '')
+      ) {
+        const defaultExchangeRate = updatedForexSubForm[0].exchangeRate || value;
+        updatedForexSubForm = updatedForexSubForm.map((row, i) => {
+          if (i === 0) return row; // Skip the first row
+  
+          return {
+            ...row,
+            exchangeRate: defaultExchangeRate, // Propagate exchangeRate
+          };
+        });
+      }
+  
+      // Propagate creditorDebit to referenceCreditorDebit for all rows
+      if (name === 'creditOrDebit') {
+        updatedForexSubForm = updatedForexSubForm.map((row) => ({
+          ...row,
+          referenceCreditorDebit: value, // Set referenceCreditorDebit from creditorDebit
+        }));
+      }
+  
+      // Recalculate totals after updating the forexSubForm
+      calculateTotals();
+  
+      // Call calculateInwardTotals after updating the inwardReferenceAmount if that field is changed
+      if (name === 'inwardReferenceAmount') {
+        calculateInwardTotals();
+      }
+  
+      return {
+        ...prevState,
+        forexSubForm: updatedForexSubForm,
+      };
+    });
   };
 
   const handleBankSubFormBlur = () => {
@@ -393,7 +604,7 @@ const formatIndianNumber = (value) => {
               value={sundryCreditor.sundryCreditorName}
               
               onKeyDown={e => handleKeyDown(e, 0)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize border border-transparent transition-all focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off" readOnly
             />
           </div>
@@ -409,7 +620,7 @@ const formatIndianNumber = (value) => {
                 name="underGroup"
                 value={sundryCreditor.underGroup}
                 
-                className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off" readOnly
               />
             </div>
@@ -426,7 +637,7 @@ const formatIndianNumber = (value) => {
                 ref={input => (inputRefs.current[1] = input)}
                 
                 onKeyDown={e => handleKeyDown(e, 1)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off" readOnly
               />
             </div>
@@ -445,7 +656,7 @@ const formatIndianNumber = (value) => {
                 ref={input => (inputRefs.current[2] = input)}
                 
                 onKeyDown={e => handleKeyDown(e, 2)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off" readOnly
               />
             </div>
@@ -462,7 +673,7 @@ const formatIndianNumber = (value) => {
                 ref={input => (inputRefs.current[3] = input)}
                 
                 onKeyDown={e => handleKeyDown(e, 3)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>
@@ -485,7 +696,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[0] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 0)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -502,7 +713,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[1] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 1)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -519,7 +730,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[2] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 2)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -536,7 +747,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[3] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 3)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -553,7 +764,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[4] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 4)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -570,7 +781,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[5] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 5)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -587,7 +798,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[6] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 6)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -608,7 +819,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[4] = input)}
               
               onKeyDown={e => handleKeyDown(e, 4)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -623,7 +834,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[5] = input)}
               
               onKeyDown={e => handleKeyDown(e, 5)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -638,7 +849,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[6] = input)}
               
               onKeyDown={e => handleKeyDown(e, 6)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -653,7 +864,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[7] = input)}
               
               onKeyDown={e => handleKeyDown(e, 7)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -668,7 +879,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[8] = input)}
               
               onKeyDown={e => handleKeyDown(e, 8)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -685,7 +896,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[9] = input)}
               
               onKeyDown={e => handleKeyDown(e, 9)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -702,7 +913,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[10] = input)}
               
               onKeyDown={e => handleKeyDown(e, 10)}
-              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -719,7 +930,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[11] = input)}
               
               onKeyDown={e => handleKeyDown(e, 11)}
-              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -736,7 +947,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[12] = input)}
               
               onKeyDown={e => handleKeyDown(e, 12)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -753,7 +964,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[13] = input)}
               
               onKeyDown={e => handleKeyDown(e, 13)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -770,7 +981,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[14] = input)}
               
               onKeyDown={e => handleKeyDown(e, 14)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -787,7 +998,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[15] = input)}
               
               onKeyDown={e => handleKeyDown(e, 15)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -804,7 +1015,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[16] = input)}
               
               onKeyDown={e => handleKeyDown(e, 16)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -821,7 +1032,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[17] = input)}
               
               onKeyDown={e => handleKeyDown(e, 17)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -838,7 +1049,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[18] = input)}
               
               onKeyDown={e => handleKeyDown(e, 18)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -855,7 +1066,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[19] = input)}
               
               onKeyDown={e => handleKeyDown(e, 19)}
-              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
           </div>
@@ -869,7 +1080,7 @@ const formatIndianNumber = (value) => {
               id="dateForOpening"
               name="dateForOpening"
               value={sundryCreditor.dateForOpening}
-              className="w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
             )<span className="ml-3">:</span>
@@ -883,7 +1094,7 @@ const formatIndianNumber = (value) => {
               
               onBlur={formatIndianNumber}
               onKeyDown={e => handleKeyDown(e, 20)}
-              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm text-right uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off" readOnly
             />
             <input
@@ -894,7 +1105,33 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[21] = input)}
               onKeyDown={e => handleKeyDown(e, 21)}
               
-              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              autoComplete="off"
+            />
+          </div>
+
+          <div className="text-sm pl-1 mb-1 flex">
+            <label htmlFor="totalForexAmount" className="w-[31.8%] ml-2">
+              Forex Amount Balance
+            </label>
+            <span className="ml-3">:</span>
+            <span className="ml-2">{sundryCreditor.forexCurrencySymbol}</span>
+            <input
+              type="text"
+              id="totalForexAmount"
+              name="totalForexAmount"
+              value={formatIndianNumber(sundryCreditor.totalForexAmount)}
+              onBlur={formatIndianNumber}
+              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm text-right uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              autoComplete="off" readOnly
+            />
+            <input
+              type="text"
+              id="creditOrDebit"
+              name="creditOrDebit"
+              value={sundryCreditor.creditOrDebit}
+              
+              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -975,7 +1212,7 @@ const formatIndianNumber = (value) => {
                               
                               ref={input => (inputRefsForex.current[0 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, 0 + index * 9)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off" readOnly
                             />
                           </td>
@@ -990,7 +1227,7 @@ const formatIndianNumber = (value) => {
                               
                               ref={input => (inputRefsForex.current[1 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, 1 + index * 9 )}
-                              className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off" readOnly
                             />
                           </td>
@@ -1004,7 +1241,7 @@ const formatIndianNumber = (value) => {
                               value={row.formattedDueDate}
                               ref={input => (inputRefsForex.current[2 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, 2 + index * 9)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                               readOnly
                             />
@@ -1023,15 +1260,7 @@ const formatIndianNumber = (value) => {
                                   ref={input => (inputRefsForex.current[3 + index * 9] = input)}
                                   
                                   onKeyDown={e => handleKeyDownForex(e, 3 + index * 9)}
-                                  onFocus={e => {
-                                    // Set focus only for the first row
-                                    if (index === 0){
-                                      setCurrencyFocused(true);
-                                      handleInputForexChange(e, index);
-                                    }
-                                  }}
-                                  onBlur={() => setCurrencyFocused(false)}
-                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1048,7 +1277,7 @@ const formatIndianNumber = (value) => {
                                   ref={input => (inputRefsForex.current[4 + index * 9] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, 4 + index * 9)}
                                   onBlur={(e) => {formatIndianNumber(e, index)}} 
-                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1064,7 +1293,7 @@ const formatIndianNumber = (value) => {
                                   
                                   ref={input => (inputRefsForex.current[5 + index * 9] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, 5 + index * 9)}
-                                  className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1077,12 +1306,12 @@ const formatIndianNumber = (value) => {
                                   id="outwardReferenceAmount"
                                   name="outwardReferenceAmount"
                                   value={formatIndianNumber(row.outwardReferenceAmount)}
-                                  
+                                  onChange={e => handleInputForexChange(e, index)}
                                   ref={input => (inputRefsForex.current[6 + index * 9] = input)}
                                   onKeyDown={e => 
                                     handleKeyDownForex(e, 6 + index * 9)
                                   }
-                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1105,7 +1334,7 @@ const formatIndianNumber = (value) => {
                                   onBlur={(e) => {
                                     formatIndianNumber(e, index);
                                   }}
-                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1122,7 +1351,7 @@ const formatIndianNumber = (value) => {
                               
                               ref={input => (inputRefsForex.current[8 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, 8 + index * 9)}
-                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off" readOnly
                             />
                           </td>
@@ -1130,7 +1359,82 @@ const formatIndianNumber = (value) => {
                       ))}
                     </tbody>
                   </table>
-              
+                  {sundryCreditor.forexApplicable !== 'no' && (
+                    <>
+                      <div className=" mt-4">
+                        <div className="w-[350px] h-[20px] flex absolute left-[610px] top-[500px] border border-t-black border-transparent">
+                          <label htmlFor="totalForexAmount" className="text-[12px] mr-1 mt-1">
+                            Total
+                          </label>
+                          <span className="text-sm mt-1">($)</span>
+                          <span className="absolute top-0 left-[60px] bottom-0">:</span>
+                          <input
+                            type="text"
+                            id="totalForexAmount"
+                            name="totalForexAmount"
+                            value={formatIndianNumber(sundryCreditor.totalForexAmount)}
+                            onBlur={(e) => formatIndianNumber(e, 0)}
+                            className="w-[100px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            autoComplete="off"
+                            readOnly
+                          />
+                        </div>
+                        <div className="w-[167px] flex absolute left-[900px] top-[500px] border border-t-black border-transparent">
+                          <label htmlFor="totalOutwardReferenceAmount" className="text-[12px] mr-1 mt-1">
+                            Total
+                          </label>
+                          <span className="text-sm mt-1">(₹)</span>
+                          <span className="absolute left-[60px] bottom-0">:</span>
+                          <input
+                            type="text"
+                            id="totalOutwardReferenceAmount"
+                            name="totalOutwardReferenceAmount"
+                            value={formatIndianNumber(sundryCreditor.totalOutwardReferenceAmount)}
+                            onBlur={(e) => formatIndianNumber(e, 1)}
+                            className="w-[120px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            autoComplete="off"
+                            readOnly
+                          />
+                          <input
+                            type="text"
+                            id="totalOutwardReferenceAmountCreditOrDebit"
+                            name="totalOutwardReferenceAmountCreditOrDebit"
+                            value={sundryCreditor.forexSubForm.totalOutwardReferenceAmountCreditOrDebit}
+                            onChange={handleInputForexChange}
+                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            autoComplete="off"
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {sundryCreditor.forexApplicable !== 'yes' && (
+                    <>
+                      <div className='w-[126px] flex absolute left-[900px] top-[500px] text-sm border border-t-black border-transparent'>
+                        <label htmlFor="" className='mt-1'>Total</label>
+                        <span className='mt-1'>:</span>
+                        <span className='ml-1 mt-1'>₹</span>
+                        <input
+                            type="text"
+                            id="totalInwardReferenceAmount"
+                            name="totalInwardReferenceAmount"
+                            value={formatIndianNumber(sundryCreditor.totalInwardReferenceAmount)}
+                            onBlur={(e) => formatIndianNumber(e, 1)}
+                            className="w-[80px] h-5 mt-1 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            autoComplete="off"
+                            readOnly
+                          />
+                          <input
+                            type="text"
+                            id="totalInwardReferenceAmountCreditOrDebit"
+                            name="totalInwardReferenceAmountCreditOrDebit"
+                            value={sundryCreditor.forexSubForm.totalInwardReferenceAmountCreditOrDebit}
+                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            autoComplete="off"
+                          />
+                      </div>
+                    </>
+                  )}    
                 </div>
               </div>
             </div>

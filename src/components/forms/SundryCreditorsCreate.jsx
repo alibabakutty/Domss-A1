@@ -39,6 +39,9 @@ const SundryCreditorsCreate = () => {
     dateForOpening: '1-Apr-2024',
     openingBalance: '',
     creditOrDebit: 'cr',
+    totalForexAmount: '',
+    totalInwardReferenceAmount: '',
+    totalOutwardReferenceAmount: '',
     forexSubForm: [
       {
         
@@ -51,12 +54,7 @@ const SundryCreditorsCreate = () => {
         exchangeRate: '',
         outwardReferenceAmount: '',
         inwardReferenceAmount: '',
-        referenceCreditOrDebit: 'cr',
-        totalForexAmount: '',
-        totalAmount: '',
-        totalAmountCreditOrDebit: 'cr',
-        totalInwardReferenceAmount: '',
-        totalInwardReferenceAmountCreditOrDebit: 'cr'
+        referenceCreditOrDebit: 'cr'
       },
     ],
   });
@@ -132,9 +130,9 @@ console.log(sundryCreditor)
     }));
   };
 
-  const calculateTotals = () => {
+  const calculateOutwardTotals = () => {
     let totalForexAmount = 0;
-    let totalAmount = 0;
+    let totalOutwardReferenceAmount = 0;
     let rowIndexToClear = -1; // Variable to keep track of the row that exceeds the limit
   
     setSundryCreditor((prevState) => {
@@ -151,10 +149,10 @@ console.log(sundryCreditor)
   
         // Accumulate totals
         totalForexAmount += forexAmount;
-        totalAmount += outwardReferenceAmount;
+        totalOutwardReferenceAmount += outwardReferenceAmount;
   
-        // Check if totalAmount exceeds openingBalance
-        if (totalAmount > openingBalance && rowIndexToClear === -1) {
+        // Check if totalOutwardReferenceAmount exceeds openingBalance
+        if (totalOutwardReferenceAmount > openingBalance && rowIndexToClear === -1) {
           rowIndexToClear = index; // Store the index of the row that caused the excess
         }
   
@@ -168,15 +166,15 @@ console.log(sundryCreditor)
         };
       });
   
-      // Check if totalAmount exceeds the openingBalance
-      if (totalAmount > openingBalance) {
-        const remainingAmount = (openingBalance - (totalAmount - updatedForexSubForm[rowIndexToClear].outwardReferenceAmount)).toLocaleString('en-IN', {
+      // Check if totalOutwardReferenceAmount exceeds the openingBalance
+      if (totalOutwardReferenceAmount > openingBalance) {
+        const remainingAmount = (openingBalance - (totalOutwardReferenceAmount - updatedForexSubForm[rowIndexToClear].outwardReferenceAmount)).toLocaleString('en-IN', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         });
   
         // Display alert for exceeding balance
-        window.alert(`The total amount exceeds the opening balance! Remaining amount: ₹${remainingAmount}`);
+        window.alert(`The total amount exceeds the opening balance! Remaining amount: ₹ ${remainingAmount}`);
   
         // Clear the forexAmount and outwardReferenceAmount of the row that caused the excess
         if (rowIndexToClear !== -1) {
@@ -193,7 +191,7 @@ console.log(sundryCreditor)
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
-      const formattedTotalAmount = totalAmount.toLocaleString('en-IN', {
+      const formattedTotalOutwardReferenceAmount = totalOutwardReferenceAmount.toLocaleString('en-IN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       });
@@ -201,7 +199,7 @@ console.log(sundryCreditor)
       // Log calculated totals for debugging
       console.log('Calculated Totals:', {
         totalForexAmount: formattedTotalForexAmount,
-        totalAmount: formattedTotalAmount,
+        totalOutwardReferenceAmount: formattedTotalOutwardReferenceAmount,
       });
   
       // Return the updated state with updated totals and forexSubForm
@@ -209,7 +207,7 @@ console.log(sundryCreditor)
         ...prevState,
         forexSubForm: updatedForexSubForm, // Update forexSubForm rows
         totalForexAmount: formattedTotalForexAmount, // Update totalForexAmount
-        totalAmount: formattedTotalAmount, // Update totalAmount
+        totalOutwardReferenceAmount: formattedTotalOutwardReferenceAmount, // Update totalOutwardReferenceAmount
       };
     });
   };       
@@ -246,15 +244,14 @@ console.log(sundryCreditor)
         });
   
         // Display alert with the remaining balance
-        window.alert(`The total inward reference amount exceeds the opening balance! Remaining amount: ₹${remainingAmount}`);
+        window.alert(`The total inward reference amount exceeds the opening balance! Remaining amount: ₹ ${remainingAmount}`);
   
         // Clear the inwardReferenceAmount of the row that caused the excess
         if (rowIndexToClear !== -1) {
           updatedForexSubForm[rowIndexToClear].inwardReferenceAmount = '0'; // Reset the inwardReferenceAmount to zero
-        }
-  
-        // Set focus to the row input that caused the issue
+          // Set focus to the row input that caused the issue
         inputRefsForex.current[rowIndexToClear * 9]?.focus();
+        }
       }
   
       // Format the total inward reference amount
@@ -339,7 +336,7 @@ console.log(sundryCreditor)
       }
   
       // Recalculate totals after updating the forexSubForm
-      calculateTotals();
+      calculateOutwardTotals();
   
       // Call calculateInwardTotals after updating the inwardReferenceAmount if that field is changed
       if (name === 'inwardReferenceAmount') {
@@ -409,6 +406,21 @@ console.log(sundryCreditor)
       setSundryCreditor({
         ...sundryCreditor,
         provideBankDetails: value,
+      });
+    } else if (['c', 'd', 'C', 'D'].includes(key) && e.target.name === 'creditOrDebit') {
+      e.preventDefault();
+      const value = key.toLowerCase() === 'c' ? 'cr' : 'dr';
+      setSundryCreditor(prevState => {
+        const updatedForexSubForm = prevState.forexSubForm.map(row => ({
+          ...row,
+          referenceCreditOrDebit: value, // Update referenceCreditOrDebit in all rows
+        }));
+  
+        return {
+          ...prevState,
+          creditOrDebit: value,
+          forexSubForm: updatedForexSubForm,
+        };
       });
     } else if (key === 'Escape') {
       e.preventDefault();
@@ -619,25 +631,26 @@ console.log(sundryCreditor)
     return {
       ...sundryCreditor,
       openingBalance: parseNumber(sundryCreditor.openingBalance),
+      totalForexAmount: parseNumber(sundryCreditor.totalForexAmount),
+      totalInwardReferenceAmount: parseNumber(sundryCreditor.totalInwardReferenceAmount),
+      totalOutwardReferenceAmount: parseNumber(sundryCreditor.totalOutwardReferenceAmount),
       sundryCreditorBankDetails: {
-        accountName: sundryCreditor.bank.accountName,
-        accountNumber: sundryCreditor.bank.accountNumber,
-        bankName: sundryCreditor.bank.bankName,
-        branchName: sundryCreditor.bank.branchName,
-        ifscCode: sundryCreditor.bank.ifscCode,
-        accountType: sundryCreditor.bank.accountType,
-        swiftCode: sundryCreditor.bank.swiftCode,
+        accountName: sundryCreditor.bank?.accountName,
+        accountNumber: sundryCreditor.bank?.accountNumber,
+        bankName: sundryCreditor.bank?.bankName,
+        branchName: sundryCreditor.bank?.branchName,
+        ifscCode: sundryCreditor.bank?.ifscCode,
+        accountType: sundryCreditor.bank?.accountType,
+        swiftCode: sundryCreditor.bank?.swiftCode,
       },
       sundryCreditorForexDetails: sundryCreditor.forexSubForm.filter(forex => forex.forexDate.trim() !== '')  // Filter out rows with empty forexDate
       .map(forex => ({
         ...forex,
-        uptoOpeningBalanceAmount: parseNumber(forex.uptoOpeningBalanceAmount),
+        forexCurrencySymbol: forex.forexCurrencySymbol,
         forexAmount: parseNumber(forex.forexAmount),
         exchangeRate: parseNumber(forex.exchangeRate),
         outwardReferenceAmount: parseNumber(forex.outwardReferenceAmount),
-        totalForexAmount: parseNumber(forex.totalForexAmount),
         inwardReferenceAmount: parseNumber(forex.inwardReferenceAmount),
-        totalAmount: parseNumber(forex.totalAmount),
       })),
     };
   };
@@ -708,10 +721,8 @@ console.log(sundryCreditor)
             exchangeRate: '',
             referenceAmount: '',
             referenceCreditOrDebit: '',
-            totalForexAmount: '',
             outwardReferenceAmount: '',
             inwardReferenceAmount: '',
-            totalAmountCreditOrDebit: '',
           },
         ],
       });
@@ -832,7 +843,7 @@ console.log(sundryCreditor)
               value={sundryCreditor.sundryCreditorName}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 0)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -848,7 +859,7 @@ console.log(sundryCreditor)
                 name="underGroup"
                 value={sundryCreditor.underGroup}
                 onChange={handleInputChange}
-                className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>
@@ -865,7 +876,7 @@ console.log(sundryCreditor)
                 ref={input => (inputRefs.current[1] = input)}
                 onChange={handleInputChange}
                 onKeyDown={e => handleKeyDown(e, 1)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>
@@ -884,7 +895,7 @@ console.log(sundryCreditor)
                 ref={input => (inputRefs.current[2] = input)}
                 onChange={handleInputChange}
                 onKeyDown={e => handleKeyDown(e, 2)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>
@@ -901,7 +912,7 @@ console.log(sundryCreditor)
                 ref={input => (inputRefs.current[3] = input)}
                 onChange={handleInputChange}
                 onKeyDown={e => handleKeyDown(e, 3)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>
@@ -924,7 +935,7 @@ console.log(sundryCreditor)
                     ref={input => (inputRefsBank.current[0] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 0)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -941,7 +952,7 @@ console.log(sundryCreditor)
                     ref={input => (inputRefsBank.current[1] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 1)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -958,7 +969,7 @@ console.log(sundryCreditor)
                     ref={input => (inputRefsBank.current[2] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 2)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -975,7 +986,7 @@ console.log(sundryCreditor)
                     ref={input => (inputRefsBank.current[3] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 3)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -992,7 +1003,7 @@ console.log(sundryCreditor)
                     ref={input => (inputRefsBank.current[4] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 4)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -1009,7 +1020,7 @@ console.log(sundryCreditor)
                     ref={input => (inputRefsBank.current[5] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 5)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -1026,7 +1037,7 @@ console.log(sundryCreditor)
                     ref={input => (inputRefsBank.current[6] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 6)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -1047,7 +1058,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[4] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 4)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1062,7 +1073,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[5] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 5)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1077,7 +1088,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[6] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 6)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1092,7 +1103,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[7] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 7)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1107,7 +1118,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[8] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 8)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1124,7 +1135,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[9] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 9)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1141,7 +1152,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[10] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 10)}
-              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1158,7 +1169,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[11] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 11)}
-              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1175,7 +1186,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[12] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 12)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1192,7 +1203,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[13] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 13)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1209,7 +1220,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[14] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 14)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1226,7 +1237,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[15] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 15)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1243,7 +1254,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[16] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 16)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1260,7 +1271,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[17] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 17)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1277,7 +1288,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[18] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 18)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1294,7 +1305,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[19] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 19)}
-              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1308,7 +1319,7 @@ console.log(sundryCreditor)
               id="dateForOpening"
               name="dateForOpening"
               value={sundryCreditor.dateForOpening}
-              className="w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
             )<span className="ml-3">:</span>
@@ -1322,7 +1333,7 @@ console.log(sundryCreditor)
               onChange={handleInputChange}
               onBlur={numberFormat}
               onKeyDown={e => handleKeyDown(e, 20)}
-              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
             <input
@@ -1333,7 +1344,7 @@ console.log(sundryCreditor)
               ref={input => (inputRefs.current[21] = input)}
               onKeyDown={e => handleKeyDown(e, 21)}
               onChange={handleInputChange}
-              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1352,7 +1363,7 @@ console.log(sundryCreditor)
                       id="billWiseBreakOf"
                       name="billWiseBreakOf"
                       value={sundryCreditor.sundryCreditorName}
-                      className="w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                      className="w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                       autoComplete="off"
                     />
                   </div>
@@ -1367,7 +1378,7 @@ console.log(sundryCreditor)
                       id="uptoOpeningBalanceAmount"
                       name="uptoOpeningBalanceAmount"
                       value={sundryCreditor.openingBalance}
-                      className="w-[100px] h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                      className="w-[100px] h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                       autoComplete="off"
                     />
                     <input
@@ -1375,7 +1386,7 @@ console.log(sundryCreditor)
                       id="uptoCreditOrDebit"
                       name="uptoCreditOrDebit"
                       value={sundryCreditor.creditOrDebit}
-                      className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                      className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                       autoComplete="off"
                     />
                   </div>
@@ -1415,7 +1426,7 @@ console.log(sundryCreditor)
                               ref={input => (inputRefsForex.current[0 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index)}}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1430,7 +1441,7 @@ console.log(sundryCreditor)
                               onChange={e => handleInputForexChange(e, index)}
                               ref={input => (inputRefsForex.current[1 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 1 )}
-                              className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1451,7 +1462,7 @@ console.log(sundryCreditor)
                                 }
                               }}
                               onBlur={(e) => {dateConvert(e, index)}}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1477,7 +1488,7 @@ console.log(sundryCreditor)
                                     }
                                   }}
                                   onBlur={() => setCurrencyFocused(false)}
-                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                                 {/* Currency Suggestion Dropdown */}
@@ -1531,7 +1542,7 @@ console.log(sundryCreditor)
                                   ref={input => (inputRefsForex.current[4 + index * 9] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 4)}
                                   onBlur={(e) => {numberFormat(e, index)}} 
-                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1548,7 +1559,7 @@ console.log(sundryCreditor)
                                   ref={input => (inputRefsForex.current[5 + index * 9] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 5)}
                                   onBlur={(e) => {numberFormat(e, index)}}
-                                  className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1570,7 +1581,7 @@ console.log(sundryCreditor)
                                     }
                                   }}
                                   onBlur={(e) => {numberFormat(e, index)}}
-                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1594,7 +1605,7 @@ console.log(sundryCreditor)
                                   onBlur={(e) => {
                                     numberFormat(e, index);
                                   }}
-                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1611,7 +1622,7 @@ console.log(sundryCreditor)
                               onChange={e => handleInputForexChange(e, index)}
                               ref={input => (inputRefsForex.current[8 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 8)}
-                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1623,46 +1634,46 @@ console.log(sundryCreditor)
                   {sundryCreditor.forexApplicable !== 'no' && (
                     <>
                       <div className=" mt-4">
-                        <div className="flex absolute left-[610px] top-[500px]">
-                          <label htmlFor="totalForexAmount" className="text-[12px] mr-1">
+                        <div className="w-[350px] h-[20px] flex absolute left-[610px] top-[500px] border border-t-black border-transparent">
+                          <label htmlFor="totalForexAmount" className="text-[12px] mr-1 mt-1">
                             Total
                           </label>
-                          <span className="text-sm">($)</span>
-                          <span className="absolute left-[60px] bottom-0">:</span>
+                          <span className="text-sm mt-1">($)</span>
+                          <span className="absolute top-0 left-[60px] bottom-0">:</span>
                           <input
                             type="text"
                             id="totalForexAmount"
                             name="totalForexAmount"
                             value={sundryCreditor.totalForexAmount}
                             onBlur={(e) => numberFormat(e, 0)}
-                            className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            className="w-[100px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                             readOnly
                           />
                         </div>
-                        <div className="flex absolute left-[900px] top-[500px]">
-                          <label htmlFor="totalAmount" className="text-[12px] mr-1">
+                        <div className="w-[167px] flex absolute left-[900px] top-[500px] border border-t-black border-transparent">
+                          <label htmlFor="totalOutwardReferenceAmount" className="text-[12px] mr-1 mt-1">
                             Total
                           </label>
-                          <span className="text-sm">(₹)</span>
+                          <span className="text-sm mt-1">(₹)</span>
                           <span className="absolute left-[60px] bottom-0">:</span>
                           <input
                             type="text"
-                            id="totalAmount"
-                            name="totalAmount"
-                            value={sundryCreditor.totalAmount}
+                            id="totalOutwardReferenceAmount"
+                            name="totalOutwardReferenceAmount"
+                            value={sundryCreditor.totalOutwardReferenceAmount}
                             onBlur={(e) => numberFormat(e, 1)}
-                            className="w-[120px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            className="w-[120px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                             readOnly
                           />
                           <input
                             type="text"
-                            id="totalAmountCreditOrDebit"
-                            name="totalAmountCreditOrDebit"
-                            value={sundryCreditor.forexSubForm.totalAmountCreditOrDebit}
+                            id="totalOutwardReferenceAmountCreditOrDebit"
+                            name="totalOutwardReferenceAmountCreditOrDebit"
+                            value={sundryCreditor.forexSubForm.totalOutwardReferenceAmountCreditOrDebit}
                             onChange={handleInputForexChange}
-                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                           />
                         </div>
@@ -1671,16 +1682,17 @@ console.log(sundryCreditor)
                   )}
                   {sundryCreditor.forexApplicable !== 'yes' && (
                     <>
-                      <div className='flex absolute left-[900px] top-[500px] text-sm'>
-                        <label htmlFor="" className=''>Total</label>
-                        <span>:</span>
+                      <div className='w-[126px] flex absolute left-[900px] top-[500px] text-sm border border-t-black border-transparent'>
+                        <label htmlFor="" className='mt-1'>Total</label>
+                        <span className='mt-1'>:</span>
+                        <span className='ml-1 mt-1'>₹</span>
                         <input
                             type="text"
                             id="totalInwardReferenceAmount"
                             name="totalInwardReferenceAmount"
                             value={sundryCreditor.totalInwardReferenceAmount}
                             onBlur={(e) => numberFormat(e, 1)}
-                            className="w-[120px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            className="w-[80px] h-5 mt-1 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                             readOnly
                           />
@@ -1689,7 +1701,7 @@ console.log(sundryCreditor)
                             id="totalInwardReferenceAmountCreditOrDebit"
                             name="totalInwardReferenceAmountCreditOrDebit"
                             value={sundryCreditor.forexSubForm.totalInwardReferenceAmountCreditOrDebit}
-                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                           />
                       </div>

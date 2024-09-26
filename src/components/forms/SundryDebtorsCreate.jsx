@@ -39,6 +39,7 @@ const SundryDebtorsCreate = () => {
     dateForOpening: '1-Apr-2024',
     openingBalance: '',
     creditOrDebit: 'dr',
+    totalForexAmount: '',
     forexSubForm: [
       {
         
@@ -51,12 +52,7 @@ const SundryDebtorsCreate = () => {
         exchangeRate: '',
         outwardReferenceAmount: '',
         inwardReferenceAmount: '',
-        referenceCreditOrDebit: '',
-        totalForexAmount: '',
-        totalAmount: '',
-        totalAmountCreditOrDebit: '',
-        totalInwardReferenceAmount: '',
-        totalInwardReferenceAmountCreditOrDebit: ''
+        referenceCreditOrDebit: ''
       },
     ],
   });
@@ -134,7 +130,7 @@ console.log(sundryDebtor)
 
   const calculateTotals = () => {
     let totalForexAmount = 0;
-    let totalAmount = 0;
+    let totalOutwardReferenceAmount = 0;
     let rowIndexToClear = -1; // Variable to keep track of the index of the row that exceeds the limit
   
     // Iterate over each row in forexSubForm to calculate totals
@@ -143,6 +139,7 @@ console.log(sundryDebtor)
       const openingBalance = parseFloat(prevState.openingBalance.replace(/,/g, '')) || 0;
   
       const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
+        // Parse forexAmount and exchangeRate as floats, removing commas
         const forexAmount = parseFloat(row.forexAmount.replace(/,/g, "")) || 0;
         const exchangeRate = parseFloat(row.exchangeRate.replace(/,/g, "")) || 1; // Assume 1 if exchange rate is not provided
   
@@ -151,10 +148,10 @@ console.log(sundryDebtor)
   
         // Add to totals with more precision
         totalForexAmount += forexAmount;
-        totalAmount += outwardReferenceAmount;
+        totalOutwardReferenceAmount += outwardReferenceAmount;
   
-        // Check if the totalAmount exceeds the openingBalance
-        if (totalAmount > openingBalance && rowIndexToClear === -1) {
+        // Check if the totalOutwardReferenceAmount exceeds the openingBalance
+        if (totalOutwardReferenceAmount > openingBalance && rowIndexToClear === -1) {
           rowIndexToClear = index; // Store the index of the first row that exceeds the limit
         }
   
@@ -168,10 +165,13 @@ console.log(sundryDebtor)
         };
       });
   
-      // Ensure the calculated totalAmount does not exceed the openingBalance
-      if (totalAmount > openingBalance) {
+      // Ensure the calculated totalOutwardReferenceAmount does not exceed the openingBalance
+      if (totalOutwardReferenceAmount > openingBalance) {
+        const remainingAmount = (openingBalance - (totalOutwardReferenceAmount - updatedForexSubForm[rowIndexToClear].outwardReferenceAmount)).toLocaleString('en-IN', {
+          minimumFractionDigits: 2, maximumFractionDigits: 2,
+        })
         // Show an alert with the remaining expected amount
-        window.alert(`The calculated total amount exceeds the opening balance!`);
+        window.alert(`The calculated total amount exceeds the opening balance! Remaining Amount: ₹ ${remainingAmount}`);
   
         // Clear the forexAmount and outwardReferenceAmount of the row that caused the issue
         if (rowIndexToClear !== -1) {
@@ -188,14 +188,14 @@ console.log(sundryDebtor)
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       }); // Keeps 2 decimal places
-      const formattedTotalAmount = totalAmount.toLocaleString('en-IN', {
+      const formattedtotalOutwardReferenceAmount = totalOutwardReferenceAmount.toLocaleString('en-IN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       }); // Keeps 2 decimal places
   
       console.log('Calculated Totals:', {
         totalForexAmount: formattedTotalForexAmount,
-        totalAmount: formattedTotalAmount,
+        totalOutwardReferenceAmount: formattedtotalOutwardReferenceAmount,
       });
   
       // Return the updated state with updated forexSubForm and totals
@@ -203,7 +203,7 @@ console.log(sundryDebtor)
         ...prevState,
         forexSubForm: updatedForexSubForm, // Update each row in forexSubForm
         totalForexAmount: formattedTotalForexAmount, // Update totalForexAmount
-        totalAmount: formattedTotalAmount, // Update totalAmount
+        totalOutwardReferenceAmount: formattedtotalOutwardReferenceAmount, // Update totalOutwardReferenceAmount
       };
     });
   };    
@@ -234,15 +234,19 @@ console.log(sundryDebtor)
   
       // Ensure the calculated totalInwardReferenceAmount does not exceed the openingBalance
       if (totalInwardReferenceAmount > openingBalance) {
+
+        const remainingAmount = (openingBalance - (totalInwardReferenceAmount - updatedForexSubForm[rowIndexToClear].inwardReferenceAmount)).toLocaleString('en-IN', {
+          minimumFractionDigits: 2, maximumFractionDigits: 2
+        });
         // Show an alert with the remaining expected amount
-        window.alert(`The total inward reference amount exceeds the opening balance!`);
+        window.alert(`The total inward reference amount exceeds the opening balance! Remaining Amount: ₹ ${remainingAmount}`);
   
         // Clear the inwardReferenceAmount of the row that caused the issue
         if (rowIndexToClear !== -1) {
           updatedForexSubForm[rowIndexToClear].inwardReferenceAmount = '0'; // Set inwardReferenceAmount to zero
         }
   
-        // Set focus to the totalAmount input after the alert is dismissed
+        // Set focus to the totalOutwardReferenceAmount input after the alert is dismissed
         inputRefsForex.current[rowIndexToClear * 9]?.focus();
       }
   
@@ -413,9 +417,6 @@ console.log(sundryDebtor)
           forexSubForm: updatedForexSubForm,
         };
       });
-  
-      // Open the forexSubFormModal when a value is entered in creditOrDebit input
-      setForexSubFormModal(true);
     } else if (key === 'Escape') {
       e.preventDefault();
       navigate(-1);
@@ -626,6 +627,7 @@ console.log(sundryDebtor)
     return {
       ...sundryDebtor,
       openingBalance: parseNumber(sundryDebtor.openingBalance),
+      totalForexAmount: parseNumber(sundryDebtor.totalForexAmount),
       sundryDebtorBankDetails: {
         accountName: sundryDebtor.bank.accountName,
         accountNumber: sundryDebtor.bank.accountNumber,
@@ -638,13 +640,13 @@ console.log(sundryDebtor)
       sundryDebtorForexDetails: sundryDebtor.forexSubForm.filter(forex => forex.forexDate.trim() !== '')  // Filter out rows with empty forexDate
       .map(forex => ({
         ...forex,
-        uptoOpeningBalanceAmount: parseNumber(forex.uptoOpeningBalanceAmount),
+        forexCurrencySymbol: forex.forexCurrencySymbol,
         forexAmount: parseNumber(forex.forexAmount),
         exchangeRate: parseNumber(forex.exchangeRate),
         outwardReferenceAmount: parseNumber(forex.outwardReferenceAmount),
         totalForexAmount: parseNumber(forex.totalForexAmount),
         inwardReferenceAmount: parseNumber(forex.inwardReferenceAmount),
-        totalAmount: parseNumber(forex.totalAmount),
+        totalOutwardReferenceAmount: parseNumber(forex.totalOutwardReferenceAmount),
       })),
     };
   };
@@ -718,7 +720,7 @@ console.log(sundryDebtor)
             totalForexAmount: '',
             outwardReferenceAmount: '',
             inwardReferenceAmount: '',
-            totalAmountCreditOrDebit: '',
+            totalOutwardReferenceAmountCreditOrDebit: '',
           },
         ],
       });
@@ -1649,16 +1651,16 @@ console.log(sundryDebtor)
                           />
                         </div>
                         <div className="flex absolute left-[900px] top-[500px]">
-                          <label htmlFor="totalAmount" className="text-[12px] mr-1">
+                          <label htmlFor="totalOutwardReferenceAmount" className="text-[12px] mr-1">
                             Total
                           </label>
                           <span className="text-sm">(₹)</span>
                           <span className="absolute left-[60px] bottom-0">:</span>
                           <input
                             type="text"
-                            id="totalAmount"
-                            name="totalAmount"
-                            value={sundryDebtor.totalAmount}
+                            id="totalOutwardReferenceAmount"
+                            name="totalOutwardReferenceAmount"
+                            value={sundryDebtor.totalOutwardReferenceAmount}
                             // onChange={handleInputForexChange}
                             onBlur={(e) => numberFormat(e, 1)}
                             className="w-[120px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
@@ -1667,9 +1669,9 @@ console.log(sundryDebtor)
                           />
                           <input
                             type="text"
-                            id="totalAmountCreditOrDebit"
-                            name="totalAmountCreditOrDebit"
-                            value={sundryDebtor.forexSubForm.totalAmountCreditOrDebit}
+                            id="totalOutwardReferenceAmountCreditOrDebit"
+                            name="totalOutwardReferenceAmountCreditOrDebit"
+                            value={sundryDebtor.forexSubForm.totalOutwardReferenceAmountCreditOrDebit}
                             onChange={handleInputForexChange}
                             className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
                             autoComplete="off"

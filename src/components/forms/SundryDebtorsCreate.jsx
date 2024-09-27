@@ -40,6 +40,8 @@ const SundryDebtorsCreate = () => {
     openingBalance: '',
     creditOrDebit: 'dr',
     totalForexAmount: '',
+    totalInwardReferenceAmount: '',
+    totalOutwardReferenceAmount: '',
     forexSubForm: [
       {
         
@@ -52,7 +54,7 @@ const SundryDebtorsCreate = () => {
         exchangeRate: '',
         outwardReferenceAmount: '',
         inwardReferenceAmount: '',
-        referenceCreditOrDebit: ''
+        referenceCreditOrDebit: 'dr'
       },
     ],
   });
@@ -128,141 +130,144 @@ console.log(sundryDebtor)
     }));
   };
 
-  const calculateTotals = () => {
+  const calculateOutwardTotals = () => {
     let totalForexAmount = 0;
     let totalOutwardReferenceAmount = 0;
-    let rowIndexToClear = -1; // Variable to keep track of the index of the row that exceeds the limit
+    let rowIndexToClear = -1; // Variable to keep track of the row that exceeds the limit
   
-    // Iterate over each row in forexSubForm to calculate totals
-    setSundryDebtor(prevState => {
-      // Parse openingBalance as a float and remove any commas
+    setSundryDebtor((prevState) => {
+      // Parse openingBalance as a float, removing commas
       const openingBalance = parseFloat(prevState.openingBalance.replace(/,/g, '')) || 0;
   
       const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
         // Parse forexAmount and exchangeRate as floats, removing commas
-        const forexAmount = parseFloat(row.forexAmount.replace(/,/g, "")) || 0;
-        const exchangeRate = parseFloat(row.exchangeRate.replace(/,/g, "")) || 1; // Assume 1 if exchange rate is not provided
+        const forexAmount = parseFloat(row.forexAmount.replace(/,/g, '')) || 0;
+        const exchangeRate = parseFloat(row.exchangeRate.replace(/,/g, '')) || 1; // Assume 1 if exchangeRate is not provided
   
-        // Calculate referenceAmount based on forexAmount * exchangeRate
+        // Calculate outwardReferenceAmount
         const outwardReferenceAmount = forexAmount * exchangeRate;
   
-        // Add to totals with more precision
+        // Accumulate totals
         totalForexAmount += forexAmount;
         totalOutwardReferenceAmount += outwardReferenceAmount;
   
-        // Check if the totalOutwardReferenceAmount exceeds the openingBalance
+        // Check if totalOutwardReferenceAmount exceeds openingBalance
         if (totalOutwardReferenceAmount > openingBalance && rowIndexToClear === -1) {
-          rowIndexToClear = index; // Store the index of the first row that exceeds the limit
+          rowIndexToClear = index; // Store the index of the row that caused the excess
         }
   
-        // Return the updated row with referenceAmount updated
+        // Return the updated row with outwardReferenceAmount
         return {
           ...row,
           outwardReferenceAmount: outwardReferenceAmount.toLocaleString('en-IN', {
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }) // Keep referenceAmount as a number with 2 decimal places
+            maximumFractionDigits: 2,
+          }),
         };
       });
   
-      // Ensure the calculated totalOutwardReferenceAmount does not exceed the openingBalance
+      // Check if totalOutwardReferenceAmount exceeds the openingBalance
       if (totalOutwardReferenceAmount > openingBalance) {
         const remainingAmount = (openingBalance - (totalOutwardReferenceAmount - updatedForexSubForm[rowIndexToClear].outwardReferenceAmount)).toLocaleString('en-IN', {
-          minimumFractionDigits: 2, maximumFractionDigits: 2,
-        })
-        // Show an alert with the remaining expected amount
-        window.alert(`The calculated total amount exceeds the opening balance! Remaining Amount: ₹ ${remainingAmount}`);
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
   
-        // Clear the forexAmount and outwardReferenceAmount of the row that caused the issue
+        // Display alert for exceeding balance
+        window.alert(`The total amount exceeds the opening balance! Remaining amount: ₹ ${remainingAmount}`);
+  
+        // Clear the forexAmount and outwardReferenceAmount of the row that caused the excess
         if (rowIndexToClear !== -1) {
-          updatedForexSubForm[rowIndexToClear].forexAmount = '0'; // Set forexAmount to zero
-          updatedForexSubForm[rowIndexToClear].outwardReferenceAmount = '0'; // Set outwardReferenceAmount to zero
-          
-          // Set focus to the specific forexAmount input
-          inputRefsForex.current[rowIndexToClear * 9]?.focus(); // Adjust the index based on your input layout
+          updatedForexSubForm[rowIndexToClear].forexAmount = '0'; // Reset forexAmount to zero
+          updatedForexSubForm[rowIndexToClear].outwardReferenceAmount = '0'; // Reset outwardReferenceAmount to zero
+  
+          // Set focus to the problematic forexAmount input
+          inputRefsForex.current[rowIndexToClear * 9]?.focus(); // Adjust index based on layout
         }
       }
   
       // Format totals to 2 decimal places
       const formattedTotalForexAmount = totalForexAmount.toLocaleString('en-IN', {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }); // Keeps 2 decimal places
-      const formattedtotalOutwardReferenceAmount = totalOutwardReferenceAmount.toLocaleString('en-IN', {
+        maximumFractionDigits: 2,
+      });
+      const formattedTotalOutwardReferenceAmount = totalOutwardReferenceAmount.toLocaleString('en-IN', {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }); // Keeps 2 decimal places
-  
-      console.log('Calculated Totals:', {
-        totalForexAmount: formattedTotalForexAmount,
-        totalOutwardReferenceAmount: formattedtotalOutwardReferenceAmount,
+        maximumFractionDigits: 2,
       });
   
-      // Return the updated state with updated forexSubForm and totals
+      // Log calculated totals for debugging
+      console.log('Calculated Totals:', {
+        totalForexAmount: formattedTotalForexAmount,
+        totalOutwardReferenceAmount: formattedTotalOutwardReferenceAmount,
+      });
+  
+      // Return the updated state with updated totals and forexSubForm
       return {
         ...prevState,
-        forexSubForm: updatedForexSubForm, // Update each row in forexSubForm
+        forexSubForm: updatedForexSubForm, // Update forexSubForm rows
         totalForexAmount: formattedTotalForexAmount, // Update totalForexAmount
-        totalOutwardReferenceAmount: formattedtotalOutwardReferenceAmount, // Update totalOutwardReferenceAmount
+        totalOutwardReferenceAmount: formattedTotalOutwardReferenceAmount, // Update totalOutwardReferenceAmount
       };
     });
-  };    
+  };       
   
   const calculateInwardTotals = () => {
     let totalInwardReferenceAmount = 0;
-    let rowIndexToClear = -1; // Variable to keep track of the index of the row that exceeds the limit
+    let rowIndexToClear = -1; // Variable to keep track of the row index that exceeds the limit
   
-    setSundryDebtor(prevState => {
-      // Parse openingBalance as a float and remove any commas
+    setSundryDebtor((prevState) => {
+      // Parse openingBalance as a float, removing commas
       const openingBalance = parseFloat(prevState.openingBalance.replace(/,/g, '')) || 0;
   
       const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
-        // Parse inwardReferenceAmount as a float and remove any commas
+        // Parse inwardReferenceAmount as a float, removing commas
         const inwardReferenceAmount = parseFloat(row.inwardReferenceAmount.replace(/,/g, '')) || 0;
   
         // Accumulate the inward reference amount
         totalInwardReferenceAmount += inwardReferenceAmount;
   
         // Check if the totalInwardReferenceAmount exceeds the openingBalance
-        if (totalInwardReferenceAmount > openingBalance) {
-          rowIndexToClear = index; // Store the index of the row that causes the alert
+        if (totalInwardReferenceAmount > openingBalance && rowIndexToClear === -1) {
+          rowIndexToClear = index; // Store the index of the row that caused the excess
         }
   
-        // Return the updated row (if you need to modify any fields)
+        // Return the row unchanged as no additional modifications are required
         return row;
       });
   
-      // Ensure the calculated totalInwardReferenceAmount does not exceed the openingBalance
+      // Ensure the total amount does not exceed the opening balance
       if (totalInwardReferenceAmount > openingBalance) {
-
         const remainingAmount = (openingBalance - (totalInwardReferenceAmount - updatedForexSubForm[rowIndexToClear].inwardReferenceAmount)).toLocaleString('en-IN', {
-          minimumFractionDigits: 2, maximumFractionDigits: 2
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
         });
-        // Show an alert with the remaining expected amount
-        window.alert(`The total inward reference amount exceeds the opening balance! Remaining Amount: ₹ ${remainingAmount}`);
   
-        // Clear the inwardReferenceAmount of the row that caused the issue
+        // Display alert with the remaining balance
+        window.alert(`The total inward reference amount exceeds the opening balance! Remaining amount: ₹ ${remainingAmount}`);
+  
+        // Clear the inwardReferenceAmount of the row that caused the excess
         if (rowIndexToClear !== -1) {
-          updatedForexSubForm[rowIndexToClear].inwardReferenceAmount = '0'; // Set inwardReferenceAmount to zero
-        }
-  
-        // Set focus to the totalOutwardReferenceAmount input after the alert is dismissed
+          updatedForexSubForm[rowIndexToClear].inwardReferenceAmount = '0'; // Reset the inwardReferenceAmount to zero
+          // Set focus to the row input that caused the issue
         inputRefsForex.current[rowIndexToClear * 9]?.focus();
+        }
       }
   
       // Format the total inward reference amount
       const formattedTotalInwardReferenceAmount = totalInwardReferenceAmount.toLocaleString('en-IN', {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        maximumFractionDigits: 2,
       });
   
+      // Return the updated state
       return {
         ...prevState,
         forexSubForm: updatedForexSubForm,
-        totalInwardReferenceAmount: formattedTotalInwardReferenceAmount // Update this field
+        totalInwardReferenceAmount: formattedTotalInwardReferenceAmount, // Update total inward reference amount
       };
     });
-  };   
+  };        
   
 
   const handleInputForexChange = (e, index) => {
@@ -331,7 +336,7 @@ console.log(sundryDebtor)
       }
   
       // Recalculate totals after updating the forexSubForm
-      calculateTotals();
+      calculateOutwardTotals();
   
       // Call calculateInwardTotals after updating the inwardReferenceAmount if that field is changed
       if (name === 'inwardReferenceAmount') {
@@ -362,9 +367,9 @@ console.log(sundryDebtor)
         }
 
         // Specific handling for 'creditOrDebit' input
-        if (e.target.name === 'creditOrDebit') {
-          // Open the forexSubFormModal when a value is entered in creditOrDebit input
-          setForexSubFormModal(true);
+        if (e.target.name === 'creditOrDebit'){
+           // Open the forexSubFormModal when a value is entered in creditOrDebit input
+           setForexSubFormModal(true);
         }
 
         // Specific handling for 'provideBankDetails' input
@@ -454,7 +459,6 @@ console.log(sundryDebtor)
         }
       }
     } else if (key === 'Escape'){
-      e.preventDefault();
       setBankSubFormModal(false);
     }
   };
@@ -474,7 +478,7 @@ console.log(sundryDebtor)
         outwardReferenceAmount: '',
         inwardReferenceAmount: '',
         // Set referenceCreditOrDebit based on the value of creditOrDebit
-        referenceCreditOrDebit: prevState.creditOrDebit || '',
+        referenceCreditOrDebit: 'dr',
       };
   
       return {
@@ -628,14 +632,16 @@ console.log(sundryDebtor)
       ...sundryDebtor,
       openingBalance: parseNumber(sundryDebtor.openingBalance),
       totalForexAmount: parseNumber(sundryDebtor.totalForexAmount),
+      totalInwardReferenceAmount: parseNumber(sundryDebtor.totalInwardReferenceAmount),
+      totalOutwardReferenceAmount: parseNumber(sundryDebtor.totalOutwardReferenceAmount),
       sundryDebtorBankDetails: {
-        accountName: sundryDebtor.bank.accountName,
-        accountNumber: sundryDebtor.bank.accountNumber,
-        bankName: sundryDebtor.bank.bankName,
-        branchName: sundryDebtor.bank.branchName,
-        ifscCode: sundryDebtor.bank.ifscCode,
-        accountType: sundryDebtor.bank.accountType,
-        swiftCode: sundryDebtor.bank.swiftCode,
+        accountName: sundryDebtor.bank?.accountName,
+        accountNumber: sundryDebtor.bank?.accountNumber,
+        bankName: sundryDebtor.bank?.bankName,
+        branchName: sundryDebtor.bank?.branchName,
+        ifscCode: sundryDebtor.bank?.ifscCode,
+        accountType: sundryDebtor.bank?.accountType,
+        swiftCode: sundryDebtor.bank?.swiftCode,
       },
       sundryDebtorForexDetails: sundryDebtor.forexSubForm.filter(forex => forex.forexDate.trim() !== '')  // Filter out rows with empty forexDate
       .map(forex => ({
@@ -644,9 +650,7 @@ console.log(sundryDebtor)
         forexAmount: parseNumber(forex.forexAmount),
         exchangeRate: parseNumber(forex.exchangeRate),
         outwardReferenceAmount: parseNumber(forex.outwardReferenceAmount),
-        totalForexAmount: parseNumber(forex.totalForexAmount),
         inwardReferenceAmount: parseNumber(forex.inwardReferenceAmount),
-        totalOutwardReferenceAmount: parseNumber(forex.totalOutwardReferenceAmount),
       })),
     };
   };
@@ -656,7 +660,7 @@ console.log(sundryDebtor)
 
     // Check if sundryDebtorName is filled
     if (!sundryDebtor.sundryDebtorName.trim()){
-      alert('Sundry Debtor Name is required!');
+      alert('Sundry Creditor Name is required!');
       // Optionally focus on the sundryDebtorName input field
       if (inputRefs.current[0]){
         inputRefs.current[0].focus();
@@ -674,7 +678,7 @@ console.log(sundryDebtor)
       // Reset form data
       setSundryDebtor({
         sundryDebtorName: '',
-        underGroup: 'sundry debtors',
+        underGroup: 'sundry creditors',
         forexApplicable: 'no',
         billWiseStatus: 'no',
         provideBankDetails: 'no',
@@ -705,7 +709,7 @@ console.log(sundryDebtor)
         emailId: '',
         dateForOpening: '1-Apr-2024',
         openingBalance: '',
-        creditOrDebit: 'dr',
+        creditOrDebit: '',
         forexSubForm: [
           {
             forexDate: '',
@@ -717,10 +721,8 @@ console.log(sundryDebtor)
             exchangeRate: '',
             referenceAmount: '',
             referenceCreditOrDebit: '',
-            totalForexAmount: '',
             outwardReferenceAmount: '',
             inwardReferenceAmount: '',
-            totalOutwardReferenceAmountCreditOrDebit: '',
           },
         ],
       });
@@ -841,7 +843,7 @@ console.log(sundryDebtor)
               value={sundryDebtor.sundryDebtorName}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 0)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -857,7 +859,7 @@ console.log(sundryDebtor)
                 name="underGroup"
                 value={sundryDebtor.underGroup}
                 onChange={handleInputChange}
-                className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>
@@ -874,7 +876,7 @@ console.log(sundryDebtor)
                 ref={input => (inputRefs.current[1] = input)}
                 onChange={handleInputChange}
                 onKeyDown={e => handleKeyDown(e, 1)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>
@@ -893,7 +895,7 @@ console.log(sundryDebtor)
                 ref={input => (inputRefs.current[2] = input)}
                 onChange={handleInputChange}
                 onKeyDown={e => handleKeyDown(e, 2)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>
@@ -910,7 +912,7 @@ console.log(sundryDebtor)
                 ref={input => (inputRefs.current[3] = input)}
                 onChange={handleInputChange}
                 onKeyDown={e => handleKeyDown(e, 3)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>
@@ -933,7 +935,7 @@ console.log(sundryDebtor)
                     ref={input => (inputRefsBank.current[0] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 0)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -950,7 +952,7 @@ console.log(sundryDebtor)
                     ref={input => (inputRefsBank.current[1] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 1)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -967,7 +969,7 @@ console.log(sundryDebtor)
                     ref={input => (inputRefsBank.current[2] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 2)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -984,7 +986,7 @@ console.log(sundryDebtor)
                     ref={input => (inputRefsBank.current[3] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 3)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -1001,7 +1003,7 @@ console.log(sundryDebtor)
                     ref={input => (inputRefsBank.current[4] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 4)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -1018,7 +1020,7 @@ console.log(sundryDebtor)
                     ref={input => (inputRefsBank.current[5] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 5)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -1035,7 +1037,7 @@ console.log(sundryDebtor)
                     ref={input => (inputRefsBank.current[6] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 6)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                     autoComplete="off"
                   />
                 </div>
@@ -1056,7 +1058,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[4] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 4)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1071,7 +1073,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[5] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 5)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1086,7 +1088,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[6] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 6)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1101,7 +1103,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[7] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 7)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1116,7 +1118,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[8] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 8)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1133,7 +1135,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[9] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 9)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1150,7 +1152,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[10] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 10)}
-              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1167,7 +1169,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[11] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 11)}
-              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1184,7 +1186,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[12] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 12)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1201,7 +1203,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[13] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 13)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1218,7 +1220,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[14] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 14)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1235,7 +1237,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[15] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 15)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1252,7 +1254,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[16] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 16)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1269,7 +1271,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[17] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 17)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1286,7 +1288,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[18] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 18)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1303,7 +1305,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[19] = input)}
               onChange={handleInputChange}
               onKeyDown={e => handleKeyDown(e, 19)}
-              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1317,7 +1319,7 @@ console.log(sundryDebtor)
               id="dateForOpening"
               name="dateForOpening"
               value={sundryDebtor.dateForOpening}
-              className="w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
             )<span className="ml-3">:</span>
@@ -1331,7 +1333,7 @@ console.log(sundryDebtor)
               onChange={handleInputChange}
               onBlur={numberFormat}
               onKeyDown={e => handleKeyDown(e, 20)}
-              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
             <input
@@ -1342,7 +1344,7 @@ console.log(sundryDebtor)
               ref={input => (inputRefs.current[21] = input)}
               onKeyDown={e => handleKeyDown(e, 21)}
               onChange={handleInputChange}
-              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1361,7 +1363,7 @@ console.log(sundryDebtor)
                       id="billWiseBreakOf"
                       name="billWiseBreakOf"
                       value={sundryDebtor.sundryDebtorName}
-                      className="w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                      className="w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                       autoComplete="off"
                     />
                   </div>
@@ -1376,7 +1378,7 @@ console.log(sundryDebtor)
                       id="uptoOpeningBalanceAmount"
                       name="uptoOpeningBalanceAmount"
                       value={sundryDebtor.openingBalance}
-                      className="w-[100px] h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                      className="w-[100px] h-5 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                       autoComplete="off"
                     />
                     <input
@@ -1384,7 +1386,7 @@ console.log(sundryDebtor)
                       id="uptoCreditOrDebit"
                       name="uptoCreditOrDebit"
                       value={sundryDebtor.creditOrDebit}
-                      className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                      className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                       autoComplete="off"
                     />
                   </div>
@@ -1424,7 +1426,7 @@ console.log(sundryDebtor)
                               ref={input => (inputRefsForex.current[0 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index)}}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1439,7 +1441,7 @@ console.log(sundryDebtor)
                               onChange={e => handleInputForexChange(e, index)}
                               ref={input => (inputRefsForex.current[1 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 1 )}
-                              className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1460,7 +1462,7 @@ console.log(sundryDebtor)
                                 }
                               }}
                               onBlur={(e) => {dateConvert(e, index)}}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1486,7 +1488,7 @@ console.log(sundryDebtor)
                                     }
                                   }}
                                   onBlur={() => setCurrencyFocused(false)}
-                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                                 {/* Currency Suggestion Dropdown */}
@@ -1540,7 +1542,7 @@ console.log(sundryDebtor)
                                   ref={input => (inputRefsForex.current[4 + index * 9] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 4)}
                                   onBlur={(e) => {numberFormat(e, index)}} 
-                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1557,7 +1559,7 @@ console.log(sundryDebtor)
                                   ref={input => (inputRefsForex.current[5 + index * 9] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 5)}
                                   onBlur={(e) => {numberFormat(e, index)}}
-                                  className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1579,7 +1581,7 @@ console.log(sundryDebtor)
                                     }
                                   }}
                                   onBlur={(e) => {numberFormat(e, index)}}
-                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1603,7 +1605,7 @@ console.log(sundryDebtor)
                                   onBlur={(e) => {
                                     numberFormat(e, index);
                                   }}
-                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1620,7 +1622,7 @@ console.log(sundryDebtor)
                               onChange={e => handleInputForexChange(e, index)}
                               ref={input => (inputRefsForex.current[8 + index * 9] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 8)}
-                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1632,38 +1634,36 @@ console.log(sundryDebtor)
                   {sundryDebtor.forexApplicable !== 'no' && (
                     <>
                       <div className=" mt-4">
-                        <div className="flex absolute left-[610px] top-[500px]">
-                          <label htmlFor="totalForexAmount" className="text-[12px] mr-1">
+                        <div className="w-[350px] h-[20px] flex absolute left-[610px] top-[500px] border border-t-black border-transparent">
+                          <label htmlFor="totalForexAmount" className="text-[12px] mr-1 mt-1">
                             Total
                           </label>
-                          <span className="text-sm">($)</span>
-                          <span className="absolute left-[60px] bottom-0">:</span>
+                          <span className="text-sm mt-1">($)</span>
+                          <span className="absolute top-0 left-[60px] bottom-0">:</span>
                           <input
                             type="text"
                             id="totalForexAmount"
                             name="totalForexAmount"
                             value={sundryDebtor.totalForexAmount}
-                            // onChange={handleInputForexChange}
                             onBlur={(e) => numberFormat(e, 0)}
-                            className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            className="w-[100px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                             readOnly
                           />
                         </div>
-                        <div className="flex absolute left-[900px] top-[500px]">
-                          <label htmlFor="totalOutwardReferenceAmount" className="text-[12px] mr-1">
+                        <div className="w-[167px] flex absolute left-[900px] top-[500px] border border-t-black border-transparent">
+                          <label htmlFor="totalOutwardReferenceAmount" className="text-[12px] mr-1 mt-1">
                             Total
                           </label>
-                          <span className="text-sm">(₹)</span>
+                          <span className="text-sm mt-1">(₹)</span>
                           <span className="absolute left-[60px] bottom-0">:</span>
                           <input
                             type="text"
                             id="totalOutwardReferenceAmount"
                             name="totalOutwardReferenceAmount"
                             value={sundryDebtor.totalOutwardReferenceAmount}
-                            // onChange={handleInputForexChange}
                             onBlur={(e) => numberFormat(e, 1)}
-                            className="w-[120px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            className="w-[120px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                             readOnly
                           />
@@ -1673,7 +1673,7 @@ console.log(sundryDebtor)
                             name="totalOutwardReferenceAmountCreditOrDebit"
                             value={sundryDebtor.forexSubForm.totalOutwardReferenceAmountCreditOrDebit}
                             onChange={handleInputForexChange}
-                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                           />
                         </div>
@@ -1682,26 +1682,26 @@ console.log(sundryDebtor)
                   )}
                   {sundryDebtor.forexApplicable !== 'yes' && (
                     <>
-                      <div className='flex absolute left-[900px] top-[500px] text-sm'>
-                        <label htmlFor="" className=''>Total</label>
-                        <span>:</span>
+                      <div className='w-[126px] flex absolute left-[900px] top-[500px] text-sm border border-t-black border-transparent'>
+                        <label htmlFor="" className='mt-1'>Total</label>
+                        <span className='mt-1'>:</span>
+                        <span className='ml-1 mt-1'>₹</span>
                         <input
                             type="text"
                             id="totalInwardReferenceAmount"
                             name="totalInwardReferenceAmount"
                             value={sundryDebtor.totalInwardReferenceAmount}
                             onBlur={(e) => numberFormat(e, 1)}
-                            className="w-[120px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            className="w-[80px] h-5 mt-1 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                             readOnly
                           />
                           <input
                             type="text"
-                            id="totalInwardAmountCreditOrDebit"
-                            name="totalInwardAmountCreditOrDebit"
-                            value={sundryDebtor.totalInwardReferenceAmountCreditOrDebit}
-                            onChange={handleInputForexChange}
-                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+                            id="totalInwardReferenceAmountCreditOrDebit"
+                            name="totalInwardReferenceAmountCreditOrDebit"
+                            value={sundryDebtor.forexSubForm.totalInwardReferenceAmountCreditOrDebit}
+                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                             autoComplete="off"
                           />
                       </div>

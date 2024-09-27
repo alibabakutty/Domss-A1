@@ -40,12 +40,12 @@ const SundryCreditorsAlter = () => {
     landlineNumber: '',
     emailId: '',
     dateForOpening: '',
-    openingBalance: '',
+    openingBalance: 0.00,
     creditOrDebit: '',
     forexCurrencySymbol: '',
-    totalForexAmount: '',
-    totalInwardReferenceAmount: '',
-    totalOutwardReferenceAmount: '',
+    totalForexAmount: 0.00,
+    totalInwardReferenceAmount: 0.00,
+    totalOutwardReferenceAmount: 0.00,
     forexSubForm: [
       {
         
@@ -54,10 +54,10 @@ const SundryCreditorsAlter = () => {
         dueDate: '',
         forexCurrencyType: '',
         forexCurrencySymbol: '',
-        forexAmount: '',
-        exchangeRate: '',
-        outwardReferenceAmount: '',
-        inwardReferenceAmount: '',
+        forexAmount: 0.00,
+        exchangeRate: 0.00,
+        outwardReferenceAmount: 0.00,
+        inwardReferenceAmount: 0.00,
         referenceCreditOrDebit: ''
       },
     ],
@@ -789,6 +789,8 @@ const SundryCreditorsAlter = () => {
     return {
       ...sundryCreditor,
       openingBalance: parseFloat(sundryCreditor.openingBalance),
+      totalForexAmount: parseFloat(sundryCreditor.totalForexAmount),
+      totalOutwardReferenceAmount: parseFloat(sundryCreditor.totalOutwardReferenceAmount),
       sundryCreditorBankDetails: sundryCreditor.bank ? {
         accountName: sundryCreditor.bank.accountName || '',
         accountNumber: parseInt(sundryCreditor.bank.accountNumber, 10),  // Ensure numeric values
@@ -1658,7 +1660,7 @@ const SundryCreditorsAlter = () => {
                                   type="text"
                                   id="forexAmount"
                                   name="forexAmount"
-                                  value={formatIndianNumber(row.forexAmount)}
+                                  value={formatIndianNumber(row.forexAmount || 0.00)}
                                   onChange={e => handleInputForexChange(e, index)}
                                   ref={input => (inputRefsForex.current[4 + index * 9] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 4)}
@@ -1675,7 +1677,7 @@ const SundryCreditorsAlter = () => {
                                   type="text"
                                   id="exchangeRate"
                                   name="exchangeRate"
-                                  value={formatIndianNumber(row.exchangeRate)}
+                                  value={formatIndianNumber(row.exchangeRate || 0.00)}
                                   onChange={e => handleInputForexChange(e, index)}
                                   ref={input => (inputRefsForex.current[5 + index * 9] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 5)}

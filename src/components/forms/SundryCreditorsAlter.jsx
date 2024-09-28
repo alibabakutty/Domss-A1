@@ -17,7 +17,7 @@ const SundryCreditorsAlter = () => {
     forexApplicable: '',
     billWiseStatus: '',
     provideBankDetails: '',
-    bank: {
+    sundryCreditorBankDetails: {
       accountName: '',
       accountNumber: '',
       bankName: '',
@@ -49,7 +49,7 @@ const SundryCreditorsAlter = () => {
     totalForexAmount: 0.0,
     totalInwardReferenceAmount: 0.0,
     totalOutwardReferenceAmount: 0.0,
-    forexSubForm: [
+    sundryCreditorForexDetails: [
       {
         forexDate: '',
         referenceName: '',
@@ -102,7 +102,7 @@ const SundryCreditorsAlter = () => {
     // Fetch the list of currencies
     listOfCurrencies()
       .then(response => {
-        console.log(response.data);
+       
         setCurrencySuggestion(response.data);
       })
       .catch(error => console.error('Error fetching currencies:', error));
@@ -149,147 +149,182 @@ const SundryCreditorsAlter = () => {
     const loadSuppliers = async () => {
       try {
         const result = await getSpecificSundryCreditorName(datas);
-        console.log('API-Response', result.data);
-
-        const {
-          sundryCreditorName = '',
-          underGroup = '',
-          forexApplicable = '',
-          billWiseStatus = '',
-          provideBankDetails = '',
-          sundryCreditorBankDetails,
-          addressOne = '',
-          addressTwo = '',
-          addressThree = '',
-          addressFour = '',
-          addressFive = '',
-          landMarkOrArea = '',
-          state = '',
-          country = '',
-          pincode = '',
-          panOrItNumber = '',
-          gstinOrUinNumber = '',
-          msmeNumber = '',
-          contactPersonName = '',
-          mobileNumber = '',
-          landlineNumber = '',
-          emailId = '',
-          dateForOpening = '',
-          openingBalance = '',
-          creditOrDebit = '',
-          totalForexAmount = '',
-          totalInwardReferenceAmount = '',
-          totalOutwardReferenceAmount = '',
-          sundryCreditorForexDetails,
-        } = result.data;
-
-        let fetchedBank = {
-          accountName: '',
-          accountNumber: '',
-          bankName: '',
-          branchName: '',
-          ifscCode: '',
-          accountType: '',
-          swiftCode: '',
-        };
-
-        let fetchedForexSubForm = [
-          {
-            forexDate: '',
-            referenceName: '',
-            dueDate: '',
-            forexCurrencyType: '',
-            forexCurrencySymbol: '',
-            forexAmount: '',
-            forexCreditOrDebit: '',
-            exchangeRate: '',
-            outwardReferenceAmount: '',
-            inwardReferenceAmount: '',
-            referenceCreditOrDebit: '',
-          },
-        ];
-
-        if (sundryCreditorBankDetails && typeof sundryCreditorBankDetails === 'object') {
-          fetchedBank = {
-            accountName: sundryCreditorBankDetails.accountName || '',
-            accountNumber: sundryCreditorBankDetails.accountNumber || '',
-            bankName: sundryCreditorBankDetails.bankName || '',
-            branchName: sundryCreditorBankDetails.branchName || '',
-            ifscCode: sundryCreditorBankDetails.ifscCode || '',
-            accountType: sundryCreditorBankDetails.accountType || '',
-            swiftCode: sundryCreditorBankDetails.swiftCode || '',
-          };
-        }
-
-        // Set default forexCurrencySymbol to avoid undefined error
-        let frontForexSymbol = '';
-
-        if (Array.isArray(sundryCreditorForexDetails) && sundryCreditorForexDetails.length > 0) {
-          fetchedForexSubForm = sundryCreditorForexDetails.map(forex => ({
-            forexDate: forex.forexDate || '',
-            formattedForexDate: formatDateForDisplay(forex.forexDate), // Format forexDate for display
-            referenceName: forex.referenceName || '',
-            dueDate: forex.dueDate || '',
-            formattedDueDate: formatDateForDisplay(forex.dueDate), // Format dueDate for display
-            forexCurrencyType: forex.forexCurrencyType || '',
-            forexCurrencySymbol: forex.forexCurrencySymbol || '',
-            forexAmount: forex.forexAmount || '',
-            forexCreditOrDebit: forex.forexCreditOrDebit || '',
-            exchangeRate: forex.exchangeRate || '',
-            outwardReferenceAmount: forex.outwardReferenceAmount || '',
-            inwardReferenceAmount: forex.inwardReferenceAmount || '',
-            referenceCreditOrDebit: forex.referenceCreditOrDebit || '',
-          }));
-
-          // Debugging: check if fetched forex form has correct symbols
-          console.log('Fetched Forex Subform', fetchedForexSubForm);
-
-          // Assuming you want to set the first forexCurrencySymbol globally
-          frontForexSymbol = fetchedForexSubForm[0].forexCurrencySymbol || '';
-          console.log(frontForexSymbol);
-        }
-
-        // Set the state with the updated values
+        
+        // setSundryCreditor(result.data)
+        const data = result.data;
         setSundryCreditor({
-          sundryCreditorName,
-          underGroup,
-          forexApplicable,
-          billWiseStatus,
-          provideBankDetails,
-          bank: fetchedBank,
-          addressOne,
-          addressTwo,
-          addressThree,
-          addressFour,
-          addressFive,
-          landMarkOrArea,
-          state,
-          country,
-          pincode,
-          panOrItNumber,
-          gstinOrUinNumber,
-          msmeNumber,
-          contactPersonName,
-          mobileNumber,
-          landlineNumber,
-          emailId,
-          dateForOpening,
-          openingBalance,
-          creditOrDebit,
-          forexCurrencySymbol: frontForexSymbol,
-          totalForexAmount,
-          totalInwardReferenceAmount,
-          totalOutwardReferenceAmount,
-          forexSubForm: fetchedForexSubForm,
+          sundryCreditorName: data.sundryCreditorName || '',
+          underGroup: data.underGroup || '',
+          forexApplicable: data.forexApplicable || '',
+          billWiseStatus: data.billWiseStatus || '',
+          provideBankDetails: data.provideBankDetails || '',
+          sundryCreditorBankDetails: data.sundryCreditorBankDetails || {},
+          addressOne: data.addressOne || '',
+          addressTwo: data.addressTwo || '',
+          addressThree: data.addressThree || '',
+          addressFour: data.addressFour || '',
+          addressFive: data.addressFive || '',
+          landMarkOrArea: data.landMarkOrArea || '',
+          state: data.state || '',
+          country: data.country || '',
+          pincode: data.pincode || '',
+          panOrItNumber: data.panOrItNumber || '',
+          gstinOrUinNumber: data.gstinOrUinNumber || '',
+          msmeNumber: data.msmeNumber || '',
+          contactPersonName: data.contactPersonName || '',
+          mobileNumber: data.mobileNumber || '',
+          landlineNumber: data.landlineNumber || '',
+          emailId: data.emailId || '',
+          dateForOpening: data.dateForOpening || '',
+          openingBalance: formatIndianNumber(data.openingBalance) || '',
+          creditOrDebit: data.creditOrDebit || '',
+          totalForexAmount: data.totalForexAmount || '',
+          totalInwardReferenceAmount: data.totalInwardReferenceAmount || '',
+          totalOutwardReferenceAmount: data.totalOutwardReferenceAmount || '',
+          sundryCreditorForexDetails: data.sundryCreditorForexDetails || [],
         });
+
+        // const {
+        //   sundryCreditorName = '',
+        //   underGroup = '',
+        //   forexApplicable = '',
+        //   billWiseStatus = '',
+        //   provideBankDetails = '',
+        //   sundryCreditorBankDetails,
+        //   addressOne = '',
+        //   addressTwo = '',
+        //   addressThree = '',
+        //   addressFour = '',
+        //   addressFive = '',
+        //   landMarkOrArea = '',
+        //   state = '',
+        //   country = '',
+        //   pincode = '',
+        //   panOrItNumber = '',
+        //   gstinOrUinNumber = '',
+        //   msmeNumber = '',
+        //   contactPersonName = '',
+        //   mobileNumber = '',
+        //   landlineNumber = '',
+        //   emailId = '',
+        //   dateForOpening = '',
+        //   openingBalance = '',
+        //   creditOrDebit = '',
+        //   totalForexAmount = '',
+        //   totalInwardReferenceAmount = '',
+        //   totalOutwardReferenceAmount = '',
+        //   sundryCreditorForexDetails,
+        // } = result.data;
+
+        // let fetchedBank = {
+        //   accountName: '',
+        //   accountNumber: '',
+        //   bankName: '',
+        //   branchName: '',
+        //   ifscCode: '',
+        //   accountType: '',
+        //   swiftCode: '',
+        // };
+
+        // let fetchedForexSubForm = [
+        //   {
+        //     forexDate: '',
+        //     referenceName: '',
+        //     dueDate: '',
+        //     forexCurrencyType: '',
+        //     forexCurrencySymbol: '',
+        //     forexAmount: '',
+        //     forexCreditOrDebit: '',
+        //     exchangeRate: '',
+        //     outwardReferenceAmount: '',
+        //     inwardReferenceAmount: '',
+        //     referenceCreditOrDebit: '',
+        //   },
+        // ];
+
+        // if (sundryCreditorBankDetails && typeof sundryCreditorBankDetails === 'object') {
+        //   fetchedBank = {
+        //     accountName: sundryCreditorBankDetails.accountName || '',
+        //     accountNumber: sundryCreditorBankDetails.accountNumber || '',
+        //     bankName: sundryCreditorBankDetails.bankName || '',
+        //     branchName: sundryCreditorBankDetails.branchName || '',
+        //     ifscCode: sundryCreditorBankDetails.ifscCode || '',
+        //     accountType: sundryCreditorBankDetails.accountType || '',
+        //     swiftCode: sundryCreditorBankDetails.swiftCode || '',
+        //   };
+        // }
+
+        // // Set default forexCurrencySymbol to avoid undefined error
+        // let frontForexSymbol = '';
+
+        // if (Array.isArray(sundryCreditorForexDetails) && sundryCreditorForexDetails.length > 0) {
+        //   fetchedForexSubForm = sundryCreditorForexDetails.map(forex => ({
+        //     forexDate: forex.forexDate || '',
+        //     formattedForexDate: formatDateForDisplay(forex.forexDate), // Format forexDate for display
+        //     referenceName: forex.referenceName || '',
+        //     dueDate: forex.dueDate || '',
+        //     formattedDueDate: formatDateForDisplay(forex.dueDate), // Format dueDate for display
+        //     forexCurrencyType: forex.forexCurrencyType || '',
+        //     forexCurrencySymbol: forex.forexCurrencySymbol || '',
+        //     forexAmount: forex.forexAmount || '',
+        //     forexCreditOrDebit: forex.forexCreditOrDebit || '',
+        //     exchangeRate: forex.exchangeRate || '',
+        //     outwardReferenceAmount: forex.outwardReferenceAmount || '',
+        //     inwardReferenceAmount: forex.inwardReferenceAmount || '',
+        //     referenceCreditOrDebit: forex.referenceCreditOrDebit || '',
+        //   }));
+
+        //   // Debugging: check if fetched forex form has correct symbols
+        //   console.log('Fetched Forex Subform', fetchedForexSubForm);
+
+        //   // Assuming you want to set the first forexCurrencySymbol globally
+        //   frontForexSymbol = fetchedForexSubForm[0].forexCurrencySymbol || '';
+        //   console.log(frontForexSymbol);
+        // }
+
+        // // Set the state with the updated values
+        // setSundryCreditor({
+        //   sundryCreditorName,
+        //   underGroup,
+        //   forexApplicable,
+        //   billWiseStatus,
+        //   provideBankDetails,
+        //   bank: fetchedBank,
+        //   addressOne,
+        //   addressTwo,
+        //   addressThree,
+        //   addressFour,
+        //   addressFive,
+        //   landMarkOrArea,
+        //   state,
+        //   country,
+        //   pincode,
+        //   panOrItNumber,
+        //   gstinOrUinNumber,
+        //   msmeNumber,
+        //   contactPersonName,
+        //   mobileNumber,
+        //   landlineNumber,
+        //   emailId,
+        //   dateForOpening,
+        //   openingBalance,
+        //   creditOrDebit,
+        //   forexCurrencySymbol: frontForexSymbol,
+        //   totalForexAmount,
+        //   totalInwardReferenceAmount,
+        //   totalOutwardReferenceAmount,
+        //   forexSubForm: fetchedForexSubForm,
+        // });
       } catch (error) {
         console.error(error);
       }
     };
-
+    
     loadSuppliers();
   }, [datas]);
 
+  
+  
   // Handling input changes in sundryCreditor form
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -302,7 +337,7 @@ const SundryCreditorsAlter = () => {
     const { name, value } = e.target;
     setSundryCreditor(prevState => ({
       ...prevState,
-      bank: { ...prevState.bank, [name]: value },
+      sundryCreditorBankDetails: { ...prevState.sundryCreditorBankDetails, [name]: value },
     }));
   };
 
@@ -313,9 +348,9 @@ const SundryCreditorsAlter = () => {
 
     setSundryCreditor(prevState => {
       // Parse openingBalance as a float, removing commas
-      const openingBalance = parseFloat(prevState.openingBalance) || 0;
+      const openingBalance = parseFloat(prevState.openingBalance.replace(/,/g, '')) || 0;
 
-      const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
+      const updatedForexSubForm = prevState.sundryCreditorForexDetails.map((row, index) => {
         // Parse forexAmount and exchangeRate as floats, removing commas
         const forexAmount = parseFloat(row.forexAmount) || 0;
         const exchangeRate = parseFloat(row.exchangeRate) || 0;
@@ -381,15 +416,15 @@ const SundryCreditorsAlter = () => {
         });
 
       // Log calculated totals for debugging
-      console.log('Calculated Totals:', {
-        totalForexAmount: formattedTotalForexAmount,
-        totalOutwardReferenceAmount: formattedtotalOutwardReferenceAmount,
-      });
+      // console.log('Calculated Totals:', {
+      //   totalForexAmount: formattedTotalForexAmount,
+      //   totalOutwardReferenceAmount: formattedtotalOutwardReferenceAmount,
+      // });
 
       // Return the updated state with updated totals and forexSubForm
       return {
         ...prevState,
-        forexSubForm: updatedForexSubForm, // Update forexSubForm rows
+        sundryCreditorForexDetails: updatedForexSubForm, // Update forexSubForm rows
         totalForexAmount: formattedTotalForexAmount, // Update totalForexAmount
         totalOutwardReferenceAmount: formattedtotalOutwardReferenceAmount, // Update totalOutwardReferenceAmount
       };
@@ -397,22 +432,22 @@ const SundryCreditorsAlter = () => {
   };
 
   const calculateInwardTotals = () => {
-    const total = sundryCreditor.forexSubForm.reduce((sum, acc) => {
+    const total = sundryCreditor.sundryCreditorForexDetails.reduce((sum, acc) => {
       return sum + parseFloat(acc.inwardReferenceAmount);
     }, 0);
     const updated = { ...sundryCreditor };
     updated.totalInwardReferenceAmount = total;
-    console.log(total);
+
     setSundryCreditor(updated);
   };
 
-  console.log(sundryCreditor);
+
 
   const handleInputForexChange = (e, index) => {
     const { name, value } = e.target;
 
     setSundryCreditor(prevState => {
-      let updatedForexSubForm = [...prevState.forexSubForm];
+      let updatedForexSubForm = [...prevState.sundryCreditorForexDetails];
 
       // Update the current row's input field
       updatedForexSubForm[index] = {
@@ -462,7 +497,7 @@ const SundryCreditorsAlter = () => {
 
       return {
         ...prevState,
-        forexSubForm: updatedForexSubForm,
+        sundryCreditorForexDetails: updatedForexSubForm,
       };
     });
   };
@@ -528,7 +563,7 @@ const SundryCreditorsAlter = () => {
       e.preventDefault();
       const value = key.toLowerCase() === 'c' ? 'cr' : 'dr';
       setSundryCreditor(prevState => {
-        const updatedForexSubForm = prevState.forexSubForm.map(row => ({
+        const updatedForexSubForm = prevState.sundryCreditorForexDetails.map(row => ({
           ...row,
           referenceCreditOrDebit: value, // Update referenceCreditOrDebit in all rows
         }));
@@ -536,7 +571,7 @@ const SundryCreditorsAlter = () => {
         return {
           ...prevState,
           creditOrDebit: value,
-          forexSubForm: updatedForexSubForm,
+          sundryCreditorForexDetails: updatedForexSubForm,
         };
       });
     } else if (key === 'Escape') {
@@ -587,8 +622,8 @@ const SundryCreditorsAlter = () => {
         forexDate: '',
         referenceName: '',
         dueDate: '',
-        forexCurrencyType: prevState.forexSubForm[0]?.forexCurrencyType || '',
-        forexCurrencySymbol: prevState.forexSubForm[0]?.forexCurrencySymbol || '',
+        forexCurrencyType: prevState.sundryCreditorForexDetails[0]?.forexCurrencyType || '',
+        forexCurrencySymbol: prevState.sundryCreditorForexDetails[0]?.forexCurrencySymbol || '',
         forexAmount: '',
         forexCreditOrDebit: prevState.creditOrDebit || '',
         exchangeRate: '',
@@ -600,15 +635,18 @@ const SundryCreditorsAlter = () => {
 
       return {
         ...prevState,
-        forexSubForm: [...prevState.forexSubForm, newRow],
+        sundryCreditorForexDetails: [...prevState.sundryCreditorForexDetails, newRow],
       };
     });
   };
 
   // Function to check if totalOutwardReferenceAmount equals openingBalance
   const checkBalanceMatch = () => {
-    const openingBalance = parseFloat(sundryCreditor.openingBalance) || 0;
+    const openingBalance = parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')) || 0;
+    console.log(parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')))
+    
     const totalOutwardReferenceAmount = parseFloat(sundryCreditor.totalOutwardReferenceAmount) || 0;
+    console.log(parseFloat(sundryCreditor.totalOutwardReferenceAmount))
 
     return totalOutwardReferenceAmount === openingBalance;
   };
@@ -640,7 +678,7 @@ const SundryCreditorsAlter = () => {
 
       // Check if the current field is referenceCreditOrDebit and its value is not empty
       const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
-      const isLastRow = rowIndex === sundryCreditor.forexSubForm.length - 1;
+      const isLastRow = rowIndex === sundryCreditor.sundryCreditorForexDetails.length - 1;
 
       // Add a new row when Enter is pressed on the last row referenceCreditOrDebit with a value
       if (isReferenceCreditOrDebit && e.target.value.trim() !== '' && isLastRow) {
@@ -731,7 +769,7 @@ const SundryCreditorsAlter = () => {
   const handleSuggestionClick = (suggestion, index) => {
     setSundryCreditor(prevState => {
       // Clone the existing forexSubForm array
-      const updatedForexSubForm = [...prevState.forexSubForm];
+      const updatedForexSubForm = [...prevState.sundryCreditorForexDetails];
 
       // Update the selected forexCurrencyType and forexCurrencySymbol
       updatedForexSubForm[index] = {
@@ -740,7 +778,7 @@ const SundryCreditorsAlter = () => {
         forexCurrencySymbol: suggestion.forexCurrencySymbol, // Assuming this field exists in the suggestion object
       };
 
-      return { ...prevState, forexSubForm: updatedForexSubForm };
+      return { ...prevState, sundryCreditorForexDetails: updatedForexSubForm };
     });
 
     // Close the suggestion dropdown after selecting
@@ -764,7 +802,7 @@ const SundryCreditorsAlter = () => {
 
         // Update the forexCurrencyType in the forexSubForm
         setSundryCreditor(prevState => {
-          const updatedForexSubForm = [...prevState.forexSubForm];
+          const updatedForexSubForm = [...prevState.sundryCreditorForexDetails];
 
           // Update the specific row
           updatedForexSubForm[index] = {
@@ -773,7 +811,7 @@ const SundryCreditorsAlter = () => {
             forexCurrencySymbol: selectedCurrency.forexCurrencySymbol, // Assuming this field exists in the
           };
 
-          return { ...prevState, forexSubForm: updatedForexSubForm };
+          return { ...prevState, sundryCreditorForexDetails: updatedForexSubForm };
         });
 
         setCurrencyFocused(false);
@@ -802,22 +840,22 @@ const SundryCreditorsAlter = () => {
   const prepareDataForBackend = sundryCreditor => {
     return {
       ...sundryCreditor,
-      openingBalance: parseFloat(sundryCreditor.openingBalance),
+      openingBalance: parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')),
       totalForexAmount: parseFloat(sundryCreditor.totalForexAmount),
       totalOutwardReferenceAmount: parseFloat(sundryCreditor.totalOutwardReferenceAmount),
-      sundryCreditorBankDetails: sundryCreditor.bank
+      sundryCreditorBankDetails: sundryCreditor.sundryCreditorBankDetails
         ? {
-            accountName: sundryCreditor.bank.accountName || '',
-            accountNumber: parseInt(sundryCreditor.bank.accountNumber, 10), // Ensure numeric values
-            bankName: sundryCreditor.bank.bankName || '',
-            branchName: sundryCreditor.bank.branchName || '',
-            ifscCode: sundryCreditor.bank.ifscCode || '',
-            accountType: sundryCreditor.bank.accountType || '',
-            swiftCode: sundryCreditor.bank.swiftCode || '',
+            accountName: sundryCreditor.sundryCreditorBankDetails.accountName || '',
+            accountNumber: parseInt(sundryCreditor.sundryCreditorBankDetails.accountNumber, 10), // Ensure numeric values
+            bankName: sundryCreditor.sundryCreditorBankDetails.bankName || '',
+            branchName: sundryCreditor.sundryCreditorBankDetails.branchName || '',
+            ifscCode: sundryCreditor.sundryCreditorBankDetails.ifscCode || '',
+            accountType: sundryCreditor.sundryCreditorBankDetails.accountType || '',
+            swiftCode: sundryCreditor.sundryCreditorBankDetails.swiftCode || '',
           }
         : {},
-      sundryCreditorForexDetails: Array.isArray(sundryCreditor.forexSubForm)
-        ? sundryCreditor.forexSubForm
+      sundryCreditorForexDetails: Array.isArray(sundryCreditor.sundryCreditorForexDetails)
+        ? sundryCreditor.sundryCreditorForexDetails
             .filter(forex => forex.forexDate.trim() !== '')
             .map(forex => ({
               ...forex,
@@ -854,11 +892,11 @@ const SundryCreditorsAlter = () => {
       const sanitizedData = prepareDataForBackend(sundryCreditor);
 
       // Log sanitized data to ensure correct structure
-      console.log('Sanitized Data:', JSON.stringify(sanitizedData, null, 2));
+      
 
       // Send sanitized data to backend
       const response = await updateSundryCreditorMaster(datas, sanitizedData);
-      console.log('Response:', response.data);
+     
 
       // Focus on the first input field
       if (inputRefs.current && inputRefs.current[0]) {
@@ -880,19 +918,36 @@ const SundryCreditorsAlter = () => {
   };
 
   // Utility function to format numbers in Indian decimal format
-  const formatIndianNumber = value => {
+  const formatIndianNumber = (value) => {
     // Convert the value to a number, handle edge cases for NaN or empty strings
     const numberValue = typeof value === 'number' ? value : parseFloat(value.replace(/,/g, ''));
 
     if (isNaN(numberValue)) return '';
 
     // Format the number in Indian format with two decimal places
-    return new Intl.NumberFormat('en-IN', {
+    return  new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(numberValue)
+    
+  };
+  const numberFormat = (item)=>{
+    const numberValue = typeof item === 'number' ? item : parseFloat(item.replace(/,/g, ''));
+
+    if (isNaN(numberValue)) return '';
+
+    // Format the number in Indian format with two decimal places
+    const formattedNumber =  new Intl.NumberFormat('en-IN', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(numberValue);
-  };
 
+    
+    setSundryCreditor((prev)=>({
+      ...prev,
+      openingBalance: formattedNumber
+    }))
+  }
   const dateConvert = (e, index) => {
     const dateValue = e.target.value;
     const fieldName = e.target.name; // forexDate or dueDate
@@ -925,7 +980,7 @@ const SundryCreditorsAlter = () => {
       const convertedDate = `${year}-${month}-${day}`;
 
       setSundryCreditor(prevState => {
-        const updatedForexSubForm = [...prevState.forexSubForm];
+        const updatedForexSubForm = [...prevState.sundryCreditorForexDetails];
         updatedForexSubForm[index] = {
           ...updatedForexSubForm[index],
           [fieldName]: convertedDate, // Save the converted date (YYYY-MM-DD format)
@@ -934,7 +989,7 @@ const SundryCreditorsAlter = () => {
         };
         return {
           ...prevState,
-          forexSubForm: updatedForexSubForm,
+          sundryCreditorForexDetails: updatedForexSubForm,
         };
       });
     }
@@ -945,14 +1000,14 @@ const SundryCreditorsAlter = () => {
 
     // Update the sundryCreditor state for the specific row and field (forexDate or dueDate)
     setSundryCreditor(prevState => {
-      const updatedForexSubForm = [...prevState.forexSubForm];
+      const updatedForexSubForm = [...prevState.sundryCreditorForexDetails];
       updatedForexSubForm[index] = {
         ...updatedForexSubForm[index],
-        [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: dateValue,
+        forexDate: dateValue,
       };
       return {
         ...prevState,
-        forexSubForm: updatedForexSubForm,
+        sundryCreditorForexDetails: updatedForexSubForm,
       };
     });
   };
@@ -1066,7 +1121,7 @@ const SundryCreditorsAlter = () => {
                     type="text"
                     id="accountName"
                     name="accountName"
-                    value={sundryCreditor.bank.accountName}
+                    value={sundryCreditor.sundryCreditorBankDetails.accountName}
                     ref={input => (inputRefsBank.current[0] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 0)}
@@ -1083,7 +1138,7 @@ const SundryCreditorsAlter = () => {
                     type="text"
                     id="accountNumber"
                     name="accountNumber"
-                    value={sundryCreditor.bank.accountNumber}
+                    value={sundryCreditor.sundryCreditorBankDetails.accountNumber}
                     ref={input => (inputRefsBank.current[1] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 1)}
@@ -1100,7 +1155,7 @@ const SundryCreditorsAlter = () => {
                     type="text"
                     id="bankName"
                     name="bankName"
-                    value={sundryCreditor.bank.bankName}
+                    value={sundryCreditor.sundryCreditorBankDetails.bankName}
                     ref={input => (inputRefsBank.current[2] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 2)}
@@ -1117,7 +1172,7 @@ const SundryCreditorsAlter = () => {
                     type="text"
                     id="branchName"
                     name="branchName"
-                    value={sundryCreditor.bank.branchName}
+                    value={sundryCreditor.sundryCreditorBankDetails.branchName}
                     ref={input => (inputRefsBank.current[3] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 3)}
@@ -1134,7 +1189,7 @@ const SundryCreditorsAlter = () => {
                     type="text"
                     id="ifscCode"
                     name="ifscCode"
-                    value={sundryCreditor.bank.ifscCode}
+                    value={sundryCreditor.sundryCreditorBankDetails.ifscCode}
                     ref={input => (inputRefsBank.current[4] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 4)}
@@ -1151,7 +1206,7 @@ const SundryCreditorsAlter = () => {
                     type="text"
                     id="accountType"
                     name="accountType"
-                    value={sundryCreditor.bank.accountType}
+                    value={sundryCreditor.sundryCreditorBankDetails.accountType}
                     ref={input => (inputRefsBank.current[5] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 5)}
@@ -1168,7 +1223,7 @@ const SundryCreditorsAlter = () => {
                     type="text"
                     id="swiftCode"
                     name="swiftCode"
-                    value={sundryCreditor.bank.swiftCode}
+                    value={sundryCreditor.sundryCreditorBankDetails.swiftCode}
                     ref={input => (inputRefsBank.current[6] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 6)}
@@ -1463,10 +1518,11 @@ const SundryCreditorsAlter = () => {
               type="text"
               id="openingBalance"
               name="openingBalance"
-              value={formatIndianNumber(sundryCreditor.openingBalance)}
+              value={sundryCreditor.openingBalance}
               ref={input => (inputRefs.current[20] = input)}
               onChange={handleInputChange}
-              onBlur={formatIndianNumber}
+              onBlur={(e) => numberFormat(e.target.value)}
+
               onKeyDown={e => handleKeyDown(e, 20)}
               className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm text-right uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
@@ -1551,7 +1607,7 @@ const SundryCreditorsAlter = () => {
                       autoComplete="off"
                     />
                   </div>
-                  <table className="border-collapse border border-slate-400 w-full table-fixed">
+                  <table className="border-collapse border border-slate-400 w-full table-fixed relative">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
                         <th className="w-[13%]">Date</th>
@@ -1575,15 +1631,15 @@ const SundryCreditorsAlter = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {sundryCreditor.forexSubForm.map((row, index) => (
-                        <tr key={index} className="leading-4">
+                      {sundryCreditor.sundryCreditorForexDetails.map((row, index) => (
+                        <tr key={index} className="leading-4 ">
                           {/* Forex Date Input */}
                           <td>
                             <input
                               type="text"
                               id="forexDate"
                               name="forexDate"
-                              value={row.formattedForexDate}
+                              value={row.forexDate}
                               onChange={e => handleFormattedDateChange(e, index, 'forexDate')}
                               ref={input => (inputRefsForex.current[0 + index * 10] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 0)}
@@ -1659,7 +1715,7 @@ const SundryCreditorsAlter = () => {
                                 />
                                 {/* Currency Suggestion Dropdown */}
                                 {currencyFocused && filteredSuggestion.length > 0 && (
-                                  <div className="w-[20%] h-[50vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[558px] top-[100px]">
+                                  <div className="w-[20%] h-[50vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute top-0 right-[300px]">
                                     <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
                                       <p>List of Currencies</p>
                                     </div>
@@ -1707,8 +1763,8 @@ const SundryCreditorsAlter = () => {
                                   onChange={e => handleInputForexChange(e, index)}
                                   ref={input => (inputRefsForex.current[4 + index * 10] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 4)}
-                                  onBlur={e => {
-                                    formatIndianNumber(e, index);
+                                  onBlur={ e=> {
+                                    formatIndianNumber(e.target.value);
                                   }}
                                   className="w-[70px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
@@ -1727,6 +1783,7 @@ const SundryCreditorsAlter = () => {
                                   onKeyDown={e => handleKeyDownForex(e, index, 5)}
                                   className="w-[30px] h-5 pl-1 pr-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
+                                  readOnly
                                 />
                               </td>
 
@@ -1742,7 +1799,7 @@ const SundryCreditorsAlter = () => {
                                   ref={input => (inputRefsForex.current[6 + index * 10] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 6)}
                                   onBlur={e => {
-                                    formatIndianNumber(e, index);
+                                    formatIndianNumber(e.target.value);
                                   }}
                                   className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
@@ -1766,7 +1823,7 @@ const SundryCreditorsAlter = () => {
                                     }
                                   }}
                                   onBlur={e => {
-                                    formatIndianNumber(e, index);
+                                    formatIndianNumber(e.target.value);
                                   }}
                                   className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
@@ -1845,6 +1902,7 @@ const SundryCreditorsAlter = () => {
                             name="totalForexAmountCreditOrDebit"
                             value={sundryCreditor.creditOrDebit}
                             onChange={handleInputChange}
+
                             ref={input => (totalRefs.current[1] = input)}
                             onKeyDown={e => handleKeyDownTotal(e, 1)}
                             className="w-[30px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
@@ -1866,7 +1924,7 @@ const SundryCreditorsAlter = () => {
                             id="totalOutwardReferenceAmount"
                             name="totalOutwardReferenceAmount"
                             value={formatIndianNumber(sundryCreditor.totalOutwardReferenceAmount)}
-                            onBlur={e => formatIndianNumber(e, 1)}
+                            onBlur={e => formatIndianNumber(e.target.value)}
                             ref={input => (totalRefs.current[2] = input)}
                             onKeyDown={e => handleKeyDownTotal(e, 2)}
                             className="w-[80px] h-5 pl-1 mt-1 ml-5 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"

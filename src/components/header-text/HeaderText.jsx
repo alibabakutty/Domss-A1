@@ -48,6 +48,14 @@ const HeaderText = () => {
       headerText = "Sundry Creditor Creation";
     } else if (location.pathname === '/menu/sundryDebtor'){
       headerText = "Sundry Debtor Creation";
+    } else if (location.pathname === '/menu/stockGroup'){
+      headerText = "Stock Group Creation";
+    } else if (location.pathname === '/menu/stockCategory'){
+      headerText = "Stock Category Creation";
+    } else if (location.pathname === '/menu/stockItem'){
+      headerText = "Stock Item Creation";
+    } else if (location.pathname === '/menu/unit'){
+      headerText = "Unit Creation"
     }
   return (
     <>

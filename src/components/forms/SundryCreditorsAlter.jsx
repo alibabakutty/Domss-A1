@@ -163,6 +163,9 @@ const SundryCreditorsAlter = () => {
             referenceCreditOrDebit: '',
           }
         ];
+
+        // Extract forexCurrencySymbol from the first forexDetail entry (if available)
+        const frontforexCurrencySymbol = data.sundryCreditorForexDetails?.[0]?.forexCurrencySymbol || '';
   
         // Set the state with the updated values
         setSundryCreditor({
@@ -191,7 +194,7 @@ const SundryCreditorsAlter = () => {
           dateForOpening: data.dateForOpening || '',
           openingBalance: formatIndianNumber(data.openingBalance) || '',
           creditOrDebit: data.creditOrDebit || '',
-          forexCurrencySymbol: data.forexCurrencySymbol || '',
+          forexCurrencySymbol: frontforexCurrencySymbol || data.forexCurrencySymbol || '',
           totalForexAmount: data.totalForexAmount || '',
           totalInwardReferenceAmount: data.totalInwardReferenceAmount || '',
           totalOutwardReferenceAmount: data.totalOutwardReferenceAmount || '',
@@ -927,7 +930,7 @@ const SundryCreditorsAlter = () => {
                 id="underGroup"
                 name="underGroup"
                 value={sundryCreditor.underGroup}
-                className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                className="w-[120px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off"
               />
             </div>

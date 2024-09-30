@@ -424,7 +424,7 @@ const SundryDebtorsDisplay = () => {
                 name="underGroup"
                 value={sundryDebtor.underGroup}
                 
-                className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                className="w-[120px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                 autoComplete="off" readOnly
               />
             </div>

@@ -742,8 +742,8 @@ const SundryCreditorsAlter = () => {
               exchangeRate: parseFloat(forex.exchangeRate),
               outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount),
               inwardReferenceAmount: parseFloat(forex.inwardReferenceAmount),
-              forexDate: new Date(forex.forexDate).toISOString().split('T')[0],    // Format forexDate to YYYY-MM-DD
-              dueDate: new Date(forex.dueDate).toISOString().split('T')[0]    // Format dueDate to YYYY-MM-DD
+              // forexDate: new Date(forex.forexDate).toISOString().split('T')[0],    // Format forexDate to YYYY-MM-DD
+              // dueDate: new Date(forex.dueDate).toISOString().split('T')[0]    // Format dueDate to YYYY-MM-DD
             }))
         : [],
     };

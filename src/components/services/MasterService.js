@@ -22,6 +22,10 @@ export const createProjectCategoryMaster = (projectCategory) => axios.post(`${RE
 export const createProjectNameMaster = (projectName) => axios.post(`${REST_API_BASE_URL}/projectNameMasterApi/addProjectName`, projectName);
 export const createSundryCreditorMaster = (sundryCreditor) => axios.post(`${REST_API_BASE_URL}/sundryCreditorMasterApi/addSundryCreditor`, sundryCreditor);
 export const createSundryDebtorMaster = (sundryDebtor) => axios.post(`${REST_API_BASE_URL}/sundryDebtorMasterApi/addSundryDebtor`, sundryDebtor);
+export const createStockGroupMaster = (stockGroup) => axios.post(`${REST_API_BASE_URL}/stockGroupMasterApi/addStockGroup`, stockGroup);
+export const createStockCategoryMaster = (stockCategory) => axios.post(`${REST_API_BASE_URL}/stockCategoryMasterApi/addStockCategory`, stockCategory);
+export const createStockItemMaster = (stockItem) => axios.post(`${REST_API_BASE_URL}/stockItemMasterApi/addStockItem`, stockItem);
+export const createUnitMaster = (unit) => axios.post(`${REST_API_BASE_URL}/unitMasterApi/addUnit`, unit);
 
 // GET Specific Data
 export const getSpecificVoucher = (voucherTypeName) => axios.get(`${REST_API_BASE_URL}/voucherTypeMasterApi/displayVoucher/${voucherTypeName}`);
@@ -43,6 +47,10 @@ export const getSpecificProjectCategory = (projectCategoryName) => axios.get(`${
 export const getSpecificProjectName = (project) => axios.get(`${REST_API_BASE_URL}/projectNameMasterApi/displayProjectName/${project}`);
 export const getSpecificSundryCreditorName = (sundryCreditorName) => axios.get(`${REST_API_BASE_URL}/sundryCreditorMasterApi/displaySundryCreditor/${sundryCreditorName}`);
 export const getSpecificSundryDebtorName = (sundryDebtorName) => axios.get(`${REST_API_BASE_URL}/sundryDebtorMasterApi/displaySundryDebtor/${sundryDebtorName}`);
+export const getSpecificStockGroupName = (stockGroupName) => axios.get(`${REST_API_BASE_URL}/stockGroupMasterApi/displayStockGroup/${stockGroupName}`);
+export const getSpecificStockCategoryName = (stockCategoryName) => axios.get(`${REST_API_BASE_URL}/stockCategoryMasterApi/displayStockCategory/${stockCategoryName}`);
+export const getSpecificStockItemName = (stockItemName) => axios.get(`${REST_API_BASE_URL}/stockItemMasterApi/displayStockItem/${stockItemName}`);
+export const getSpecificUnitSymbolName = (unitSymbolName) => axios.get(`${REST_API_BASE_URL}/unitMasterApi/displayUnitMaster/${unitSymbolName}`);
 
 
 // DISPLAY ALL
@@ -65,6 +73,10 @@ export const listsOfProjectCategories = () => axios.get(`${REST_API_BASE_URL}/pr
 export const listsOfProjectNames = () => axios.get(`${REST_API_BASE_URL}/projectNameMasterApi/allProjects`);
 export const listsOfSundryCreditors = () => axios.get(`${REST_API_BASE_URL}/sundryCreditorMasterApi/allSundryCreditors`);
 export const listsOfSundryDebtors = () => axios.get(`${REST_API_BASE_URL}/sundryDebtorMasterApi/allSundryDebtors`);
+export const listOfStockGroups = () => axios.get(`${REST_API_BASE_URL}/stockGroupMasterApi/allStockGroups`);
+export const listOfStockCategories = () => axios.get(`${REST_API_BASE_URL}/stockCategoryMasterApi/allStockCategories`);
+export const listOfStockItems = () => axios.get(`${REST_API_BASE_URL}/stockItemMasterApi/allStockItems`);
+export const listOfUnits = () => axios.get(`${REST_API_BASE_URL}/unitMasterApi/allUnits`);
 
 // ALTER
 export const updateVoucherTypeMaster = (voucherTypeName,voucher) => axios.put(`${REST_API_BASE_URL}/voucherTypeMasterApi/alterVoucherTypeMaster/${voucherTypeName}`, voucher);
@@ -85,6 +97,10 @@ export const updateProjectCategoryMaster = (projectCategoryName, projectCategory
 export const updateProjectNameMaster = (projectName, project) => axios.put(`${REST_API_BASE_URL}/projectNameMasterApi/alterProjectNameMaster/${projectName}`, project);
 export const updateSundryCreditorMaster = (sundryCreditorName, sundryCreditor) => axios.put(`${REST_API_BASE_URL}/sundryCreditorMasterApi/alterSundryCreditorMaster/${sundryCreditorName}`, sundryCreditor);
 export const updateSundryDebtorMaster = (sundryDebtorName, sundryDebtor) => axios.put(`${REST_API_BASE_URL}/sundryDebtorMasterApi/alterSundryDebtorMaster/${sundryDebtorName}`, sundryDebtor);
+export const updateStockGroupMaster = (stockGroupName, stockGroup) => axios.put(`${REST_API_BASE_URL}/stockGroupMasterApi/alterStockGroupMaster/${stockGroupName}`, stockGroup);
+export const updateStockCategoryMaster = (stockCategoryName, stockCategory) => axios.put(`${REST_API_BASE_URL}/stockCategoryMasterApi/alterStockCategoryMaster/${stockCategoryName}`, stockCategory);
+export const updateStockItemMaster = (stockItemName, stockItem) => axios.put(`${REST_API_BASE_URL}/stockItemMasterApi/alterStockItemMaster/${stockItemName}`, stockItem); 
+export const updateUnitMaster = (unitSymbolName, unit) => axios.put(`${REST_API_BASE_URL}/unitMasterApi/alterUnitMaster/${unitSymbolName}`, unit);
 
 // DELETE
 export const deleteVoucher = (id) => axios.delete(`${REST_API_BASE_URL}/voucherTypeMasterApi/deleteVoucher/${id}`);
@@ -105,3 +121,7 @@ export const deleteProjectCategoryName = (id) => axios.delete(`${REST_API_BASE_U
 export const deleteProjectName = (id) => axios.delete(`${REST_API_BASE_URL}/projectNameMasterApi/deleteProjectName/${id}`);
 export const deleteSundryCreditor = (id) => axios.delete(`${REST_API_BASE_URL}/sundryCreditorMasterApi/deleteSundryCreditor/${id}`);
 export const deleteSundryDebtor = (id) => axios.delete(`${REST_API_BASE_URL}/sundryDebtorMasterApi/deleteSundryDebtor/${id}`);
+export const deleteStockGroup = (id) => axios.delete(`${REST_API_BASE_URL}/stockGroupMasterApi/deleteStockGroupMaster/${id}`);
+export const deleteStockCategory = (id) => axios.delete(`${REST_API_BASE_URL}/stockCategoryMasterApi/deleteStockCategoryMaster/${id}`);
+export const deleteStockItem = (id) => axios.delete(`${REST_API_BASE_URL}/stockItemMasterApi/deleteStockItemMaster/${id}`);
+export const deleteUnit = (id) => axios.delete(`${REST_API_BASE_URL}/unitMasterApi/deleteUnitMaster/${id}`);

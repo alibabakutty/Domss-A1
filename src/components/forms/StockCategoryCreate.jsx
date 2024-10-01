@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import LeftSideMenu from '../left-side-menu/LeftSideMenu'
 import RightSideButton from '../right-side-button/RightSideButton'
+import { createStockCategoryMaster } from '../services/MasterService';
 
 const StockCategoryCreate = () => {
 
@@ -29,6 +30,14 @@ const StockCategoryCreate = () => {
         if (nextField < inputRefs.current.length){
           inputRefs.current[nextField]?.focus();
           inputRefs.current[nextField]?.setSelectionRange(0, 0);
+        } else if (e.target.name === 'under'){
+          // Show confirmation dialog only if revenueCategoryName is filled
+          const userConfirmed = window.confirm('Do you want to confirm this submit?');
+          if (userConfirmed) {
+            handleSubmit(e);
+          } else {
+            (e).preventDefault();
+          }
         }
       }
     } else if (key === 'Backspace'){
@@ -50,15 +59,33 @@ const StockCategoryCreate = () => {
       [name]: value,
     }))
   };
+
+  const handleSubmit = async (e) => {
+    (e).preventDefault();
+    try {
+      const response = await createStockCategoryMaster(stockCategory);
+      console.log(response.data);
+      // After the submit
+      setStockCategory({
+        stockCategoryName: '',
+        under: '♦ Primary'
+      });
+      if (inputRefs.current[0]){
+        inputRefs.current[0].focus();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <>
       <div className='flex'>
         <LeftSideMenu />
-        <form action="" className='border border-slate-500 w-[45.5%] h-[12vh] absolute left-[44.5%]'>
+        <form action="" className='border border-slate-500 w-[45.5%] h-[12vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
           <div className='text-sm flex mt-2 ml-2 mb-1'>
             <label htmlFor="stockCategoryName" className='w-[15%]'>Name</label>
             <span>:</span>
-            <input type="text" name='stockCategoryName' ref={(input) => (inputRefs.current[0] = input)} onKeyDown={(e) => handleKeyDown(e, 0)} value={stockCategory.stockCategoryName} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+            <input type="text" name='stockCategoryName' ref={(input) => (inputRefs.current[0] = input)} onKeyDown={(e) => handleKeyDown(e, 0)} value={stockCategory.stockCategoryName} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
           </div>
           <div className='text-sm flex ml-2'>
             <label htmlFor="under" className='w-[15%]'>Under</label>

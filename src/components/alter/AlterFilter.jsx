@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
+import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfStockCategories, listOfStockGroups, listOfStockItems, listOfUnits, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const AlterFilter = () => {
@@ -25,7 +25,11 @@ const AlterFilter = () => {
         projectCategory: [],
         projectName: [],
         sundryCreditor: [],
-        sundryDebtor: []
+        sundryDebtor: [],
+        stockGroup: [],
+        stockCategory: [],
+        stockItem: [],
+        unit: [],
     });
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
@@ -50,7 +54,11 @@ const AlterFilter = () => {
         projectCategory: 'Project Categories',
         projectName: 'Projects',
         sundryCreditor: 'Sundry Creditors',
-        sundryDebtor: 'Sundry Debtors'
+        sundryDebtor: 'Sundry Debtors',
+        stockGroup: 'Stock Groups',
+        stockCategory: 'Stock Categories',
+        stockItem: 'Stock Items',
+        unit: 'Units',
       };
 
     const formatType = (str) => {
@@ -145,7 +153,23 @@ const AlterFilter = () => {
                     sundryDebtor: async () => {
                         const response = await listsOfSundryDebtors();
                         setSuggestions(prev => ({ ...prev, sundryDebtor: response.data }));
-                    }
+                    },
+                    stockGroup: async () => {
+                        const response = await listOfStockGroups();
+                        setSuggestions(prev => ({ ...prev, stockGroup: response.data }));
+                    },
+                    stockCategory: async () => {
+                        const response = await listOfStockCategories();
+                        setSuggestions(prev => ({ ...prev, stockCategory: response.data }));
+                    },
+                    stockItem: async () => {
+                        const response = await listOfStockItems();
+                        setSuggestions(prev => ({ ...prev, stockItem: response.data }));
+                    },
+                    unit: async () => {
+                        const response = await listOfUnits();
+                        setSuggestions(prev => ({ ...prev, unit: response.data }));
+                    },
                 };
 
                 if (fetchFunctions[type]) {
@@ -239,7 +263,23 @@ const AlterFilter = () => {
 
     const filteredCustomers = suggestions.sundryDebtor.filter(customer =>
         customer.sundryDebtorName.toLowerCase().includes(filterInput.toLowerCase())
-    )
+    );
+
+    const filteredStockGroups = suggestions.stockGroup.filter(group => 
+        group.stockGroupName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredStockCategories = suggestions.stockCategory.filter(category => 
+        category.stockCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredStockItems = suggestions.stockItem.filter(item => 
+        item.stockItemName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredUnits = suggestions.unit.filter(unit => 
+        unit.unitSymbolName.toLowerCase().includes(filterInput.toLowerCase())
+    );
 
      // Logic to determine if the scrollbar should be shown based on the type
      let shouldShowScroll;
@@ -280,6 +320,14 @@ const AlterFilter = () => {
         shouldShowScroll = (filteredSuppliers.length > 20);
     } else if (type === 'sundryDebtor'){
         shouldShowScroll = (filteredCustomers.length > 20);
+    } else if (type === 'stockGroup'){
+        shouldShowScroll = (filteredStockGroups.length > 20);
+    } else if (type === 'stockCategory'){
+        shouldShowScroll = (filteredStockCategories.length > 20);
+    } else if (type === 'stockItem'){
+        shouldShowScroll = (filteredStockItems.length > 20);
+    } else if (type === 'unit'){
+        shouldShowScroll = (filteredUnits.length > 20);
     } else{
         shouldShowScroll = false;
      }
@@ -325,6 +373,14 @@ const AlterFilter = () => {
                 totalItems = filteredSuppliers.length;
             } else if (type === 'sundryDebtor'){
                 totalItems = filteredCustomers.length;
+            } else if (type === 'stockGroup'){
+                totalItems = filteredStockGroups.length;
+            } else if (type === 'stockCategory'){
+                totalItems = filteredStockCategories.length;
+            } else if (type === 'stockItem'){
+                totalItems = filteredStockItems.length;
+            } else if (type === 'unit'){
+                totalItems = filteredUnits.length;
             }
 
             if (e.key === 'ArrowDown') {
@@ -475,6 +531,34 @@ const AlterFilter = () => {
                             navigate(`/sundryDebtorMasterApi/alterSundryDebtorMaster/${selectedSundryDebtor.sundryDebtorName}`);
                         }
                     }
+                } else if (type === 'stockGroup'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredStockGroups.length){
+                        const selectedStockGroup = filteredStockGroups[selectedIndex - 2];
+                        if (selectedStockGroup) {
+                            navigate(`/stockGroupMasterApi/alterStockGroupMaster/${selectedStockGroup.stockGroupName}`);
+                        }
+                    }
+                } else if (type === 'stockCategory'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredStockCategories.length){
+                        const selectedStockCategory = filteredStockCategories[selectedIndex - 2];
+                        if (selectedStockCategory) {
+                            navigate(`/stockCategoryMasterApi/alterStockCategoryMaster/${selectedStockCategory.stockCategoryName}`);
+                        }
+                    }
+                } else if (type === 'stockItem'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredStockItems.length){
+                        const selectedStockItem = filteredStockItems[selectedIndex - 2];
+                        if (selectedStockItem) {
+                            navigate(`/stockItemMasterApi/alterStockItemMaster/${selectedStockItem.stockItemName}`);
+                        }
+                    }
+                } else if (type === 'unit'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredUnits.length){
+                        const selectedUnit = filteredUnits[selectedIndex - 2];
+                        if (selectedUnit) {
+                            navigate(`/unitMasterApi/alterUnitMaster/${selectedUnit.unitSymbolName}`);
+                        }
+                    }
                 }
             } else if (e.key === 'Escape') {
                 navigate(`/menu/${type}`);
@@ -483,7 +567,7 @@ const AlterFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, filteredStockGroups, filteredStockCategories, filteredStockItems, filteredUnits, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -762,6 +846,42 @@ const AlterFilter = () => {
                                                     <Link to={`/sundryDebtorMasterApi/alterSundryDebtorMaster/${customer.sundryDebtorName}`}>
                                                         {customer.sundryDebtorName}
                                                     </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'stockGroup' && (
+                                        <ul>
+                                            {filteredStockGroups.map((stockGroup,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    {stockGroup.stockGroupName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'stockCategory' && (
+                                        <ul>
+                                            {filteredStockCategories.map((stockCategory,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    {stockCategory.stockCategoryName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'stockItem' && (
+                                        <ul>
+                                            {filteredStockItems.map((stockItem,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    {stockItem.stockItemName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'unit' && (
+                                        <ul>
+                                            {filteredUnits.map((unit,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    {unit.unitSymbolName}
                                                 </li>
                                             ))}
                                         </ul>

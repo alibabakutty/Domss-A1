@@ -1,18 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
 import LeftSideMenu from '../left-side-menu/LeftSideMenu'
 import RightSideButton from '../right-side-button/RightSideButton'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import UQC from '../../assets/UQC'
-import { createUnitMaster } from '../services/MasterService';
+import { getSpecificUnitSymbolName, updateUnitMaster } from '../services/MasterService';
 
-const UnitCreate = () => {
+const UnitAlter = () => {
+
+  const { datas } = useParams();
 
   const [unit, setUnit] = useState({
     unitTypeName: 'simple',
     unitSymbolName: '',
     formalName: '',
     unitQuantityCode: '',
-    numberOfDecimalPlaces: 0
+    numberOfDecimalPlaces: ''
   });
 
   const [filteredSuggestion, setFilteredSuggestion] = useState([]);
@@ -26,6 +28,17 @@ const UnitCreate = () => {
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
     }
+
+    const loadUnits = async () => {
+        try {
+            const result = await getSpecificUnitSymbolName(datas);
+            console.log(result.data);
+            setUnit(result.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    loadUnits();
   }, []);
 
   const handleKeyDown = (e, index) => {
@@ -38,7 +51,7 @@ const UnitCreate = () => {
         if (nextField < inputRefs.current.length){
           inputRefs.current[nextField]?.focus();
           inputRefs.current[nextField]?.setSelectionRange(0, 0);
-        } else if (e.target.name === 'formalName'){
+        } else if (e.target.name === 'unitSymbolName'){
           // Show confirmation dialog only if numberOfDecimalPlaces is filled
           const userConfirmed = window.confirm('Do you want to confirm this submit?');
           if (userConfirmed) {
@@ -59,6 +72,7 @@ const UnitCreate = () => {
       }
     }
   };
+
 
   const handleKeyDownUQC = (e) => {
     const key = e.key;
@@ -119,14 +133,14 @@ const UnitCreate = () => {
     }));
     setFilteredSuggestion([]);
 
-     // Focus on the next input field (numberOfDecimalPlaces)
-     inputRefs.current[2]?.focus();   // Assuming the next input is numberOfDecimalPlaces
+    // Focus on the next input field (numberOfDecimalPlaces)
+    inputRefs.current[2]?.focus();
   };
 
   const handleSubmit = async (e) => {
     (e).preventDefault();
     try {
-      const response = await createUnitMaster(unit);
+      const response = await updateUnitMaster(datas, unit);
       console.log(response.data);
       // After the submit
       setUnit({
@@ -134,11 +148,12 @@ const UnitCreate = () => {
         unitSymbolName: '',
         formalName: '',
         unitQuantityCode: '',
-        numberOfDecimalPlaces: 0
+        numberOfDecimalPlaces: ''
       })
       if (inputRefs.current[0]){
         inputRefs.current[0].focus();
-      }
+      };
+      navigate(-1);
     } catch (error) {
       console.error(error);
     }
@@ -148,7 +163,7 @@ const UnitCreate = () => {
     <>
       <div className='flex'>
         <LeftSideMenu />
-        <form action="" className='border border-slate-500 w-[45.5%] h-[20vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
+        <form action="" className='border border-slate-500 w-[42.5%] h-[20vh] absolute left-[47.5%]' onSubmit={handleSubmit}>
           <div className='text-sm flex mt-2 ml-2'>
             <label htmlFor="unitTypeName" className='w-[30%]'>UOM Type</label>
             <span>:</span>
@@ -201,4 +216,4 @@ const UnitCreate = () => {
   )
 }
 
-export default UnitCreate;
+export default UnitAlter;

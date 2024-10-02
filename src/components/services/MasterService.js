@@ -50,7 +50,7 @@ export const getSpecificSundryDebtorName = (sundryDebtorName) => axios.get(`${RE
 export const getSpecificStockGroupName = (stockGroupName) => axios.get(`${REST_API_BASE_URL}/stockGroupMasterApi/displayStockGroup/${stockGroupName}`);
 export const getSpecificStockCategoryName = (stockCategoryName) => axios.get(`${REST_API_BASE_URL}/stockCategoryMasterApi/displayStockCategory/${stockCategoryName}`);
 export const getSpecificStockItemName = (stockItemName) => axios.get(`${REST_API_BASE_URL}/stockItemMasterApi/displayStockItem/${stockItemName}`);
-export const getSpecificUnitSymbolName = (unitSymbolName) => axios.get(`${REST_API_BASE_URL}/unitMasterApi/displayUnitMaster/${unitSymbolName}`);
+export const getSpecificUnitSymbolName = (unitSymbolName) => axios.get(`${REST_API_BASE_URL}/unitMasterApi/displayUnit/${unitSymbolName}`);
 
 
 // DISPLAY ALL

@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import LeftSideMenu from '../left-side-menu/LeftSideMenu'
 import RightSideButton from '../right-side-button/RightSideButton'
-import { useNavigate } from 'react-router-dom';
-import { createStockItemMaster, listOfStockCategories, listOfStockGroups, listOfUnits } from '../services/MasterService';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getSpecificStockItemName, listOfStockCategories, listOfStockGroups, listOfUnits, updateStockItemMaster } from '../services/MasterService';
 
-const StockItemCreate = () => {
+const StockItemAlter = () => {
 
+  const { datas } = useParams();
   const [stockItem, setStockItem] = useState({
     stockItemName: '',
     under: '♦ primary',
@@ -72,6 +73,30 @@ const StockItemCreate = () => {
     
   }, []);
 
+  useEffect(() => {
+    const loadStockItems = async () => {
+        try {
+            const result = await getSpecificStockItemName(datas);
+            
+            // Assuming result.data is your stock item data
+            const fetchedData = result.data;
+
+            // Format the numeric fields before setting them in the state
+            setStockItem({
+                ...fetchedData,
+                openingBalanceQuantity: numberFormat(fetchedData.openingBalanceQuantity),
+                openingBalanceRate: numberFormat(fetchedData.openingBalanceRate),
+                openingBalanceValue: numberFormat(fetchedData.openingBalanceValue)
+            });
+
+            console.log(fetchedData);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    loadStockItems();
+  }, [datas])
+
   const handleKeyDown = (e, index) => {
     const key = e.key;
 
@@ -105,103 +130,6 @@ const StockItemCreate = () => {
     }
   };
 
-  const handleKeyDownGroup = (e) => {
-    const key = e.key;
-  
-    if (key === 'Enter') {
-      e.preventDefault();
-      if (filteredStockGroup.length > 0) {
-        // Select the highlighted suggestion for stock group
-        const selectedGroup = filteredStockGroup[highlightedStockGroup];
-        handleStockGroupSuggestionClick(selectedGroup); // Define this function for handling the selection
-        inputRefs.current[0].blur(); // Blur the input after selection
-      }
-    } else if (key === 'ArrowDown') {
-      if (filteredStockGroup.length > 0) {
-        e.preventDefault();
-        setHighlightedStockGroup((prev) =>
-          Math.min(prev + 1, filteredStockGroup.length - 1)
-        );
-      }
-    } else if (key === 'ArrowUp') {
-      if (filteredStockGroup.length > 0) {
-        e.preventDefault();
-        setHighlightedStockGroup((prev) =>
-          Math.max(prev - 1, 0)
-        );
-      }
-    } else if (key === 'Escape') {
-      // Close the dropdown on Escape key
-      setFilteredStockGroup([]);
-      inputRefs.current[0].blur(); // Optionally blur the input field
-    }
-  };
-  
-  const handleKeyDownCategory = (e) => {
-    const key = e.key;
-
-    if (key === 'Enter'){
-      e.preventDefault();
-      if (filteredStockCategory.length > 0){
-        // Select the highlighted suggestion for stock group
-        const selectedCategory = filteredStockCategory[highlightedStockCategory];
-
-        handleStockCategorySuggestionClick(selectedCategory);   // Define this function for handling the selection
-        inputRefs.current[1].blur(); // Blur the input after selection
-      }
-    } else if (key === 'ArrowDown'){
-      if (filteredStockCategory.length > 0){
-        e.preventDefault();
-        setHighlightedStockCategory((prev) =>
-        Math.min(prev + 1, filteredStockCategory.length - 1)
-        );
-      }
-    } else if (key === 'ArrowUp'){
-      if (filteredStockCategory.length > 0){
-        e.preventDefault();
-        setHighlightedStockCategory((prev) =>
-        Math.max(prev - 1, 0)
-        );
-      }
-    } else if (key === 'Escape'){
-      // Close the dropdown on Escape key
-      setFilteredStockCategory([]);
-      inputRefs.current[1].blur(); // Optionally blur the input field
-    }
-  }
-
-  const handleKeyDownUnit = (e) => {
-    const key = e.key;
-
-    if (key === 'Enter'){
-      e.preventDefault();
-      if (filteredUnit.length > 0){
-        // Select the highlighted suggestion for unit
-        const selectedUnit = filteredUnit[highlightedUnit];
-        handleUnitSuggestionClick(selectedUnit);   // Define this function for handling the selection
-        inputRefs.current[2].blur(); // Blur the input after selection
-      }
-    } else if (key === 'ArrowDown'){
-      if (filteredUnit.length > 0){
-        e.preventDefault();
-        setHighlightedUnit((prev) =>
-          Math.min(prev + 1, filteredUnit.length - 1)
-        );
-      }
-    } else if (key === 'ArrowUp'){
-      if (filteredUnit.length > 0){
-        e.preventDefault();
-        setHighlightedUnit((prev) =>
-          Math.max(prev - 1, 0)
-        );
-      }
-    } else if (key === 'Escape'){
-      // Close the dropdown on Escape key
-      setFilteredUnit([]);
-      inputRefs.current[2].blur(); // Optionally blur the input field
-    }
-  }
-
   const handleInputChange = (e) => {
     const {name,value} = e.target;
 
@@ -230,7 +158,7 @@ const StockItemCreate = () => {
       );
       setFilteredUnit(filtered);
       setUnitsFocused(true);
-      setHighlightedUnit(0);  // Reset highlighted suggestion index
+      setHighlightedUnit(0);
     }
   };
 
@@ -240,10 +168,6 @@ const StockItemCreate = () => {
       under: stockGroup.stockGroupName
     }));
     setUnderFocused(false);
-
-    // focus next input after selection
-    inputRefs.current[2].focus();
-    inputRefs.current[2].setSelectionRange(0, 0);
   };
 
   const handleStockCategorySuggestionClick = (stockCategory) => {
@@ -253,30 +177,21 @@ const StockItemCreate = () => {
     })
     );
     setCategoryFocused(false);
-
-    // focus next input after selection
-    inputRefs.current[3].focus();
-    inputRefs.current[3].setSelectionRange(0, 0);
   };
 
   const handleUnitSuggestionClick = (unit) => {
     setStockItem(prev => ({
       ...prev,
-      units: unit.unitSymbolName,
-      openingBalanceUnit: unit.unitSymbolName  // Set the selected unit to openingBalanceUnit
+      units: unit.unitSymbolName
     }));
     setUnitsFocused(false);
-
-    // focus next input after selection
-    inputRefs.current[4].focus();
-    inputRefs.current[4].setSelectionRange(0, 0);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
 
-      // Sanitize stockItem values to remove commas and ensure proper formatting
+        // Sanitize stockItem values to remove commas and ensure proper formatting
       const sanitizedStockItem = {
         ...stockItem,
         openingBalanceQuantity: parseFloat(stockItem.openingBalanceQuantity.replace(/,/g, '')) || 0,
@@ -284,7 +199,7 @@ const StockItemCreate = () => {
         openingBalanceValue: parseFloat(stockItem.openingBalanceValue.replace(/,/g, '')) || 0
       };
 
-      const response = await createStockItemMaster(sanitizedStockItem);
+      const response = await updateStockItemMaster(datas, sanitizedStockItem);
       console.log(response.data);
       // After the submit
       setStockItem({
@@ -299,29 +214,20 @@ const StockItemCreate = () => {
       });
       if (inputRefs.current[0]){
         inputRefs.current[0].focus();
-      }
+      };
+      navigate(-1);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const numberFormat = (e, index) => {
-    // Remove existing commas and parse the value
-    const rawValue = e.target.value.replace(/,/g, '');
+  const numberFormat = (value) => {
+    if (!value || isNaN(value)) return '';
 
-    // Check if the value is a valid number
-    if (isNaN(rawValue) || rawValue === '') return;
-    
-    // Format the number with commas
-    const formattedValue = new Intl.NumberFormat('en-IN', {
-      minimumFractionDigits: 2, maximumFractionDigits: 2
-    }).format(parseFloat(rawValue));
-
-    // Update the state for the corresponding input field
-    setStockItem((prevStockItem) => ({
-      ...prevStockItem,
-      [e.target.name]: formattedValue,
-    }))
+    return new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
   };
 
   // useEffect to update openingBalanceValue whenever quantity or rate changes
@@ -346,40 +252,16 @@ const StockItemCreate = () => {
     <>
       <div className='flex'>
         <LeftSideMenu />
-        <form action="" className='border border-slate-500 w-[45.5%] h-[35vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
-        <div className='text-sm flex mt-2 ml-2'>
-            <label htmlFor="category" className='w-[40%]'>Product Item Code</label>
-            <span>:</span>
-            <input type="text" name='category' ref={(input) => (inputRefs.current[2] = input)} onKeyDown={(e) => handleKeyDownCategory(e, 2)} onChange={handleInputChange} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
-          </div>
-          <div className='text-sm flex ml-2'>
-            <label htmlFor="stockItemName" className='w-[40%]'>Product Item Name</label>
+        <form action="" className='border border-slate-500 w-[42.5%] h-[25vh] absolute left-[47.5%]' onSubmit={handleSubmit}>
+          <div className='text-sm flex mt-2 ml-2'>
+            <label htmlFor="stockItemName" className='w-[40%]'>Name</label>
             <span>:</span>
             <input type="text" name='stockItemName' ref={(input) => (inputRefs.current[0] = input)} value={stockItem.stockItemName} onKeyDown={(e) => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
           </div>
           <div className='text-sm flex ml-2'>
-            <label htmlFor="category" className='w-[40%]'>Stock Category</label>
+            <label htmlFor="under" className='w-[40%]'>Under</label>
             <span>:</span>
-            <input type="text" name='category' ref={(input) => (inputRefs.current[2] = input)} value={stockItem.category} onKeyDown={(e) => handleKeyDownCategory(e, 2)} onChange={handleInputChange} onFocus={(e) => {setCategoryFocused(true); handleInputChange(e);}} onBlur={() => setCategoryFocused(false)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
-            {categoryFocused && filteredStockCategory.length > 0 && (
-              <div className='w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0'>
-                <div className='text-left bg-[#003285] text-[13.5px] text-white pl-2'>
-                  <p>List of Categories</p>
-                </div>
-                <ul className='suggestions w-full h-[75vh] text-left text-sm mt-2 capitalize' ref={stockCategoryOptionsRef}>
-                  {filteredStockCategory.map((stockCategory, index) => (
-                    <li key={index} tabIndex={0} className={`pl-2 cursor-pointer hover:bg-yellow-200 ${highlightedStockCategory === index ? 'bg-yellow-200' : ''}`} onClick={() => handleStockCategorySuggestionClick(stockCategory)} onMouseDown={(e) => e.preventDefault()}>
-                      {stockCategory.stockCategoryName}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-          <div className='text-sm flex ml-2'>
-            <label htmlFor="under" className='w-[40%]'>Stock Group</label>
-            <span>:</span>
-            <input type="text" name='under' ref={(input) => (inputRefs.current[1] = input)} value={stockItem.under} onKeyDown={(e) => handleKeyDownGroup(e, 1)} onChange={handleInputChange} onFocus={(e) => {setUnderFocused(true); handleInputChange(e);}} onBlur={() => setUnderFocused(false)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+            <input type="text" name='under' ref={(input) => (inputRefs.current[1] = input)} value={stockItem.under} onKeyDown={(e) => handleKeyDown(e, 1)} onChange={handleInputChange} onFocus={(e) => {setUnderFocused(true); handleInputChange(e);}} onBlur={() => setUnderFocused(false)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
             {underFocused && filteredStockGroup.length > 0 && (
               <div className='w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0'>
                 <div className='text-left bg-[#003285] text-[13.5px] text-white pl-2'>
@@ -396,9 +278,28 @@ const StockItemCreate = () => {
             )}
           </div>
           <div className='text-sm flex ml-2'>
-            <label htmlFor="units" className='w-[40%]'>UOM</label>
+            <label htmlFor="category" className='w-[40%]'>Category</label>
             <span>:</span>
-            <input type="text" name='units' ref={(input) => (inputRefs.current[3] = input)} value={stockItem.units} onKeyDown={(e) => handleKeyDownUnit(e, 3)} onChange={handleInputChange} onFocus={(e) => {setUnitsFocused(true); handleInputChange(e);}} onBlur={() => setUnitsFocused(false)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+            <input type="text" name='category' ref={(input) => (inputRefs.current[2] = input)} value={stockItem.category} onKeyDown={(e) => handleKeyDown(e, 2)} onChange={handleInputChange} onFocus={(e) => {setCategoryFocused(true); handleInputChange(e);}} onBlur={() => setCategoryFocused(false)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+            {categoryFocused && filteredStockCategory.length > 0 && (
+              <div className='w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0'>
+                <div className='text-left bg-[#003285] text-[13.5px] text-white pl-2'>
+                  <p>List of Categories</p>
+                </div>
+                <ul className='suggestions w-full h-[75vh] text-left text-sm mt-2 capitalize' ref={stockCategoryOptionsRef}>
+                  {filteredStockCategory.map((stockCategory, index) => (
+                    <li key={index} tabIndex={0} className={`pl-2 cursor-pointer hover:bg-yellow-200 ${highlightedStockCategory === index ? 'bg-yellow-200' : ''}`} onClick={() => handleStockCategorySuggestionClick(stockCategory)} onMouseDown={(e) => e.preventDefault()}>
+                      {stockCategory.stockCategoryName}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+          <div className='text-sm flex ml-2'>
+            <label htmlFor="units" className='w-[40%]'>Units</label>
+            <span>:</span>
+            <input type="text" name='units' ref={(input) => (inputRefs.current[3] = input)} value={stockItem.units} onKeyDown={(e) => handleKeyDown(e, 3)} onChange={handleInputChange} onFocus={(e) => {setUnitsFocused(true); handleInputChange(e);}} onBlur={() => setUnitsFocused(false)} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
             {unitsFocused && filteredUnit.length > 0 && (
               <div className='w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0'>
                 <div className='text-left bg-[#003285] text-[13.5px] text-white pl-2'>
@@ -415,7 +316,7 @@ const StockItemCreate = () => {
             )}
           </div>
           <div className='flex items-center text-sm font-bold mt-2'>
-            <p className='ml-[284px]'>Quantity</p>
+            <p className='ml-[270px]'>Quantity</p>
             <p className='ml-12'>Rate</p>
             <p className='ml-8'>Unit</p>
             <p className='ml-[50px]'>Value</p>
@@ -424,7 +325,7 @@ const StockItemCreate = () => {
             <p className='w-[40%]'>Opening Balance</p>
             <span>:</span>
             <label htmlFor="openingBalanceQuantity" className=''></label>
-            <input type="text" name='openingBalanceQuantity' value={stockItem.openingBalanceQuantity} onChange={handleInputChange} ref={(input) => (inputRefs.current[4] = input)} onKeyDown={(e) => handleKeyDown(e, 4)} className='w-[75px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+            <input type="text" name='openingBalanceQuantity' value={stockItem.openingBalanceQuantity} onChange={handleInputChange} ref={(input) => (inputRefs.current[4] = input)} onKeyDown={(e) => handleKeyDown(e, 4)} onBlur={numberFormat} className='w-[75px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
 
             <label htmlFor="openingBalanceRate" className=''></label>
             <input type="text" name='openingBalanceRate' value={stockItem.openingBalanceRate} onChange={handleInputChange} ref={(input) => (inputRefs.current[5] = input)} onKeyDown={(e) => handleKeyDown(e, 5)} onBlur={numberFormat} className='w-[76px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
@@ -433,7 +334,7 @@ const StockItemCreate = () => {
             <input type="text" name='openingBalanceUnit' value={stockItem.openingBalanceUnit} onChange={handleInputChange} ref={(input) => (inputRefs.current[6] = input)} onKeyDown={(e) => handleKeyDown(e, 6)} onBlur={numberFormat} className='w-[50px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
 
             <label htmlFor="openingBalanceValue" className=''></label>
-            <input type="text" name='openingBalanceValue' value={stockItem.openingBalanceValue} onChange={handleInputChange} ref={(input) => (inputRefs.current[7] = input)} onKeyDown={(e) => handleKeyDown(e, 7)} onBlur={numberFormat} className='w-[80px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' readOnly />
+            <input type="text" name='openingBalanceValue' value={stockItem.openingBalanceValue} onChange={handleInputChange} ref={(input) => (inputRefs.current[7] = input)} onKeyDown={(e) => handleKeyDown(e, 7)} onBlur={numberFormat} className='w-[80px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
           </div>
         </form>
         <RightSideButton />
@@ -442,4 +343,4 @@ const StockItemCreate = () => {
   )
 }
 
-export default StockItemCreate
+export default StockItemAlter

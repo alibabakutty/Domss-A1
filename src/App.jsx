@@ -43,6 +43,14 @@ import SundryCreditorsDisplay from "./components/forms/SundryCreditorsDisplay"
 import SundryDebtorsDisplay from "./components/forms/SundryDebtorsDisplay"
 import SundryDebtorsAlter from "./components/forms/SundryDebtorsAlter"
 import SundryCreditorsAlter from "./components/forms/SundryCreditorsAlter"
+import StockGroupDisplay from "./components/forms/StockGroupDisplay"
+import StockCategoryDisplay from "./components/forms/StockCategoryDisplay"
+import StockItemDisplay from "./components/forms/StockItemDisplay"
+import UnitDisplay from "./components/forms/UnitDisplay"
+import StockGroupAlter from "./components/forms/StockGroupAlter"
+import StockCategoryAlter from "./components/forms/StockCategoryAlter"
+import StockItemAlter from "./components/forms/StockItemAlter"
+import UnitAlter from "./components/forms/UnitAlter"
 
 function App() {
   
@@ -59,6 +67,8 @@ function App() {
           <Route path="menu/:type" element={<CreateMasterFormRouter />} />
           <Route path="/:type/display" element={<DisplayFilter />} />
           <Route path="/:type/alter" element={<AlterFilter />} />
+
+          // DISPLAY
           <Route path="/voucherTypeMasterApi/display/:datas" element={<VoucherTypeDisplay />} />
           <Route path="/preDefinedVoucherTypeApi/displayPreDefinedVoucher/:datas" element={<VoucherTypeDisplay />} />
           <Route path="/currencyMasterApi/displayCurrency/:datas" element={<CurrencyDisplay />} />
@@ -78,6 +88,12 @@ function App() {
           <Route path="/projectNameMasterApi/displayProjectName/:datas" element={<ProjectNameDisplay />} />
           <Route path="/sundryCreditorMasterApi/displaySundryCreditor/:datas" element={<SundryCreditorsDisplay />} />
           <Route path="/sundryDebtorMasterApi/displaySundryDebtor/:datas" element={<SundryDebtorsDisplay />} />
+          <Route path="/stockGroupMasterApi/displayStockGroup/:datas" element={<StockGroupDisplay />} />
+          <Route path="/stockCategoryMasterApi/displayStockCategory/:datas" element={<StockCategoryDisplay />} />
+          <Route path="/stockItemMasterApi/displayStockItem/:datas" element={<StockItemDisplay />} />
+          <Route path="/unitMasterApi/displayUnit/:datas" element={<UnitDisplay />} />
+
+          //ALTER
           <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:datas" element={<VoucherTypeAlter />} />
           <Route path="/currencyMasterApi/alterCurrencyMaster/:datas" element={<CurrencyAlter />} />
           <Route path="/departmentMasterApi/alterDepartmentMaster/:datas" element={<DepartmentAlter />} />
@@ -96,6 +112,10 @@ function App() {
           <Route path="/projectNameMasterApi/alterProjectNameMaster/:datas" element={<ProjectNameAlter />} />
           <Route path="/sundryCreditorMasterApi/alterSundryCreditorMaster/:datas" element={<SundryCreditorsAlter />} />
           <Route path="/sundryDebtorMasterApi/alterSundryDebtorMaster/:datas" element={<SundryDebtorsAlter />} />
+          <Route path="/stockGroupMasterApi/alterStockGroupMaster/:datas" element={<StockGroupAlter />} />
+          <Route path="/stockCategoryMasterApi/alterStockCategoryMaster/:datas" element={<StockCategoryAlter />} />
+          <Route path="/stockItemMasterApi/alterStockItemMaster/:datas" element={<StockItemAlter />} />
+          <Route path="/unitMasterApi/alterUnitMaster/:datas" element={<UnitAlter />} />
       
         </Routes>
       </BrowserRouter>

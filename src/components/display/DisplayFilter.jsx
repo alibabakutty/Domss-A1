@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
+import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfStockCategories, listOfStockGroups, listOfStockItems, listOfUnits, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const DisplayFilter = () => {
@@ -25,7 +25,11 @@ const DisplayFilter = () => {
         projectCategory: [],
         projectName: [],
         sundryCreditor: [],
-        sundryDebtor: []
+        sundryDebtor: [],
+        stockGroup: [],
+        stockCategory: [],
+        stockItem: [],
+        unit: [],
     });
     const [selectedIndex, setSelectedIndex] = useState(2);
     const [filterInput, setFilterInput] = useState('');
@@ -50,7 +54,11 @@ const DisplayFilter = () => {
         projectCategory: 'Project Categories',
         projectName: 'Projects',
         sundryCreditor: 'Sundry Creditors',
-        sundryDebtor: 'Sundry Debtors'
+        sundryDebtor: 'Sundry Debtors',
+        stockGroup: 'Stock Groups',
+        stockCategory: 'Stock Categories',
+        stockItem: 'Stock Items',
+        unit: 'Units',
       };
 
     const formatType = (str) => {
@@ -145,7 +153,23 @@ const DisplayFilter = () => {
                     sundryDebtor: async () => {
                         const response = await listsOfSundryDebtors();
                         setSuggestions(prev => ({ ...prev, sundryDebtor: response.data }));
-                    }
+                    },
+                    stockGroup: async () => {
+                        const response = await listOfStockGroups();
+                        setSuggestions(prev => ({ ...prev, stockGroup: response.data }));
+                    },
+                    stockCategory: async () => {
+                        const response = await listOfStockCategories();
+                        setSuggestions(prev => ({ ...prev, stockCategory: response.data }));
+                    },
+                    stockItem: async () => {
+                        const response = await listOfStockItems();
+                        setSuggestions(prev => ({ ...prev, stockItem: response.data }));
+                    },
+                    unit: async () => {
+                        const response = await listOfUnits();
+                        setSuggestions(prev => ({ ...prev, unit: response.data }));
+                    },
                 };
 
                 if (fetchFunctions[type]) {
@@ -239,7 +263,23 @@ const DisplayFilter = () => {
 
     const filteredCustomers = suggestions.sundryDebtor.filter(customer =>
         customer.sundryDebtorName.toLowerCase().includes(filterInput.toLowerCase())
-    )
+    );
+
+    const filteredStockGroups = suggestions.stockGroup.filter(group => 
+        group.stockGroupName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredStockCategories = suggestions.stockCategory.filter(category => 
+        category.stockCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredStockItems = suggestions.stockItem.filter(item => 
+        item.stockItemName.toLowerCase().includes(filterInput.toLowerCase())
+    );
+
+    const filteredUnits = suggestions.unit.filter(unit => 
+        unit.unitSymbolName.toLowerCase().includes(filterInput.toLowerCase())
+    );
 
     // Determine if the scrollbar should be shown based on the type
   const shouldShowScroll = (() => {
@@ -261,7 +301,11 @@ const DisplayFilter = () => {
       projectCategory: filteredProjectCategories.length,
       projectName: filteredProjectNames.length,
       sundryCreditor: filteredSuppliers.length,
-      sundryDebtor: filteredCustomers.length
+      sundryDebtor: filteredCustomers.length,
+      stockGroup: filteredStockGroups.length,
+      stockCategory: filteredStockCategories.length,
+      stockItem: filteredStockItems.length,
+      unit: filteredUnits.length,
     };
     return countMap[type] > 20;
   })();
@@ -307,6 +351,14 @@ const DisplayFilter = () => {
                 totalItems = filteredSuppliers.length;
             } else if (type === 'sundryDebtor'){
                 totalItems = filteredCustomers.length;
+            } else if (type === 'stockGroup'){
+                totalItems = filteredStockGroups.length;
+            } else if (type === 'stockCategory'){
+                totalItems = filteredStockCategories.length;
+            } else if (type === 'stockItem'){
+                totalItems = filteredStockItems.length;
+            } else if (type === 'unit'){
+                totalItems = filteredUnits.length;
             }
 
             if (e.key === 'ArrowDown') {
@@ -457,6 +509,34 @@ const DisplayFilter = () => {
                             navigate(`/sundryDebtorMasterApi/displaySundryDebtor/${selectedSundryDebtor.sundryDebtorName}`);
                         }
                     }
+                } else if (type === 'stockGroup'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredStockGroups.length){
+                        const selectedStockGroup = filteredStockGroups[selectedIndex - 2];
+                        if (selectedStockGroup){
+                            navigate(`/stockGroupMasterApi/displayStockGroup/${selectedStockGroup.stockGroupName}`);
+                        }
+                    }
+                } else if (type === 'stockCategory'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredStockCategories.length){
+                        const selectedStockCategory = filteredStockCategories[selectedIndex - 2];
+                        if (selectedStockCategory){
+                            navigate(`/stockCategoryMasterApi/displayStockCategory/${selectedStockCategory.stockCategoryName}`);
+                        }
+                    }
+                } else if (type === 'stockItem'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredStockItems.length){
+                        const selectedStockItem = filteredStockItems[selectedIndex - 2];
+                        if (selectedStockItem){
+                            navigate(`/stockItemMasterApi/displayStockItem/${selectedStockItem.stockItemName}`);
+                        }
+                    }
+                } else if (type === 'unit'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredUnits.length){
+                        const selectedUnit = filteredUnits[selectedIndex - 2];
+                        if (selectedUnit){
+                            navigate(`/unitMasterApi/displayUnit/${selectedUnit.unitSymbolName}`);
+                        }
+                    }
                 }
             } else if (e.key === 'Escape') {
                 navigate(`/menu/${type}`);
@@ -465,7 +545,7 @@ const DisplayFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, filteredStockGroups, filteredStockCategories, filteredStockItems, filteredUnits, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -558,9 +638,7 @@ const DisplayFilter = () => {
                                                     className={`text-sm capitalize font-medium pl-3 ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                     ref={el => listItemRefs.current[index + 2] = el}
                                                 >
-                                                    <Link to={`/currencyMasterApi/displayCurrency/${currency.forexCurrencySymbol}`}>
-                                                    {currency.forexCurrencySymbol} - {currency.forexCurrencyName}
-                                                    </Link>
+                                                   {currency.forexCurrencySymbol} - {currency.forexCurrencyName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -570,9 +648,7 @@ const DisplayFilter = () => {
                                             {filteredDepartments.map((department,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
                                                 >
-                                                <Link to={`/departmentMasterApi/displayDepartment/${type}`}>
-                                                    {department.departmentName}
-                                                </Link>
+                                                {department.departmentName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -581,9 +657,7 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredLocations.map((location,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                   <Link to={`/locationMasterApi/displayGodown/${location.godownName}`}>
-                                                    {location.godownName}
-                                                   </Link>
+                                                   {location.godownName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -592,9 +666,7 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredHeadOffices.map((headOffice,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/headOfficeMasterApi/displayHeadOffice/${headOffice.headOfficeName}`}>
-                                                        {headOffice.headOfficeName}
-                                                    </Link>
+                                                    {headOffice.headOfficeName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -603,9 +675,7 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredBranchOffices.map((branchOffice,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/branchOfficeMasterApi/displayBranchOffice/${branchOffice.branchOfficeName}`}>
-                                                        {branchOffice.branchOfficeName}
-                                                    </Link>
+                                                    {branchOffice.branchOfficeName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -614,9 +684,7 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredRevenueCategories.map((revenueCategory,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/revenueCategoryMasterApi/displayRevenueCategory/${revenueCategory.revenueCategoryName}`}>
-                                                        {revenueCategory.revenueCategoryName}
-                                                    </Link>
+                                                    {revenueCategory.revenueCategoryName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -626,9 +694,7 @@ const DisplayFilter = () => {
                                             {filteredRevenueCenters.map((revenueCenter,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/revenueCenterMasterApi/displayRevenueCenter/${revenueCenter.revenueCenterName}`}>
-                                                        {revenueCenter.revenueCenterName}
-                                                    </Link>
+                                                    {revenueCenter.revenueCenterName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -638,9 +704,7 @@ const DisplayFilter = () => {
                                             {filteredCostCategories.map((costCategory,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/costCategoryMasterApi/displayCostCategory/${costCategory.costCategoryName}`}>
-                                                        {costCategory.costCategoryName}
-                                                    </Link>
+                                                    {costCategory.costCategoryName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -650,9 +714,7 @@ const DisplayFilter = () => {
                                             {filteredCostCenters.map((costCenter,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/costCenterMasterApi/displayCostCenter/${costCenter.costCenterName}`}>
-                                                        {costCenter.costCenterName}
-                                                    </Link>
+                                                    {costCenter.costCenterName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -662,9 +724,7 @@ const DisplayFilter = () => {
                                             {filteredBatchCategories.map((batchCategory,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/batchCategoryMasterApi/displayBatchCategory/${batchCategory.batchCategoryName}`}>
-                                                        {batchCategory.batchCategoryName}
-                                                    </Link>
+                                                    {batchCategory.batchCategoryName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -674,9 +734,7 @@ const DisplayFilter = () => {
                                             {filteredBatchSerialNumbers.map((batchSerial,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/batchSerialNumberMasterApi/displayBatchSerialNumber/${batchSerial.batchSerialNumber}`}>
-                                                        {batchSerial.batchSerialNumber}
-                                                    </Link>
+                                                    {batchSerial.batchSerialNumber}
                                                 </li>
                                             ))}
                                         </ul>
@@ -686,9 +744,7 @@ const DisplayFilter = () => {
                                             {filteredBatchColors.map((batchColor,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/batchColorMasterApi/displayBatchColor/${batchColor.batchColorName}`}>
-                                                        {batchColor.batchColorName}
-                                                    </Link>
+                                                    {batchColor.batchColorName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -698,9 +754,7 @@ const DisplayFilter = () => {
                                             {filteredBatchSizes.map((batchSize,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/batchSizeMasterApi/displayBatchSize/${batchSize.batchSizeName}`}>
-                                                        {batchSize.batchSizeName}
-                                                    </Link>
+                                                    {batchSize.batchSizeName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -710,9 +764,7 @@ const DisplayFilter = () => {
                                             {filteredProjectCategories.map((projectCategory,index) =>(
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/projectCategoryMasterApi/displayProjectCategory/${projectCategory.projectCategoryName}`}>
-                                                        {projectCategory.projectCategoryName}
-                                                    </Link>
+                                                   {projectCategory.projectCategoryName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -722,9 +774,7 @@ const DisplayFilter = () => {
                                             {filteredProjectNames.map((project,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/projectNameMasterApi/displayProjectName/${project.projectName}`}>
-                                                        {project.projectName}
-                                                    </Link>
+                                                    {project.projectName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -733,9 +783,7 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredSuppliers.map((supplier,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/sundryCreditorMasterApi/displaySundryCreditor/${supplier.sundryCreditorName}`}>
-                                                        {supplier.sundryCreditorName}
-                                                    </Link>
+                                                    {supplier.sundryCreditorName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -744,9 +792,43 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredCustomers.map((customer,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/sundryDebtorMasterApi/displaySundryDebtor/${customer.sundryDebtorName}`}>
-                                                        {customer.sundryDebtorName}
-                                                    </Link>
+                                                    {customer.sundryDebtorName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'stockGroup' && (
+                                        <ul>
+                                            {filteredStockGroups.map((stockGroup, index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    {stockGroup.stockGroupName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'stockCategory' && (
+                                        <ul>
+                                            {filteredStockCategories.map((stockCategory, index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    {stockCategory.stockCategoryName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'stockItem' && (
+                                        <ul>
+                                            {filteredStockItems.map((stockItem, index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    {stockItem.stockItemName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'unit' && (
+                                        <ul>
+                                            {filteredUnits.map((unit, index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                    {unit.unitSymbolName}
                                                 </li>
                                             ))}
                                         </ul>

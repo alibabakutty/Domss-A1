@@ -22,10 +22,11 @@ const Home = () => {
         },
         { id: 8, name: 'Inventory Info Master',
             subItems: [
-                { id: 9, name: 'Stock Group', path: 'menu/stockGroup'},
+                { id: 9, name: 'Stock UOM', path: 'menu/unit'},
                 { id: 10, name: 'Stock Category', path: 'menu/stockCategory'},
-                { id: 11, name: 'Stock Item', path: 'menu/stockItem'},
-                { id: 12, name: 'UOM', path: 'menu/unit'},
+                { id: 11, name: 'Stock Group', path: 'menu/stockGroup'},
+                { id: 12, name: 'Stock Item', path: 'menu/stockItem'},
+                
             ]
          },
         { id: 13, name: 'Supplier Master' ,

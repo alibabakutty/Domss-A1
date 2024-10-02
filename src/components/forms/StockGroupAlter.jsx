@@ -1,26 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react'
 import LeftSideMenu from '../left-side-menu/LeftSideMenu'
 import RightSideButton from '../right-side-button/RightSideButton'
-import { createStockGroupMaster } from '../services/MasterService';
+import { getSpecificStockGroupName, updateStockGroupMaster } from '../services/MasterService';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const StockGroupCreate = () => {
+const StockGroupAlter = () => {
 
+  const { datas } = useParams();
   const [stockGroup, setStockGroup] = useState({
     stockGroupName: '',
     under: '♦ primary',
-    shouldQuantitiesOfItemsBeAdded: 'no',
-    // hsnOrSacDetails: 'as per company/stock group',
-    // sourceOfDetails: 'not available',
-    // hsnOrSac: '',
-    // description: ''
+    shouldQuantitiesOfItemsBeAdded: 'no'
   });
 
   const inputRefs = useRef([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
     }
+
+    const loadStockGroups = async () => {
+        try {
+            const result = await getSpecificStockGroupName(datas);
+            console.log(result.data);
+            setStockGroup(result.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    loadStockGroups();
   }, []);
 
   const handleKeyDown = (e, index) => {
@@ -71,7 +80,7 @@ const StockGroupCreate = () => {
   const handleSubmit = async (e) => {
     (e).preventDefault();
     try {
-      const response = await createStockGroupMaster(stockGroup);
+      const response = await updateStockGroupMaster(datas, stockGroup);
       console.log(response.data);
       setStockGroup({
         stockGroupName: '',
@@ -84,7 +93,8 @@ const StockGroupCreate = () => {
       })
       if (inputRefs.current[0]){
         inputRefs.current[0].focus();
-      }
+      };
+      navigate(-1);
     } catch (error) {
       console.error(error);
     }
@@ -93,7 +103,7 @@ const StockGroupCreate = () => {
     <>
       <div className='flex'>
         <LeftSideMenu />
-        <form action="" className='border border-slate-500 w-[45.5%] h-[15vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
+        <form action="" className='border border-slate-500 w-[42.5%] h-[15vh] absolute left-[47.5%]' onSubmit={handleSubmit}>
           <div className='text-sm flex mt-2 ml-2'>
             <label htmlFor="stockGroupName" className='w-[40%]'>Name</label>
             <span>:</span>
@@ -109,30 +119,6 @@ const StockGroupCreate = () => {
             <span>:</span>
             <input type="text" name='shouldQuantitiesOfItemsBeAdded' ref={(input) => (inputRefs.current[2] = input)} value={stockGroup.shouldQuantitiesOfItemsBeAdded} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 2)} className='w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
           </div>
-          {/* <p className='underline text-sm ml-2 mt-3 mb-2'>Statutory Details</p> */}
-          {/* <div className='text-sm'>
-            <p className='underline ml-2'>HSN/SAC & Related Details</p>
-            <div className='flex ml-2'>
-              <label htmlFor="hsnOrSacDetails" className='w-[40%]'>HSN/SAC Details</label>
-              <span>:</span>
-              <input type="text" name='hsnOrSacDetails' ref={(input) => (inputRefs.current[3] = input)} value={stockGroup.hsnOrSacDetails} onKeyDown={(e) => handleKeyDown(e, 3)} onChange={handleInputChange} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
-            </div>
-            <div className='flex ml-2'>
-              <label htmlFor="sourceOfDetails" className='w-[40%]'>Source of Details</label>
-              <span>:</span>
-              <input type="text" name='sourceOfDetails' ref={(input) => (inputRefs.current[4] = input)} value={stockGroup.sourceOfDetails} onKeyDown={(e) => handleKeyDown(e, 4)} onChange={handleInputChange} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
-            </div>
-            <div className='flex ml-2'>
-              <label htmlFor="hsnOrSac" className='w-[40%]'>HSN/SAC</label>
-              <span>:</span>
-              <input type="text" name='hsnOrSac' ref={(input) => (inputRefs.current[5] = input)} value={stockGroup.hsnOrSac} onKeyDown={(e) => handleKeyDown(e, 5)} onChange={handleInputChange} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
-            </div>
-            <div className='flex ml-2'>
-              <label htmlFor="description" className='w-[40%]'>Description</label>
-              <span>:</span>
-              <input type="text" name='description' ref={(input) => (inputRefs.current[6] = input)} value={stockGroup.description} onKeyDown={(e) => handleKeyDown(e, 6)} onChange={handleInputChange} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
-            </div>
-          </div> */}
         </form>
         <RightSideButton />
       </div>
@@ -140,4 +126,4 @@ const StockGroupCreate = () => {
   )
 }
 
-export default StockGroupCreate
+export default StockGroupAlter

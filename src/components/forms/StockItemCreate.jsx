@@ -15,9 +15,9 @@ const StockItemCreate = () => {
   const [stockItem, setStockItem] = useState({
     stockItemCode: '',
     stockItemName: '',
-    under: '♦ primary',
-    category: '♦ not applicable',
-    units: '♦ not applicable',
+    under: '',
+    category: '',
+    units: '',
     standardSellingPrice: 'no',
     standardSellingPriceSubForm: [
       {
@@ -49,6 +49,8 @@ const StockItemCreate = () => {
         netAmount: '',
       },
     ],
+    totalQuantity: '',
+    totalNetAmount: '',
     openingBalanceRate: '',
     openingBalanceUnit: '',
     openingBalanceValue: '',
@@ -86,6 +88,10 @@ const StockItemCreate = () => {
   const inputSellingPriceRef = useRef([]);
   const inputSellingCostRef = useRef([]);
   const inputGodownRef = useRef([]);
+  const prevSellingPriceModal = useRef(false);
+  const prevSellingCostModal = useRef(false);
+  const prevGodownModal = useRef(false);
+  const totalRefs = useRef([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -105,6 +111,44 @@ const StockItemCreate = () => {
     if (godownSubFormModal && inputGodownRef.current[0]) {
       inputGodownRef.current[0].focus();
     }
+
+    // Detect if the sellingpriceSubFormModal is closed
+    if (prevSellingPriceModal.current && !standardSellingPriceModal){
+      // Focus on the standard selling cost input when standardsellingpriceModal closes
+      const sellingCostInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'standardSellingCost'
+      );
+      if (sellingCostInputIndex !== -1 && inputRefs.current[sellingCostInputIndex]){
+        inputRefs.current[sellingCostInputIndex].focus();
+      }
+    }
+
+    // Detect if the sellingcostSubFormModal is closed
+    if (prevSellingCostModal.current && !standardSellingCostModal){
+      // Focus on the standard selling price input when standardsellingcostModal closes
+      const sellingPriceInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'openingBalanceQuantity'
+      );
+      if (sellingPriceInputIndex !== -1 && inputRefs.current[sellingPriceInputIndex]){
+        inputRefs.current[sellingPriceInputIndex].focus();
+      }
+    }
+
+    // Detect if the godownSubFormModal is closed
+    if (prevGodownModal.current && !godownSubFormModal){
+      // Focus on the standard selling price input when godownSubFormModal closes
+      const godownInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'openingBalanceRate'
+      );
+      if (godownInputIndex !== -1 && inputRefs.current[godownInputIndex]){
+        inputRefs.current[godownInputIndex].focus();
+      }
+    }
+
+    // Update the previous state value
+    prevSellingPriceModal.current = standardSellingPriceModal;
+    prevSellingCostModal.current = standardSellingCostModal;
+    prevGodownModal.current = godownSubFormModal;
 
     // Fetch stock categories and units concurrently
     const fetchData = async () => {
@@ -207,12 +251,12 @@ const StockItemCreate = () => {
     }
   };
 
-  const handleKeyDownGroup = e => {
+  const handleKeyDownGroup = (e) => {
     const key = e.key;
 
     if (key === 'Enter') {
       e.preventDefault();
-      if (filteredStockGroup.length > 0) {
+      if (filteredStockGroup.length >= 0) {
         // Select the highlighted suggestion for stock group
         const selectedGroup = filteredStockGroup[highlightedStockGroup];
         handleStockGroupSuggestionClick(selectedGroup); // Define this function for handling the selection
@@ -228,6 +272,9 @@ const StockItemCreate = () => {
         e.preventDefault();
         setHighlightedStockGroup(prev => Math.max(prev - 1, 0));
       }
+    } else if (key === ' '){
+      e.preventDefault();
+      inputRefs.current[3].value = '';  // Clear the input field
     } else if (key === 'Escape') {
       // Close the dropdown on Escape key
       setFilteredStockGroup([]);
@@ -240,7 +287,7 @@ const StockItemCreate = () => {
 
     if (key === 'Enter') {
       e.preventDefault();
-      if (filteredStockCategory.length > 0) {
+      if (filteredStockCategory.length >= 0) {
         // Select the highlighted suggestion for stock group
         const selectedCategory = filteredStockCategory[highlightedStockCategory];
 
@@ -257,6 +304,9 @@ const StockItemCreate = () => {
         e.preventDefault();
         setHighlightedStockCategory(prev => Math.max(prev - 1, 0));
       }
+    } else if (key === ' '){
+      e.preventDefault();
+      inputRefs.current[2].value = '';  // Clear the input field
     } else if (key === 'Escape') {
       // Close the dropdown on Escape key
       setFilteredStockCategory([]);
@@ -264,12 +314,12 @@ const StockItemCreate = () => {
     }
   };
 
-  const handleKeyDownUnit = e => {
+  const handleKeyDownUnit = (e) => {
     const key = e.key;
 
     if (key === 'Enter') {
       e.preventDefault();
-      if (filteredUnit.length > 0) {
+      if (filteredUnit.length >= 0) {
         // Select the highlighted suggestion for unit
         const selectedUnit = filteredUnit[highlightedUnit];
         handleUnitSuggestionClick(selectedUnit); // Define this function for handling the selection
@@ -285,6 +335,9 @@ const StockItemCreate = () => {
         e.preventDefault();
         setHighlightedUnit(prev => Math.max(prev - 1, 0));
       }
+    } else if (key === ' '){
+      e.preventDefault();
+      inputRefs.current[4].value = '';  // Clear the input field
     } else if (key === 'Escape') {
       // Close the dropdown on Escape key
       setFilteredUnit([]);
@@ -313,10 +366,6 @@ const StockItemCreate = () => {
         e.preventDefault();
         setHighlightedGodown(prev => Math.max(prev - 1, 0));
       }
-    } else if (key === 'Escape') {
-      // Close the dropdown on Escape key
-      setFilteredGodown([]);
-      inputGodownRef.current[index * 6].blur(); // Optionally blur the input field
     }
   };
 
@@ -341,10 +390,6 @@ const StockItemCreate = () => {
         e.preventDefault();
         setHighlightedBatch(prev => Math.max(prev - 1, 0));
       }
-    } else if (key === 'Escape') {
-      // Close the dropdown on Escape key
-      setFilteredBatch([]);
-      inputBatchRef.current[index * 6].blur(); // Optionally blur the input field
     }
   };
 
@@ -368,9 +413,31 @@ const StockItemCreate = () => {
 
   const handleKeyDownSellingPrice = (e, rowIndex, colIndex) => {
     const key = e.key;
+    const firstSellingPriceDate = 0;
 
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
+
+      // Check if the current input is the first sellingpriceDate and ensure it has a value
+      if (rowIndex === 0 && colIndex === firstSellingPriceDate && e.target.value.trim() === ''){
+        alert('Please enter the selling price date before proceeding');
+        inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus();  // Refocus on the empty sellingpricedate field
+        return;
+      }
+
+      // If it's not the first row, and the sellingPriceDate is empty, confirm to close the subform
+      if (colIndex === firstSellingPriceDate && e.target.value.trim() === '' && rowIndex > 0){
+        const confirmationClose = window.confirm('Do you want to close this subform?');
+        if (confirmationClose) {
+          setStandardSellingPriceModal(false);
+          setStockItem((prev) => ({...prev, standardSellingPrice: 'no' }))
+          inputRefs.current[6]?.focus();
+          return;
+        } else {
+          inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus();  // Refocus if they choose not to close
+          return;
+        }
+      }
 
       // Check if the current field is sellingpricestatus and its value is not empty
       const isSellingPriceStatus = e.target.name === 'sellingPriceStatus';
@@ -406,6 +473,22 @@ const StockItemCreate = () => {
       }
     } else if (key === 'Escape') {
       setStandardSellingPriceModal(false);
+    } else if (key === 'a' || key === 'A'){
+      // Set the value to 'Active' if 'A' or 'a' is pressed
+      if (e.target.name === 'sellingPriceStatus'){
+        e.preventDefault();
+        const newRow = [...stockItem.standardSellingPriceSubForm];
+        newRow[rowIndex].sellingPriceStatus = 'Active';    // Update the status in the row
+        setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
+      }
+    } else if (key === 'n' || key === 'N'){
+      // Set the value to 'Not Active' if 'N' or 'n' is pressed
+      if (e.target.name === 'sellingPriceStatus'){
+        e.preventDefault();
+        const newRow = [...stockItem.standardSellingPriceSubForm];
+        newRow[rowIndex].sellingPriceStatus = 'Not Active';  // Update the status in the row
+        setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
+      }
     }
   };
 
@@ -429,9 +512,31 @@ const StockItemCreate = () => {
 
   const handleKeyDownSellingCost = (e, rowIndex, colIndex) => {
     const key = e.key;
+    const firstSellingCostDate = 0;
 
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
+
+      // Check if the current input is the first sellingcostDate and ensure it has a value
+      if (rowIndex === 0 && colIndex === firstSellingCostDate && e.target.value.trim() === ''){
+        alert('The Selling Cost Date field must have a value before proceeding.')
+        inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus();   // Refocus on the empty forexDate field
+        return;
+      }
+
+      // If it's not the first row, and the sellingCostDate is empty, confirm to close the subform
+      if (colIndex === firstSellingCostDate && e.target.value.trim() === '' && rowIndex > 0){
+        const confirmationClose = window.confirm('Do you want to close this subform?');
+        if (confirmationClose){
+          setStandardSellingCostModal(false);
+          setStockItem((prev) => ({...prev, standardSellingCost: 'no' }))
+          inputRefs.current[7]?.focus();
+          return;
+        } else {
+          inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus();   // Refocus if they choose not to close
+          return;
+        }
+      }
 
       // Check if the current field is sellingcoststatus and its value is not empty
       const isSellingCostStatus = e.target.name === 'sellingCostStatus';
@@ -464,6 +569,20 @@ const StockItemCreate = () => {
       }
     } else if (key === 'Escape') {
       setStandardSellingCostModal(false);
+    } else if (key === 'a' || key === 'A'){
+      if (e.target.name === 'sellingCostStatus'){
+        e.preventDefault();
+        const newRow = [...stockItem.standardSellingCostSubForm];
+        newRow[rowIndex].sellingCostStatus = 'Active';
+        setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
+      }
+    } else if (key === 'n' || key === 'N'){
+      if (e.target.name === 'sellingCostStatus'){
+        e.preventDefault();
+        const newRow = [...stockItem.standardSellingCostSubForm];
+        newRow[rowIndex].sellingCostStatus = 'Not Active';
+        setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
+      }
     }
   };
 
@@ -496,8 +615,12 @@ const StockItemCreate = () => {
       const isNetAmount = e.target.name === 'netAmount';
       const isLastRowNetAmount = rowIndex === stockItem.godownSubForm.length - 1;
 
+      // Check if openingBalanceQuantity equals totalQuantity
+      const isQuantityEqual = stockItem.openingBalanceQuantity === stockItem.totalQuantity;
+
       // Add a new row when Enter is pressed on the last row net-amount with a value
-      if (isNetAmount && isLastRowNetAmount && e.target.value.trim() !== '') {
+      // unless openingBalanceQuantity equals totalQuantity
+      if (isNetAmount && isLastRowNetAmount && e.target.value.trim() !== '' && !isQuantityEqual) {
         addNewRowGodown();
         setTimeout(() => {
           inputGodownRef.current[(rowIndex + 1) * 6]?.focus();
@@ -824,7 +947,7 @@ const StockItemCreate = () => {
     }));
   }, [stockItem.openingBalanceQuantity, stockItem.openingBalanceRate]);
   
-  const calculateNetRate = (index) => {
+  const calculateSellingPriceNetRate = (index) => {
     // Parse rate and percentage inputs from the current row
     const rate = parseFloat(stockItem.standardSellingPriceSubForm[index].sellingPriceRate.replace(/,/g, '')) || 0;
     const percentage = parseFloat(stockItem.standardSellingPriceSubForm[index].sellingPricePercentage.replace(/,/g, '')) || 0;
@@ -861,8 +984,149 @@ const StockItemCreate = () => {
         };
       });
     }
-  };  
+  };
   
+  const calculateSellingCostNetRate = (index) => {
+    // Parse rate and percentage inputs from the current row
+    const rate = parseFloat(stockItem.standardSellingCostSubForm[index].sellingCostRate.replace(/,/g, '')) || 0;
+    const percentage = parseFloat(stockItem.standardSellingCostSubForm[index].sellingCostPercentage.replace(/,/g, '')) || 0;
+
+    // Check if both rate and percentage are valid numbers
+    if (rate > 0 && percentage >= 0){
+      // Calculate the percentage of the rate and subtract it from the rate
+      const discountAmount = (rate * percentage) / 100;
+      const netRate = rate - discountAmount;
+
+      // Format the net rate with commas and 2 decimal places
+      const formattedNetRate = new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      }).format(netRate);
+
+      // Update the state with the calculated net rate
+      setStockItem(prevState => {
+        const updatedForm = [...prevState.standardSellingCostSubForm];
+        updatedForm[index].sellingCostNetRate = formattedNetRate; // update the rate in the correct row
+        return {
+          ...prevState,
+          standardSellingCostSubForm: updatedForm,
+        }
+      });
+    } else {
+      // If the input is invalid, clear the net rate field
+      setStockItem(prevState => {
+        const updatedForm = [...prevState.standardSellingCostSubForm];
+        updatedForm[index].sellingCostNetRate = '';
+        return {
+          ...prevState,
+          standardSellingCostSubForm: updatedForm,
+        }
+      })
+    }
+  };
+  
+  const calculatenetAmountForGodown = (index) => {
+    const updatedGodownSubForm = [...stockItem.godownSubForm];
+
+    // Parse and clean quantity and rateAmount inputs
+    const quantity = parseFloat(updatedGodownSubForm[index].quantity.replace(/,/g, '')) || 0;
+    const rateAmount = parseFloat(updatedGodownSubForm[index].rateAmount.replace(/,/g, '')) || 0;
+
+    // Check if both quantity and rateAmount are valid numbers
+    if (quantity > 0 && rateAmount > 0){
+      // Calculate the netAmount by multiplying quantity and rateAmount
+      const netAmount = (quantity * rateAmount).toFixed(2);
+
+      // Format the netAmount with commas and 2 decimal places
+      const formattedNetAmount = new Intl.NumberFormat('en-In', {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      }).format(netAmount);
+
+      // Update the state with the calculated and formatted netAmount
+      setStockItem(prevState => {
+        const updatedForm = [...prevState.godownSubForm];
+        updatedForm[index].netAmount = formattedNetAmount;   // update the netAmount in the correct row
+        return {
+          ...prevState,
+          godownSubForm: updatedForm,
+        }
+      })
+    } else {
+      // If the input is invalid, clear the netAmount field
+      setStockItem(prevState => {
+        const updatedSubForm = [...prevState.godownSubForm];
+        updatedSubForm[index].netAmount = '';
+        return {
+          ...prevState,
+          godownSubForm: updatedSubForm,
+        }
+      })
+    }
+
+    // Call the total calculation function after updating the net amount
+    calcualteTotalsForGodownSubForm();
+  };
+
+  const calcualteTotalsForGodownSubForm = () => {
+    let totalQuantity = 0;
+    let totalNetAmount = 0;
+
+    // Iterate over the godownSubForm array to calculate totals
+    stockItem.godownSubForm.forEach((row) => {
+      const quantity = parseFloat(row.quantity.replace(/,/g, '')) || 0;
+      const netAmount = parseFloat(row.netAmount.replace(/,/g, '')) || 0;
+
+      totalQuantity += quantity;
+      totalNetAmount += netAmount;
+    });
+
+    // Format the total values with commas and two decimal places
+    const formattedTotalQuantity = new Intl.NumberFormat('en-In', {
+      minimumFractionDigits: 0, maximumFractionDigits: 0
+    }).format(totalQuantity);
+
+    const formattedTotalNetAmount = new Intl.NumberFormat('en-In', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2
+    }).format(totalNetAmount);
+
+    // Update the stockItem state with the calculated totals
+    setStockItem(prevState => ({
+      ...prevState,
+      totalQuantity: formattedTotalQuantity,
+      totalNetAmount: formattedTotalNetAmount
+    }))
+  };
+
+  const percentageFormat = (e, index = null, formType = null) => {
+    const { name, value } = e.target;
+    // Remove existing percentage symbol
+    const rawValue = value.replace('%', '').trim();
+
+    // Check if the value is a valid number
+    if (isNaN(rawValue) || rawValue === '') return;
+
+    // Format the number
+    const formattedValue = `${parseFloat(rawValue)}%`; // Keep two decimal places and add %
+
+    // If formType is provided, update the subform
+    if (formType !== null && index !== null) {
+      setStockItem(prevStockItem => {
+        const updatedSubForm = prevStockItem[formType].map((item, i) =>
+          i === index ? { ...item, [name]: formattedValue } : item,
+        );
+        return {
+          ...prevStockItem,
+          [formType]: updatedSubForm,
+        };
+      });
+    } else {
+      // Otherwise, update the main stock item field
+      setStockItem(prevStockItem => ({
+        ...prevStockItem,
+        [name]: formattedValue,
+      }));
+    }
+};
+
 
   return (
     <>
@@ -925,7 +1189,7 @@ const StockItemCreate = () => {
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
-            {categoryFocused && filteredStockCategory.length > 0 && (
+            {categoryFocused && filteredStockCategory.length >= 0 && (
               <div className="w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0">
                 <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
                   <p>List of Categories</p>
@@ -971,7 +1235,7 @@ const StockItemCreate = () => {
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
-            {underFocused && filteredStockGroup.length > 0 && (
+            {underFocused && filteredStockGroup.length >= 0 && (
               <div className="w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0">
                 <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
                   <p>List of Groups</p>
@@ -1017,7 +1281,7 @@ const StockItemCreate = () => {
               className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
-            {unitsFocused && filteredUnit.length > 0 && (
+            {unitsFocused && filteredUnit.length >= 0 && (
               <div className="w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0">
                 <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
                   <p>List of Units</p>
@@ -1077,7 +1341,7 @@ const StockItemCreate = () => {
                       autoComplete="off"
                     />
                   </div>
-                  <table className="border border-slate-400 border-collapse w-full table-fixed">
+                  <table className="border border-slate-400 w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
                         <th>Date</th>
@@ -1114,7 +1378,7 @@ const StockItemCreate = () => {
                               value={row.sellingPriceRate}
                               onChange={e => handleInputSellingPriceChange(e, index)}
                               ref={input => (inputSellingPriceRef.current[1 + index * 5] = input)}
-                              onKeyDown={e => {handleKeyDownSellingPrice(e, index, 1); calculateNetRate(index);}}
+                              onKeyDown={e => {handleKeyDownSellingPrice(e, index, 1); calculateSellingPriceNetRate(index);}}
                               className="w-[80px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingPriceSubForm');
@@ -1129,10 +1393,13 @@ const StockItemCreate = () => {
                               type="text"
                               name="sellingPricePercentage"
                               value={row.sellingPricePercentage}
-                              onChange={e => {handleInputSellingPriceChange(e, index); calculateNetRate(index);}}
+                              onChange={e => {handleInputSellingPriceChange(e, index); calculateSellingPriceNetRate(index);}}
                               ref={input => (inputSellingPriceRef.current[2 + index * 5] = input)}
-                              onKeyDown={e => handleKeyDownSellingPrice(e, index, 2)}
-                              className="w-[30px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              onKeyDown={(e) => {handleKeyDownSellingPrice(e, index, 2); calculateSellingPriceNetRate(index);}}
+                              onBlur={e => {
+                                percentageFormat(e, index, 'standardSellingPriceSubForm')
+                              }}
+                              className="w-[35px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1143,7 +1410,7 @@ const StockItemCreate = () => {
                               type="text"
                               name="sellingPriceNetRate"
                               value={row.sellingPriceNetRate}
-                              onChange={e => handleInputSellingPriceChange(e, index)}
+                              readOnly
                               ref={input => (inputSellingPriceRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 3)}
                               className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
@@ -1163,7 +1430,7 @@ const StockItemCreate = () => {
                               onChange={e => handleInputSellingPriceChange(e, index)}
                               ref={input => (inputSellingPriceRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 4)}
-                              className="w-[90px] h-5 pl-1 ml-6 font-medium text-[12px] capitalize pr-1 focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 ml-3 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1246,7 +1513,7 @@ const StockItemCreate = () => {
                               value={row.sellingCostRate}
                               onChange={e => handleInputSellingCostChange(e, index)}
                               ref={input => (inputSellingCostRef.current[1 + index * 5] = input)}
-                              onKeyDown={e => handleKeyDownSellingCost(e, index, 1)}
+                              onKeyDown={(e) => {handleKeyDownSellingCost(e, index, 1); calculateSellingCostNetRate(index);}}
                               className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingCostSubForm');
@@ -1261,10 +1528,13 @@ const StockItemCreate = () => {
                               type="text"
                               name="sellingCostPercentage"
                               value={row.sellingCostPercentage}
-                              onChange={e => handleInputSellingCostChange(e, index)}
+                              onChange={(e) => {handleInputSellingCostChange(e, index); calculateSellingCostNetRate(index);}}
                               ref={input => (inputSellingCostRef.current[2 + index * 5] = input)}
-                              onKeyDown={e => handleKeyDownSellingCost(e, index, 2)}
-                              className="w-[30px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              onKeyDown={(e) => {handleKeyDownSellingCost(e, index, 2); calculateSellingCostNetRate(index);}}
+                              onBlur={e => {
+                                percentageFormat(e, index, 'standardSellingCostSubForm')
+                              }}
+                              className="w-[35px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1275,7 +1545,7 @@ const StockItemCreate = () => {
                               type="text"
                               name="sellingCostNetRate"
                               value={row.sellingCostNetRate}
-                              onChange={e => handleInputSellingCostChange(e, index)}
+                              readOnly
                               ref={input => (inputSellingCostRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 3)}
                               className="w-[90px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
@@ -1311,7 +1581,7 @@ const StockItemCreate = () => {
             <p className="ml-[284px]">Quantity</p>
             <p className="ml-12">Rate</p>
             <p className="ml-8">Unit</p>
-            <p className="ml-[50px]">Value</p>
+            <p className="ml-[70px]">Value</p>
           </div>
           <div className="text-sm flex mt-1 ml-2 mb-1">
             <p className="w-[40%]">Opening Balance</p>
@@ -1363,7 +1633,7 @@ const StockItemCreate = () => {
               ref={input => (inputRefs.current[10] = input)}
               onKeyDown={e => handleKeyDown(e, 10)}
               onBlur={numberFormat}
-              className="w-[80px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[100px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
               readOnly
             />
@@ -1399,14 +1669,14 @@ const StockItemCreate = () => {
                       autoComplete="off"
                     />
                   </div>
-                  <table className="border border-slate-400 border-collapse w-full table-fixed">
+                  <table className="border border-slate-400 w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
                         <th className='w-[20%]'>Location</th>
                         <th>Batch</th>
                         <th>Quantity</th>
+                        <th>Uom</th>
                         <th>Rate</th>
-                        <th>per</th>
                         <th>Amount</th>
                       </tr>
                     </thead>
@@ -1514,26 +1784,9 @@ const StockItemCreate = () => {
                               name="quantity"
                               value={row.quantity}
                               ref={input => (inputGodownRef.current[2 + index * 6] = input)}
-                              onChange={e => handleInputGodownSubFormChange(e, index)}
-                              onKeyDown={e => handleKeyDownGodownSubForm(e, index, 2)}
-                              className="w-[20px] h-5 pl-1 ml-10 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
-                              autoComplete="off"
-                            />
-                          </td>
-
-                          {/* rate-amount Input */}
-                          <td>
-                            <input
-                              type="text"
-                              name="rateAmount"
-                              value={row.rateAmount}
-                              ref={input => (inputGodownRef.current[3 + index * 6] = input)}
-                              onChange={e => handleInputGodownSubFormChange(e, index)}
-                              onKeyDown={e => handleKeyDownGodownSubForm(e, index, 3)}
-                              className="w-[70px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
-                              onBlur={e => {
-                                numberFormat(e, index, 'godownSubForm');
-                              }}
+                              onChange={(e) => {handleInputGodownSubFormChange(e, index)}}
+                              onKeyDown={(e) => {handleKeyDownGodownSubForm(e, index, 2); calculatenetAmountForGodown(index);}}
+                              className="w-[60px] h-5 pl-1 ml-4 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1544,10 +1797,27 @@ const StockItemCreate = () => {
                               type="text"
                               name="perUnit"
                               value={row.perUnit}
-                              ref={input => (inputGodownRef.current[4 + index * 6] = input)}
+                              ref={input => (inputGodownRef.current[3 + index * 6] = input)}
                               onChange={e => handleInputGodownSubFormChange(e, index)}
-                              onKeyDown={e => handleKeyDownGodownSubForm(e, index, 4)}
-                              className="w-[50px] h-5 pl-1 ml-9 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              onKeyDown={e => handleKeyDownGodownSubForm(e, index, 3)}
+                              className="w-[50px] h-5 pl-1 ml-3 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              autoComplete="off"
+                            />
+                          </td>
+
+                          {/* rate-amount Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="rateAmount"
+                              value={row.rateAmount}
+                              ref={input => (inputGodownRef.current[4 + index * 6] = input)}
+                              onChange={(e) => {handleInputGodownSubFormChange(e, index); calculatenetAmountForGodown(index);}}
+                              onKeyDown={(e) => {handleKeyDownGodownSubForm(e, index, 4); calculatenetAmountForGodown(index);}}
+                              className="w-[70px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              onBlur={e => {
+                                numberFormat(e, index, 'godownSubForm');
+                              }}
                               autoComplete="off"
                             />
                           </td>
@@ -1559,7 +1829,7 @@ const StockItemCreate = () => {
                               name="netAmount"
                               value={row.netAmount}
                               ref={input => (inputGodownRef.current[5 + index * 6] = input)}
-                              onChange={e => handleInputGodownSubFormChange(e, index)}
+                              readOnly
                               onKeyDown={e => handleKeyDownGodownSubForm(e, index, 5)}
                               className="w-full h-5 pl-1 font-medium text-[12px] text-right pr-1 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               onBlur={e => {
@@ -1573,16 +1843,20 @@ const StockItemCreate = () => {
                     </tbody>
                   </table>
                 </div>
-                <div className='flex absolute top-[468px] left-[200px] border border-double border-t border-slate-400 border-l-0 border-r-0'>
+                <div className='flex absolute top-[468px] left-[275px] border border-double border-t border-slate-400 border-l-0 border-r-0'>
                   <p className='text-sm mt-1'>Total</p>
                   <span className='ml-1'>:</span>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" className="w-[50px] h-5 pl-1 ml-6 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" />
+                    <input type="text" value={stockItem.totalQuantity} ref={(input) => (totalRefs.current[0] = input)} className="w-[50px] h-5 pl-1 ml-4 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" />
                   </div>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" className="w-[100px] h-5 pl-1 ml-[282px] font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" />
+                    <input type="text" value={stockItem.units} ref={(input) => (totalRefs.current[0] = input)} className="w-[50px] h-5 pl-1 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" />
+                  </div>
+                  <div>
+                    <label htmlFor=""></label>
+                    <input type="text" value={stockItem.totalNetAmount} ref={(input) => (totalRefs.current[1] = input)} className="w-[100px] h-5 pl-1 ml-[163px] font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" />
                   </div>
                 </div>
               </div>

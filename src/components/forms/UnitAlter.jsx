@@ -51,7 +51,7 @@ const UnitAlter = () => {
         if (nextField < inputRefs.current.length){
           inputRefs.current[nextField]?.focus();
           inputRefs.current[nextField]?.setSelectionRange(0, 0);
-        } else if (e.target.name === 'unitSymbolName'){
+        } else if (e.target.name === 'formalName'){
           // Show confirmation dialog only if numberOfDecimalPlaces is filled
           const userConfirmed = window.confirm('Do you want to confirm this submit?');
           if (userConfirmed) {

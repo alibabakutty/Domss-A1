@@ -478,7 +478,7 @@ const StockItemCreate = () => {
       if (e.target.name === 'sellingPriceStatus'){
         e.preventDefault();
         const newRow = [...stockItem.standardSellingPriceSubForm];
-        newRow[rowIndex].sellingPriceStatus = 'Active';    // Update the status in the row
+        newRow[rowIndex].sellingPriceStatus = 'active';    // Update the status in the row
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
       }
     } else if (key === 'n' || key === 'N'){
@@ -486,7 +486,7 @@ const StockItemCreate = () => {
       if (e.target.name === 'sellingPriceStatus'){
         e.preventDefault();
         const newRow = [...stockItem.standardSellingPriceSubForm];
-        newRow[rowIndex].sellingPriceStatus = 'Not Active';  // Update the status in the row
+        newRow[rowIndex].sellingPriceStatus = 'not active';  // Update the status in the row
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
       }
     }
@@ -573,14 +573,14 @@ const StockItemCreate = () => {
       if (e.target.name === 'sellingCostStatus'){
         e.preventDefault();
         const newRow = [...stockItem.standardSellingCostSubForm];
-        newRow[rowIndex].sellingCostStatus = 'Active';
+        newRow[rowIndex].sellingCostStatus = 'active';
         setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
       }
     } else if (key === 'n' || key === 'N'){
       if (e.target.name === 'sellingCostStatus'){
         e.preventDefault();
         const newRow = [...stockItem.standardSellingCostSubForm];
-        newRow[rowIndex].sellingCostStatus = 'Not Active';
+        newRow[rowIndex].sellingCostStatus = 'not active';
         setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
       }
     }
@@ -911,7 +911,7 @@ const StockItemCreate = () => {
             sellingPriceRate: '',
             sellingPricePercentage: '',
             sellingPriceNetRate: '',
-            sellingPriceStatus: '',
+            sellingPriceStatus: 'active',
           },
         ],
         standardSellingCost: 'no',
@@ -921,7 +921,7 @@ const StockItemCreate = () => {
             sellingCostRate: '',
             sellingCostPercentage: '',
             sellingCostNetRate: '',
-            sellingCostStatus: '',
+            sellingCostStatus: 'active',
           },
         ],
         openingBalanceQuantity: '',
@@ -983,23 +983,44 @@ const StockItemCreate = () => {
     }
   };
 
-  // const unitFormat = (e) => {
-  //   const { name, value } = e.target; // Destructure name and value from the input event
-  //   const rawValue = value.trim(); // Trim whitespace from the input value
+  const unitFormat = (e) => {
+    const { name, value } = e.target; // Destructure name and value from the input event
+    const rawValue = value.trim(); // Trim whitespace from the input value
   
-  //   // Check if the value is a valid number
-  //   if (isNaN(rawValue) || rawValue === '') return; // Return if not a valid number or empty
+    // Check if the trimmed value is a valid number (allow decimals and negative numbers)
+    if (isNaN(rawValue) || rawValue === '') return; // Return if it's not a valid number or empty
   
-  //   // Format the number as a whole number (integer)
-  //   const formattedValue = Math.round(parseFloat(rawValue)); // Round to the nearest integer after parsing
+    // Update the stock item state
+    setStockItem((prevStockItem) => {
+      // Get the unit from the state if it exists, or use an empty string
+      const unit = prevStockItem.units || '';
   
-  //   // Update the main stock item field
-  //   setStockItem((prevStockItem) => ({
-  //     ...prevStockItem,
-  //     [name]: formattedValue, // Store only the numerical value
-  //     [`${name}Display`]: formattedValue + ' ' + (prevStockItem.units || ''), // Store display value with unit
-  //   }));
-  // };  
+      // Return the updated state
+      return {
+        ...prevStockItem,
+        [name]: rawValue, // Store the raw numerical value
+        [`${name}Display`]: `${rawValue} ${unit}`.trim(), // Store display value with unit (e.g., "100 kg")
+      };
+    });
+  };  
+  
+  const handleUnitFormattedChange = (e) => {
+    const unitValue = e.target.value.trim(); // Get and trim the value from the input
+  
+    // Use a regular expression to extract the numeric part from the formatted string
+    const numericValue = unitValue.replace(/[^0-9.-]/g, ''); // Allow numbers, '.', and '-' only
+  
+    // Update the stockItem state
+    setStockItem(prevState => {
+      const unit = prevState.units || ''; // Get the unit from the state if it exists
+  
+      return {
+        ...prevState,
+        openingBalanceQuantity: numericValue, // Store the raw numeric value (e.g., "100")
+        openingBalanceQuantityDisplay: `${numericValue} ${unit}`.trim(), // Store formatted display value with unit (e.g., "100 kg")
+      };
+    });
+  };    
 
   // useEffect to update openingBalanceValue whenever quantity or rate changes
   useEffect(() => {
@@ -1198,6 +1219,110 @@ const StockItemCreate = () => {
       }));
     }
   };
+
+
+  const dateConvert = (e, index) => {
+    const dateValue = e.target.value;
+    const fieldName = e.target.name; // forexDate or dueDate
+  
+    // Validate and format date
+    const datePattern = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2}|\d{4})$/;
+    if (datePattern.test(dateValue)) {
+      let [_, day, month, year] = datePattern.exec(dateValue);
+  
+      if (year.length === 2) year = `20${year}`;
+      day = day.padStart(2, '0');
+      month = month.padStart(2, '0');
+  
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthIndex = parseInt(month) - 1;
+      const formattedDisplayDate = `${day}-${monthNames[monthIndex]}-${year}`;
+      const convertedDate = `${year}-${month}-${day}`;
+  
+      setStockItem(prevState => {
+        const updatedForexSubForm = [...prevState.standardSellingPriceSubForm];
+        updatedForexSubForm[index] = {
+          ...updatedForexSubForm[index],
+          [fieldName]: convertedDate, // Save the converted date (YYYY-MM-DD format)
+          [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: formattedDisplayDate // Save the formatted date (DD-MMM-YYYY format)
+        };
+        return {
+          ...prevState,
+          standardSellingPriceSubForm: updatedForexSubForm
+        };
+      });
+    }
+  };
+  
+  
+  const handleFormattedDateChange = (e, index, fieldName) => {
+    const dateValue = e.target.value;
+    
+    // Update the sundryCreditor state for the specific row and field (forexDate or dueDate)
+    setStockItem(prevState => {
+      const updatedForexSubForm = [...prevState.standardSellingPriceSubForm];
+      updatedForexSubForm[index] = {
+        ...updatedForexSubForm[index],
+        [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: dateValue
+      };
+      return {
+        ...prevState,
+        standardSellingPriceSubForm: updatedForexSubForm
+      };
+    });
+  };
+
+  const dateConvertForSellingCost = (e, index) => {
+    const dateValue = e.target.value;
+    const fieldName = e.target.name; // forexDate or dueDate
+  
+    // Validate and format date
+    const datePattern = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2}|\d{4})$/;
+    if (datePattern.test(dateValue)) {
+      let [_, day, month, year] = datePattern.exec(dateValue);
+  
+      if (year.length === 2) year = `20${year}`;
+      day = day.padStart(2, '0');
+      month = month.padStart(2, '0');
+  
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthIndex = parseInt(month) - 1;
+      const formattedDisplayDate = `${day}-${monthNames[monthIndex]}-${year}`;
+      const convertedDate = `${year}-${month}-${day}`;
+  
+      setStockItem((prevState) => {
+        const updatedCostSubForm = [...prevState.standardSellingCostSubForm];
+        updatedCostSubForm[index] = {
+          ...updatedCostSubForm[index],
+          [fieldName]: convertedDate, // Save the converted date (YYYY-MM-DD format)
+          [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: formattedDisplayDate, // Save the formatted date (DD-MMM-YYYY format)
+        };
+        return {
+          ...prevState,
+          standardSellingCostSubForm: updatedCostSubForm,
+        };
+      });
+    }
+  };
+
+  const handleFormattedDateChangeForSellingCost = (e, index, fieldName) => {
+    const dateValue = e.target.value;
+  
+    // Update the standardSellingCostSubForm state for the specific row and field (forexDate or dueDate)
+    setStockItem((prevState) => {
+      const updatedCostSubForm = [...prevState.standardSellingCostSubForm];
+      updatedCostSubForm[index] = {
+        ...updatedCostSubForm[index],
+        [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: dateValue,
+      };
+      return {
+        ...prevState,
+        standardSellingCostSubForm: updatedCostSubForm,
+      };
+    });
+  };
+  
+  
 
   return (
     <>
@@ -1432,10 +1557,11 @@ const StockItemCreate = () => {
                             <input
                               type="text"
                               name="sellingPriceDate"
-                              value={row.sellingPriceDate}
-                              onChange={e => handleInputSellingPriceChange(e, index)}
+                              value={row.formattedSellingPriceDate}
+                              onChange={e => handleFormattedDateChange(e, index, 'sellingPriceDate')}
                               ref={input => (inputSellingPriceRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 0)}
+                              onBlur={(e) => {dateConvert(e, index)}}
                               className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
@@ -1567,10 +1693,11 @@ const StockItemCreate = () => {
                             <input
                               type="text"
                               name="sellingCostDate"
-                              value={row.sellingCostDate}
-                              onChange={e => handleInputSellingCostChange(e, index)}
+                              value={row.formattedSellingCostDate}
+                              onChange={e => handleFormattedDateChangeForSellingCost(e, index, 'sellingCostDate')}
                               ref={input => (inputSellingCostRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 0)}
+                              onBlur={(e) => {dateConvertForSellingCost(e, index, 0)}}
                               className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
@@ -1661,11 +1788,15 @@ const StockItemCreate = () => {
             <input
               type="text"
               name="openingBalanceQuantity"
-              value={stockItem.openingBalanceQuantity}
-              onChange={handleInputChange}
+              value={stockItem.openingBalanceQuantityDisplay}
+              onChange={handleUnitFormattedChange}
               ref={input => (inputRefs.current[7] = input)}
-              onKeyDown={e => handleKeyDown(e, 7)}
-              // onBlur={(e) => unitFormat(e)}
+              onKeyDown={e => {handleKeyDown(e, 7);
+                if (e.key === 'Enter'){
+                  inputRefs.current[8].focus(); // Adjust the index based on your input structure
+                }
+              }}
+              onBlur={(e) => unitFormat(e)}
               className="w-[75px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />

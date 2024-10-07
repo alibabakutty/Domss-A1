@@ -727,7 +727,7 @@ console.log(sundryCreditor)
       console.log('Response:', response.data);
 
       // Reset form data
-      const [sundryCreditor, setSundryCreditor] = useState({
+      setSundryCreditor({
         sundryCreditorName: '',
         underGroup: 'sundry creditors',
         forexApplicable: 'no',

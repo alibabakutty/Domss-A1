@@ -870,6 +870,8 @@ const StockItemCreate = () => {
         openingBalanceQuantity: parseFloat(stockItem.openingBalanceQuantity?.replace(/,/g, '')) || 0,
         openingBalanceRate: parseFloat(stockItem.openingBalanceRate?.replace(/,/g, '')) || 0,
         openingBalanceValue: parseFloat(stockItem.openingBalanceValue?.replace(/,/g, '')) || 0,
+        totalQuantity: stockItem.totalQuantity?.replace(/,/g, '') || 0,
+        totalNetAmount: parseFloat(stockItem.totalNetAmount?.replace(/,/g, '')) || 0,
         standardSellingPriceSubForm: stockItem.standardSellingPriceSubForm
         .filter(price => price.sellingPriceDate.trim() !== '')
         .map((price) => ({

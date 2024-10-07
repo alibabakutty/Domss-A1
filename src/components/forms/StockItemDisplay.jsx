@@ -8,17 +8,57 @@ const StockItemDisplay = () => {
 
   const { datas } = useParams();
   const [stockItem, setStockItem] = useState({
+    stockItemCode: '',
     stockItemName: '',
-    under: '♦ primary',
-    category: '♦ not applicable',
-    units: '♦ not applicable',
+    under: '',
+    category: '',
+    units: '',
+    standardSellingPrice: 'no',
+    standardSellingPriceSubForm: [
+      {
+        sellingPriceDate: '',
+        sellingPriceRate: '',
+        sellingPricePercentage: '',
+        sellingPriceNetRate: '',
+        sellingPriceStatus: 'active',
+      },
+    ],
+    standardSellingCost: 'no',
+    standardSellingCostSubForm: [
+      {
+        sellingCostDate: '',
+        sellingCostRate: '',
+        sellingCostPercentage: '',
+        sellingCostNetRate: '',
+        sellingCostStatus: 'active',
+      },
+    ],
     openingBalanceQuantity: '',
+    godownSubForm: [
+      {
+        godownName: '',
+        batchName: '',
+        quantity: '',
+        rateAmount: '',
+        perUnit: '',
+        netAmount: '',
+      },
+    ],
+    totalQuantity: '',
+    totalNetAmount: '',
     openingBalanceRate: '',
     openingBalanceUnit: '',
-    openingBalanceValue: ''
+    openingBalanceValue: '',
   });
 
+  const [standardSellingPriceModal, setStandardSellingPriceModal] = useState(false);
+  const [standardSellingCostModal, setStandardSellingCostModal] = useState(false);
+  const [godownSubFormModal, setGodownSubFormModal] = useState(false);
   const inputRefs = useRef([]);
+  const inputSellingPriceRef = useRef([]);
+  const inputSellingCostRef = useRef([]);
+  const inputGodownRef = useRef([]);
+  const totalRefs = useRef([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,21 +67,71 @@ const StockItemDisplay = () => {
       inputRefs.current[0].focus();
     }
 
+    // Utility function to format dates from YYYY-MM-DD to DD-MMM-YYYY
+    const formatDateForDisplay = (date) => {
+      if (!date) return '';
+    
+      const [year, month, day] = date.split('-'); // Change to '-' for typical date format
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      
+      return `${day.padStart(2, '0')}-${monthNames[parseInt(month, 10) - 1]}-${year}`;
+    };
+
     const loadStockItems = async () => {
         try {
             const result = await getSpecificStockItemName(datas);
+            console.log('API-Response', result.data);
 
-            // Assuming result.data is your stock item data
-            const fetchedData = result.data;
+            const {
+              stockItemCode = '',
+              stockItemName = '',
+              under = '',
+              category = '',
+              units = '',
+              standardSellingPrice = '',
+              standardSellingPriceSubForm,
+              standardSellingCost = '',
+              standardSellingCostSubForm,
+              openingBalanceQuantity = '',
+              godownSubForm,
+              totalQuantity = '',
+              totalNetAmount = '',
+              openingBalanceRate = '',
+              openingBalanceUnit = '',
+              openingBalanceValue = '',
+            } = result.data;
 
-             // Format the numeric fields before setting them in the state
-            setStockItem({
-                ...fetchedData,
-                openingBalanceQuantity: numberFormat(fetchedData.openingBalanceQuantity),
-                openingBalanceRate: numberFormat(fetchedData.openingBalanceRate),
-                openingBalanceValue: numberFormat(fetchedData.openingBalanceValue)
-            });
-            console.log(fetchedData);
+            let fetchedSellingPriceSubForm = [ 
+              {
+                sellingPriceDate: '',
+                sellingPriceRate: '',
+                sellingPricePercentage: '',
+                sellingPriceNetRate: '',
+                sellingPriceStatus: '',
+              }
+            ];
+
+            let fetchedSellingCostSubForm = [
+              {
+                sellingCostDate: '',
+                sellingCostRate: '',
+                sellingCostPercentage: '',
+                sellingCostNetRate: '',
+                sellingCostStatus: '',
+              }
+            ];
+
+            let fetchedGodownSubForm = [
+              {
+                godownName: '',
+                batchName: '',
+                quantity: '',
+                rateAmount: '',
+                perUnit: '',
+                netAmount: '',
+              }
+            ]
+            console.log();
         } catch (error) {
             console.error(error);
         }

@@ -533,61 +533,70 @@ const SundryCreditorsAlter = () => {
     const firstForexDateIndex = 0;
 
     if (key === 'Enter') {
-      e.preventDefault(); // Prevent default Enter key behavior
+        e.preventDefault(); // Prevent default Enter key behavior
 
-      // Check if the current input is the first forexDate and ensure it has a value
-      if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === '') {
-        alert('The forexDate field must have a value before proceeding.');
-        inputRefsForex.current[rowIndex * 10 + colIndex]?.focus(); // Refocus on the empty forexDate field
-        return;
-      }
-
-      // Check if the current field is forexDate and its value is empty
-      if (e.target.name === 'forexDate') {
-        if (e.target.value.trim() === '') {
-          // Focus on totalForexAmount input if forexDate is empty
-          if (totalRefs.current[0]) {
-            totalRefs.current[0].focus(); // Focus on totalForexAmount input
-          }
-          return; // Exit the function
+        // Check if the current input is the first forexDate and ensure it has a value
+        if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === '') {
+            alert('The forexDate field must have a value before proceeding.');
+            inputRefsForex.current[rowIndex * 10 + colIndex]?.focus(); // Refocus on the empty forexDate field
+            return;
         }
-      }
 
-      // Check if the current field is referenceCreditOrDebit and its value is not empty
-      const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
-      const isLastRow = rowIndex === sundryCreditor.sundryCreditorForexDetails.length - 1;
+        // Check if the current field is forexDate and its value is empty
+        if (e.target.name === 'forexDate') {
+            if (e.target.value.trim() === '') {
+                // Focus on totalForexAmount input if forexDate is empty
+                if (totalRefs.current[0]) {
+                    totalRefs.current[0].focus(); // Focus on totalForexAmount input
+                }
+                return; // Exit the function
+            }
+        }
 
-      // Add a new row when Enter is pressed on the last row referenceCreditOrDebit with a value
-      if (isReferenceCreditOrDebit && e.target.value.trim() !== '' && isLastRow) {
-        addNewRow();
-        setTimeout(() => {
-          inputRefsForex.current[(rowIndex + 1) * 10]?.focus();
-        }, 0);
-        return;
-      }
+        // Check if the current field is referenceCreditOrDebit and its value is not empty
+        const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
+        const isLastRow = rowIndex === sundryCreditor.sundryCreditorForexDetails.length - 1;
 
-      // Move to the next cell
-      const nextCell = rowIndex * 10 + colIndex + 1;
-      if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
-        inputRefsForex.current[nextCell]?.focus();
-      }
+        // Get openingBalance and totalOutwardReferenceAmount values
+        const openingBalance = sundryCreditor.openingBalance;
+        const totalOutwardAmount = sundryCreditor.totalOutwardReferenceAmount;
+
+        // Add a new row when Enter is pressed on the last row referenceCreditOrDebit with a value
+        if (isReferenceCreditOrDebit && e.target.value.trim() !== '' && isLastRow) {
+            // Ensure openingBalance is not equal to totalOutwardReferenceAmount before adding a new row
+            if (openingBalance !== totalOutwardAmount) {
+                addNewRow();
+                setTimeout(() => {
+                    inputRefsForex.current[(rowIndex + 1) * 10]?.focus(); // Focus on the first cell of the new row
+                }, 0);
+            } else {
+                alert("Cannot add a new row because the opening balance equals the total outward amount.");
+            }
+            return;
+        }
+
+        // Move to the next cell
+        const nextCell = rowIndex * 10 + colIndex + 1;
+        if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
+            inputRefsForex.current[nextCell]?.focus();
+        }
     } else if (key === 'Backspace') {
-      // Move focus to the previous input if the current input is empty
-      if (e.target.value.trim() === '') {
-        e.preventDefault();
-        const prevCell = rowIndex * 10 + colIndex - 1;
-        if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
-          inputRefsForex.current[prevCell].focus();
-          inputRefsForex.current[prevCell].setSelectionRange(0, 0);
+        // Move focus to the previous input if the current input is empty
+        if (e.target.value.trim() === '') {
+            e.preventDefault();
+            const prevCell = rowIndex * 10 + colIndex - 1;
+            if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
+                inputRefsForex.current[prevCell].focus();
+                inputRefsForex.current[prevCell].setSelectionRange(0, 0);
+            }
         }
-      }
     } else if (key === 'Tab') {
-      e.preventDefault();
-      setCurrencyFocused(false);
+        e.preventDefault();
+        setCurrencyFocused(false);
     } else if (key === 'Escape') {
-      setForexSubFormModal(false);
+        setForexSubFormModal(false);
     }
-  };
+};
 
   const handleKeyDownTotal = async (e, currentIndex) => {
     switch (e.key) {
@@ -780,9 +789,7 @@ const SundryCreditorsAlter = () => {
       console.log('Response:', response.data);
 
       // Focus on the first input field
-      if (inputRefs.current && inputRefs.current[0]) {
-        inputRefs.current[0].focus();
-      }
+      navigate(-1);
     } catch (error) {
       console.error('Error submitting data:', error);
     }

@@ -27,6 +27,7 @@ const StockItemAlter = () => {
     standardSellingPriceSubForm: [
       {
         sellingPriceDate: '',
+        sellingPriceDateDisplay: '',
         sellingPriceRate: '',
         sellingPricePercentage: '',
         sellingPriceNetRate: '',
@@ -37,12 +38,14 @@ const StockItemAlter = () => {
     standardSellingCostSubForm: [
       {
         sellingCostDate: '',
+        sellingCostDateDisplay: '',
         sellingCostRate: '',
         sellingCostPercentage: '',
         sellingCostNetRate: '',
         sellingCostStatus: '',
       },
     ],
+    openingBalanceQuantityDisplay: '',
     openingBalanceQuantity: '',
     godownSubForm: [
       {
@@ -295,7 +298,7 @@ console.log(stockItem)
           if (Array.isArray(standardSellingPriceSubForm) && standardSellingPriceSubForm.length > 0){
             fetchedSellingPriceSubForm = standardSellingPriceSubForm.map((price) => ({
               sellingPriceDate: price.sellingPriceDate || '',
-              formattedSellingPriceDate: formatDateForDisplay(price.sellingPriceDate),
+              sellingPriceDateDisplay: formatDateForDisplay(price.sellingPriceDate),
               sellingPriceRate: numberFormatValue(price.sellingPriceRate),
               sellingPricePercentage: percentageFormatForDisplay(price.sellingPricePercentage),
               sellingPriceNetRate: numberFormatValue(price.sellingPriceNetRate),
@@ -307,7 +310,7 @@ console.log(stockItem)
           if (Array.isArray(standardSellingCostSubForm) && standardSellingCostSubForm.length > 0){
             fetchedSellingCostSubForm = standardSellingCostSubForm.map((cost) => ({
               sellingCostDate: cost.sellingCostDate || '',
-              formattedSellingCostDate: formatDateForDisplay(cost.sellingCostDate),
+              sellingCostDateDisplay: formatDateForDisplay(cost.sellingCostDate),
               sellingCostRate: numberFormatValue(cost.sellingCostRate),
               sellingCostPercentage: percentageFormatForDisplay(cost.sellingCostPercentage),
               sellingCostNetRate: numberFormatValue(cost.sellingCostNetRate),
@@ -1056,7 +1059,7 @@ console.log(stockItem)
         .map((price) => ({
           ...price,
           sellingPriceRate: parseFloat(price.sellingPriceRate.replace(/,/g, '')) || 0,
-          sellingPricePercentage: parseInt(price.sellingPricePercentage) || 0,
+          sellingPricePercentage: parseFloat(price.sellingPricePercentage.replace(/,/g, '')) || 0,
           sellingPriceNetRate: parseFloat(price.sellingPriceNetRate.replace(/,/g, '')) || 0,
         })),
         standardSellingCostSubForm: stockItem.standardSellingCostSubForm
@@ -1064,7 +1067,7 @@ console.log(stockItem)
         .map((cost) => ({
           ...cost,
           sellingCostRate: parseFloat(cost.sellingCostRate.replace(/,/g, '')) || 0,
-          sellingCostPercentage: parseInt(cost.sellingCostPercentage) || 0,
+          sellingCostPercentage: parseFloat(cost.sellingCostPercentage.replace(/,/g, '')) || 0,
           sellingCostNetRate: parseFloat(cost.sellingCostNetRate.replace(/,/g, '')) || 0,
         })),
         godownSubForm: stockItem.godownSubForm
@@ -1360,108 +1363,54 @@ console.log(stockItem)
   };
 
 
-  const dateConvert = (e, index) => {
+  const dateConvert = (e, index, type) => {
     const dateValue = e.target.value;
-    const fieldName = e.target.name; // forexDate or dueDate
-  
-    // Validate and format date
     const datePattern = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2}|\d{4})$/;
-    if (datePattern.test(dateValue)) {
-      let [_, day, month, year] = datePattern.exec(dateValue);
-  
-      if (year.length === 2) year = `20${year}`;
-      day = day.padStart(2, '0');
-      month = month.padStart(2, '0');
-  
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      const monthIndex = parseInt(month) - 1;
-      const formattedDisplayDate = `${day}-${monthNames[monthIndex]}-${year}`;
-      const convertedDate = `${year}-${month}-${day}`;
-  
-      setStockItem(prevState => {
-        const updatedForexSubForm = [...prevState.standardSellingPriceSubForm];
-        updatedForexSubForm[index] = {
-          ...updatedForexSubForm[index],
-          [fieldName]: convertedDate, // Save the converted date (YYYY-MM-DD format)
-          [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: formattedDisplayDate // Save the formatted date (DD-MMM-YYYY format)
-        };
-        return {
-          ...prevState,
-          standardSellingPriceSubForm: updatedForexSubForm
-        };
-      });
-    }
-  };
-  
-  
-  const handleFormattedDateChange = (e, index, fieldName) => {
-    const dateValue = e.target.value;
-    
-    // Update the sundryCreditor state for the specific row and field (forexDate or dueDate)
-    setStockItem(prevState => {
-      const updatedForexSubForm = [...prevState.standardSellingPriceSubForm];
-      updatedForexSubForm[index] = {
-        ...updatedForexSubForm[index],
-        [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: dateValue
-      };
-      return {
-        ...prevState,
-        standardSellingPriceSubForm: updatedForexSubForm
-      };
-    });
-  };
 
-  const dateConvertForSellingCost = (e, index) => {
-    const dateValue = e.target.value;
-    const fieldName = e.target.name; // forexDate or dueDate
-  
-    // Validate and format date
-    const datePattern = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2}|\d{4})$/;
     if (datePattern.test(dateValue)) {
-      let [_, day, month, year] = datePattern.exec(dateValue);
-  
-      if (year.length === 2) year = `20${year}`;
-      day = day.padStart(2, '0');
-      month = month.padStart(2, '0');
-  
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      const monthIndex = parseInt(month) - 1;
-      const formattedDisplayDate = `${day}-${monthNames[monthIndex]}-${year}`;
-      const convertedDate = `${year}-${month}-${day}`;
-  
-      setStockItem((prevState) => {
-        const updatedCostSubForm = [...prevState.standardSellingCostSubForm];
-        updatedCostSubForm[index] = {
-          ...updatedCostSubForm[index],
-          [fieldName]: convertedDate, // Save the converted date (YYYY-MM-DD format)
-          [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: formattedDisplayDate, // Save the formatted date (DD-MMM-YYYY format)
-        };
-        return {
-          ...prevState,
-          standardSellingCostSubForm: updatedCostSubForm,
-        };
-      });
-    }
-  };
+        let [_, day, month, year] = datePattern.exec(dateValue);
+        if (year.length === 2) year = `20${year}`;
+        day = day.padStart(2, '0');
+        month = month.padStart(2, '0');
 
-  const handleFormattedDateChangeForSellingCost = (e, index, fieldName) => {
-    const dateValue = e.target.value;
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthIndex = parseInt(month) - 1;
+        const formattedDisplayDate = `${day}-${monthNames[monthIndex]}-${year}`; // Format for display
+        const convertedDate = `${year}-${month}-${day}`; // Format for database
+
+        setStockItem((prevState) => {
+            const updatedSubForm = [...prevState[type]];
+            updatedSubForm[index] = {
+                ...updatedSubForm[index],
+                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDate' : 'sellingCostDate'}`]: convertedDate, // Actual date for database
+                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDateDisplay' : 'sellingCostDateDisplay'}`]: formattedDisplayDate, // Formatted date for display
+            };
+            return {
+                ...prevState,
+                [type]: updatedSubForm,
+            };
+        });
+    } else {
+        // Handle invalid date format
+        console.log('Invalid date format');
+    }
+};
   
-    // Update the standardSellingCostSubForm state for the specific row and field (forexDate or dueDate)
-    setStockItem((prevState) => {
-      const updatedCostSubForm = [...prevState.standardSellingCostSubForm];
-      updatedCostSubForm[index] = {
-        ...updatedCostSubForm[index],
-        [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: dateValue,
-      };
-      return {
-        ...prevState,
-        standardSellingCostSubForm: updatedCostSubForm,
-      };
-    });
-  };
   
-  
+const handleFormattedDateChange = (e, index, field, type) => {
+  const newValue = e.target.value;
+
+  setStockItem(prevState => {
+      const updatedSubForm = [...prevState[type]];
+      updatedSubForm[index][field] = newValue; // Update the specific row and field
+
+      // Additionally, call dateConvert to ensure display date is formatted
+      dateConvert({ target: { value: newValue } }, index, type); // Call dateConvert directly with the new value
+
+      return { ...prevState, [type]: updatedSubForm };
+  });
+};
+
 
   return (
     <>
@@ -1696,11 +1645,11 @@ console.log(stockItem)
                             <input
                               type="text"
                               name="sellingPriceDate"
-                              value={row.formattedSellingPriceDate}
-                              onChange={e => handleFormattedDateChange(e, index, 'sellingPriceDate')}
+                              value={row.sellingPriceDate || ''}
+                              onChange={e => handleFormattedDateChange(e, index, 'sellingPriceDate', 'standardSellingPriceSubForm')}
                               ref={input => (inputSellingPriceRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 0)}
-                              onBlur={(e) => {dateConvert(e, index)}}
+                              onBlur={(e) => {dateConvert(e, index, 'standardSellingPriceSubForm')}}
                               className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
@@ -1735,7 +1684,7 @@ console.log(stockItem)
                               onBlur={e => {
                                 percentageFormat(e, index, 'standardSellingPriceSubForm')
                               }}
-                              className="w-[35px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[40px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1832,11 +1781,11 @@ console.log(stockItem)
                             <input
                               type="text"
                               name="sellingCostDate"
-                              value={row.formattedSellingCostDate}
-                              onChange={e => handleFormattedDateChangeForSellingCost(e, index, 'sellingCostDate')}
+                              value={row.sellingCostDate || ''}
+                              onChange={e => handleFormattedDateChange(e, index, 'sellingCostDate', 'standardSellingCostSubForm')}
                               ref={input => (inputSellingCostRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 0)}
-                              onBlur={(e) => {dateConvertForSellingCost(e, index, 0)}}
+                              onBlur={(e) => {dateConvert(e, index, 'standardSellingCostSubForm')}}
                               className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
@@ -1871,7 +1820,7 @@ console.log(stockItem)
                               onBlur={e => {
                                 percentageFormat(e, index, 'standardSellingCostSubForm')
                               }}
-                              className="w-[35px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[40px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1927,7 +1876,7 @@ console.log(stockItem)
             <input
               type="text"
               name="openingBalanceQuantity"
-              value={stockItem.openingBalanceQuantityDisplay}
+              value={stockItem.openingBalanceQuantityDisplay || ''}
               onChange={handleUnitFormattedChange}
               ref={input => (inputRefs.current[7] = input)}
               onKeyDown={e => {handleKeyDown(e, 7);
@@ -2193,11 +2142,11 @@ console.log(stockItem)
                   </div>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" name='totalPerUnit' value={stockItem.units} ref={(input) => (totalRefs.current[1] = input)} onKeyDown={e => handleKeyDownTotal(e, 1)} className="w-[50px] h-5 pl-1 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
+                    <input type="text" name='totalPerUnit' value={stockItem.units} ref={(input) => (totalRefs.current[1] = input)} onKeyDown={e => handleKeyDownTotal(e, 1)} className="w-[40px] h-5 pl-1 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
                   </div>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" name='totalNetAmount' value={stockItem.totalNetAmount} ref={(input) => (totalRefs.current[2] = input)} onKeyDown={e => handleKeyDownTotal(e, 2)} className="w-[100px] h-5 pl-1 ml-[163px] font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
+                    <input type="text" name='totalNetAmount' value={stockItem.totalNetAmount} ref={(input) => (totalRefs.current[2] = input)} onKeyDown={e => handleKeyDownTotal(e, 2)} className="w-[110px] h-5 pl-1 ml-[163px] font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
                   </div>
                 </div>
               </div>

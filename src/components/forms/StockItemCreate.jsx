@@ -1598,7 +1598,7 @@ const StockItemCreate = () => {
                               onBlur={e => {
                                 percentageFormat(e, index, 'standardSellingPriceSubForm')
                               }}
-                              className="w-[35px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[40px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1734,7 +1734,7 @@ const StockItemCreate = () => {
                               onBlur={e => {
                                 percentageFormat(e, index, 'standardSellingCostSubForm')
                               }}
-                              className="w-[35px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[40px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>

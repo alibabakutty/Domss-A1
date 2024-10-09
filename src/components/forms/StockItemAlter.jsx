@@ -1046,27 +1046,27 @@ const StockItemAlter = () => {
       // Sanitize stockItem values to remove commas and ensure proper formatting
       const sanitizedStockItem = {
         ...stockItem,
-        openingBalanceQuantity: parseFloat(stockItem.openingBalanceQuantity?.replace(/,/g, '')) || 0,
-        openingBalanceRate: parseFloat(stockItem.openingBalanceRate?.replace(/,/g, '')) || 0,
+        openingBalanceQuantity: parseFloat(stockItem.openingBalanceQuantity) || 0,
+        openingBalanceRate: parseFloat(stockItem.openingBalanceRate) || 0,
         openingBalanceUnit: stockItem.openingBalanceUnit,
-        openingBalanceValue: parseFloat(stockItem.openingBalanceValue?.replace(/,/g, '')) || 0,
-        totalQuantity: stockItem.totalQuantity?.replace(/,/g, '') || 0,
-        totalNetAmount: parseFloat(stockItem.totalNetAmount?.replace(/,/g, '')) || 0,
+        openingBalanceValue: parseFloat(stockItem.openingBalanceValue) || 0,
+        totalQuantity: stockItem.totalQuantity || 0,
+        totalNetAmount: parseFloat(stockItem.totalNetAmount) || 0,
         standardSellingPriceSubForm: stockItem.standardSellingPriceSubForm
         .filter(price => price.sellingPriceDate.trim() !== '')
         .map((price) => ({
           ...price,
-          sellingPriceRate: parseFloat(price.sellingPriceRate.replace(/,/g, '')) || 0,
-          sellingPricePercentage: parseInt(price.sellingPricePercentage.replace(/,/g, '')) || 0,
-          sellingPriceNetRate: parseFloat(price.sellingPriceNetRate.replace(/,/g, '')) || 0,
+          sellingPriceRate: parseFloat(price.sellingPriceRate) || 0,
+          sellingPricePercentage: parseInt(price.sellingPricePercentage) || 0,
+          sellingPriceNetRate: parseFloat(price.sellingPriceNetRate) || 0,
         })),
         standardSellingCostSubForm: stockItem.standardSellingCostSubForm
         .filter(cost => cost.sellingCostDate.trim() !== '')
         .map((cost) => ({
           ...cost,
-          sellingCostRate: parseFloat(cost.sellingCostRate.replace(/,/g, '')) || 0,
-          sellingCostPercentage: parseInt(cost.sellingCostPercentage.replace(/,/g, '')) || 0,
-          sellingCostNetRate: parseFloat(cost.sellingCostNetRate.replace(/,/g, '')) || 0,
+          sellingCostRate: parseFloat(cost.sellingCostRate) || 0,
+          sellingCostPercentage: parseInt(cost.sellingCostPercentage) || 0,
+          sellingCostNetRate: parseFloat(cost.sellingCostNetRate) || 0,
         })),
         godownSubForm: stockItem.godownSubForm
         .map((godown) => ({
@@ -1305,7 +1305,7 @@ const StockItemAlter = () => {
     }, 0);
 
     const totalNetAmount = stockItem.godownSubForm.reduce((total, row) => {
-      const netAmount = parseFloat(row.netAmount) || 0; // assuming netAmount is in the correct format
+      const netAmount = parseFloat(row.netAmount.replace(/,/g, '')) || 0; // assuming netAmount is in the correct format
       return total + netAmount;
     }, 0);
 

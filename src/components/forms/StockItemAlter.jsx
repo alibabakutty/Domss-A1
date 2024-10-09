@@ -1262,7 +1262,7 @@ const StockItemAlter = () => {
 
     // Parse and clean quantity and rateAmount inputs
     const quantity = parseFloat(updatedGodownSubForm[index].quantity) || 0;
-    const rateAmount = parseFloat(updatedGodownSubForm[index].rateAmount) || 0;
+    const rateAmount = parseFloat(updatedGodownSubForm[index].rateAmount.replace(/,/g, '')) || 0;
 
     // Check if both quantity and rateAmount are valid numbers
     if (quantity > 0 && rateAmount > 0) {

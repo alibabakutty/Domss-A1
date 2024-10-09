@@ -60,7 +60,7 @@ const StockItemAlter = () => {
     openingBalanceUnit: '',
     openingBalanceValue: '',
   });
-
+console.log(stockItem)
   const [stockGroupSuggestion, setStockGroupSuggestion] = useState([]);
   const [stockCategorySuggestion, setStockCategorySuggestion] = useState([]);
   const [unitSuggestion, setUnitSuggestion] = useState([]);
@@ -179,11 +179,7 @@ const StockItemAlter = () => {
         setBatchSuggestion(batchResponse.data);
 
         // Optional: Remove console logs if not necessary
-        console.log('Stock Groups:', stockGroupResponse.data);
-        console.log('Stock Categories:', stockCategoryResponse.data);
-        console.log('Units:', unitResponse.data);
-        console.log('Godowns:', godownResponse.data);
-        console.log('Batchs:', batchResponse.data);
+        
       } catch (error) {
         console.error(error);
       }
@@ -232,17 +228,17 @@ const StockItemAlter = () => {
     };
     
     // Function to format opening balance quantity
-    const unitFormatFetch = (value, unit) => {
+    const unitFormatFetch = (value, units) => {
       if (value === null || value === undefined) return '';
       const numericValue = Number(value);
       if (isNaN(numericValue)) return ''; // Return empty string if value is not a number
-      return `${numericValue} ${unit || ''}`; // Use unit passed in or empty string if not available
+      return `${numericValue} ${units || ''}`; // Use unit passed in or empty string if not available
     };
 
     const loadStockItems = async () => {
         try {
           const result = await getSpecificStockItemName(datas);
-          console.log('API-Response', result.data);
+          // console.log('API-Response', result.data);
 
           const {
             stockItemCode = '',
@@ -262,6 +258,8 @@ const StockItemAlter = () => {
             openingBalanceUnit = '',
             openingBalanceValue = '',
           } = result.data;
+
+          const formattedFetchedUnit = unitFormatFetch(openingBalanceQuantity, units);
 
           let fetchedSellingPriceSubForm = [ 
             {
@@ -303,7 +301,7 @@ const StockItemAlter = () => {
               sellingPriceNetRate: numberFormatValue(price.sellingPriceNetRate),
               sellingPriceStatus: price.sellingPriceStatus || '',
             }));
-            console.log('fetched selling price subform:', fetchedSellingPriceSubForm);
+            // console.log('fetched selling price subform:', fetchedSellingPriceSubForm);
           }
 
           if (Array.isArray(standardSellingCostSubForm) && standardSellingCostSubForm.length > 0){
@@ -315,7 +313,7 @@ const StockItemAlter = () => {
               sellingCostNetRate: numberFormatValue(cost.sellingCostNetRate),
               sellingCostStatus: cost.sellingCostStatus || '',
             }));
-            console.log('fetched selling cost subform:', fetchedSellingCostSubForm);
+            // console.log('fetched selling cost subform:', fetchedSellingCostSubForm);
           }
 
           if (Array.isArray(godownSubForm) && godownSubForm.length > 0){
@@ -327,7 +325,7 @@ const StockItemAlter = () => {
               perUnit: godown.perUnit || '',
               netAmount: numberFormatValue(godown.netAmount),
             }));
-            console.log('fetched godown subform:', godownSubForm);
+            // console.log('fetched godown subform:', godownSubForm);
           }
 
           // Set the state with the updated values
@@ -341,7 +339,8 @@ const StockItemAlter = () => {
             standardSellingPriceSubForm: fetchedSellingPriceSubForm,
             standardSellingCost,
             standardSellingCostSubForm: fetchedSellingCostSubForm,
-            openingBalanceQuantity: unitFormatFetch(openingBalanceQuantity, units),
+            openingBalanceQuantity,
+            openingBalanceQuantityDisplay: formattedFetchedUnit,
             godownSubForm: fetchedGodownSubForm,
             totalQuantity,
             totalNetAmount: numberFormatValue(totalNetAmount),
@@ -781,8 +780,8 @@ const StockItemAlter = () => {
     const totalQuantity = parseQuantity(stockItem.totalQuantity);
   
     // Debugging
-    console.log("Opening Balance Quantity:", openingBalanceQuantity);
-    console.log("Total Quantity:", totalQuantity);
+    // console.log("Opening Balance Quantity:", openingBalanceQuantity);
+    // console.log("Total Quantity:", totalQuantity);
     
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
@@ -795,7 +794,7 @@ const StockItemAlter = () => {
       const isQuantityEqual = openingBalanceQuantity === totalQuantity;
   
       // Debugging
-      console.log("Is Quantity Equal?", isQuantityEqual);
+      // console.log("Is Quantity Equal?", isQuantityEqual);
   
       // Add a new row when Enter is pressed on the last row net-amount with a value
       // unless openingBalanceQuantity equals totalQuantity
@@ -1043,43 +1042,44 @@ const StockItemAlter = () => {
       return; // stop the form submission
     }
     try {
+      console.log("before" + stockItem)
       // Sanitize stockItem values to remove commas and ensure proper formatting
       const sanitizedStockItem = {
         ...stockItem,
-        openingBalanceQuantity: parseFloat(stockItem.openingBalanceQuantity) || 0,
-        openingBalanceRate: parseFloat(stockItem.openingBalanceRate) || 0,
-        openingBalanceUnit: stockItem.openingBalanceUnit,
-        openingBalanceValue: parseFloat(stockItem.openingBalanceValue) || 0,
+        openingBalanceQuantity: parseInt(stockItem.openingBalanceQuantity, 10) || 0,
+        openingBalanceRate: parseFloat(stockItem.openingBalanceRate.replace(/,/g, '')) || 0,
+        openingBalanceValue: parseFloat(stockItem.openingBalanceValue.replace(/,/g, '')) || 0,
         totalQuantity: stockItem.totalQuantity || 0,
-        totalNetAmount: parseFloat(stockItem.totalNetAmount) || 0,
+        totalNetAmount: parseFloat(stockItem.totalNetAmount.replace(/,/g, '')) || 0,
         standardSellingPriceSubForm: stockItem.standardSellingPriceSubForm
         .filter(price => price.sellingPriceDate.trim() !== '')
         .map((price) => ({
           ...price,
-          sellingPriceRate: parseFloat(price.sellingPriceRate) || 0,
+          sellingPriceRate: parseFloat(price.sellingPriceRate.replace(/,/g, '')) || 0,
           sellingPricePercentage: parseInt(price.sellingPricePercentage) || 0,
-          sellingPriceNetRate: parseFloat(price.sellingPriceNetRate) || 0,
+          sellingPriceNetRate: parseFloat(price.sellingPriceNetRate.replace(/,/g, '')) || 0,
         })),
         standardSellingCostSubForm: stockItem.standardSellingCostSubForm
         .filter(cost => cost.sellingCostDate.trim() !== '')
         .map((cost) => ({
           ...cost,
-          sellingCostRate: parseFloat(cost.sellingCostRate) || 0,
+          sellingCostRate: parseFloat(cost.sellingCostRate.replace(/,/g, '')) || 0,
           sellingCostPercentage: parseInt(cost.sellingCostPercentage) || 0,
-          sellingCostNetRate: parseFloat(cost.sellingCostNetRate) || 0,
+          sellingCostNetRate: parseFloat(cost.sellingCostNetRate.replace(/,/g, '')) || 0,
         })),
         godownSubForm: stockItem.godownSubForm
         .map((godown) => ({
           ...godown,
-          quantity: parseInt(godown.quantity) || 0,
-          rateAmount: parseFloat(godown.rateAmount) || 0,
-          netAmount: parseFloat(godown.netAmount) || 0,
+          quantity: parseInt(godown.quantity, 10) || 0,
+          rateAmount: parseFloat(godown.rateAmount.replace(/,/g, '')) || 0,
+          netAmount: parseFloat(godown.netAmount.replace(/,/g, '')) || 0,
         })),
       };
-
+     
       const response = await updateStockItemMaster(datas, sanitizedStockItem);
-      console.log(response.data);
+        console.log(response.data)
       // After the submit
+      console.log(response.data);
       if (inputRefs.current[0]) {
         inputRefs.current[0].focus();
       }
@@ -1087,7 +1087,6 @@ const StockItemAlter = () => {
       console.error(error);
     }
   };
-
   const numberFormat = (e, index = null, formType = null) => {
     const { name, value } = e.target;
     // Remove existing commas and parse the value
@@ -1145,21 +1144,22 @@ const StockItemAlter = () => {
   
   const handleUnitFormattedChange = (e) => {
     const unitValue = e.target.value.trim(); // Get and trim the value from the input
-  
+
     // Use a regular expression to extract the numeric part from the formatted string
-    const numericValue = unitValue.replace(/[^0-9.-]/g, ''); // Allow numbers, '.', and '-' only
-  
+    const numericValue = unitValue.replace(/[^0-9]/g, ''); // Allow only numbers
+
+    // Parse the numeric value to an integer
+    const integerValue = parseInt(numericValue, 10) || 0; // Default to 0 if NaN
+    
+    // console.log("Updated Integer Value:", integerValue); // Debug log to check value
+
     // Update the stockItem state
-    setStockItem(prevState => {
-      const unit = prevState.units || ''; // Get the unit from the state if it exists
-  
-      return {
-        ...prevState,
-        openingBalanceQuantity: numericValue, // Store the raw numeric value (e.g., "100")
-        openingBalanceQuantityDisplay: `${numericValue} ${unit}`.trim(), // Store formatted display value with unit (e.g., "100 kg")
-      };
-    });
-  };    
+    setStockItem(prevState => ({
+      ...prevState,
+      openingBalanceQuantity: integerValue,
+      openingBalanceQuantityDisplay: `${numericValue} ${prevState.openingBalanceUnit || ''}`.trim(),
+  }));
+};      
 
   // useEffect to update openingBalanceValue whenever quantity or rate changes
   useEffect(() => {
@@ -1267,7 +1267,7 @@ const StockItemAlter = () => {
     // Check if both quantity and rateAmount are valid numbers
     if (quantity > 0 && rateAmount > 0) {
       // Calculate the netAmount by multiplying quantity and rateAmount
-      const netAmount = (quantity * rateAmount).toFixed(2);
+      const netAmount = (quantity * rateAmount);
 
       // Format the netAmount with commas and 2 decimal places
       const formattedNetAmount = new Intl.NumberFormat('en-IN', {
@@ -1927,7 +1927,7 @@ const StockItemAlter = () => {
             <input
               type="text"
               name="openingBalanceQuantity"
-              value={stockItem.openingBalanceQuantity}
+              value={stockItem.openingBalanceQuantityDisplay}
               onChange={handleUnitFormattedChange}
               ref={input => (inputRefs.current[7] = input)}
               onKeyDown={e => {handleKeyDown(e, 7);
@@ -2005,7 +2005,7 @@ const StockItemAlter = () => {
                     <input
                       type="text"
                       name="for"
-                      value={stockItem.openingBalanceQuantity}
+                      value={stockItem.openingBalanceQuantityDisplay}
                       className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                       autoComplete="off"
                     />

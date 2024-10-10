@@ -609,32 +609,41 @@ const StockItemCreate = () => {
 
   const handleKeyDownGodownSubForm = (e, rowIndex, colIndex) => {
     const key = e.key;
-
+  
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
-
+  
       // Check if the current field is net-amount and its value is not empty
       const isNetAmount = e.target.name === 'netAmount';
       const isLastRowNetAmount = rowIndex === stockItem.godownSubForm.length - 1;
-
-      // Check if openingBalanceQuantity equals totalQuantity
+  
+      // Check if openingBalanceQuantity equals or exceeds totalQuantity
       const isQuantityEqual = stockItem.openingBalanceQuantity === stockItem.totalQuantity;
-
-      // Add a new row when Enter is pressed on the last row net-amount with a value
-      // unless openingBalanceQuantity equals totalQuantity
-      if (isNetAmount && isLastRowNetAmount && e.target.value.trim() !== '' && !isQuantityEqual) {
-        addNewRowGodown();
-        setTimeout(() => {
-          inputGodownRef.current[(rowIndex + 1) * 6]?.focus();
-        }, 0);
-        return;
+      const isQuantityExceeded = stockItem.totalQuantity > stockItem.openingBalanceQuantity;
+  
+      if (isNetAmount && isLastRowNetAmount && e.target.value.trim() !== '') {
+        // Check if totalQuantity exceeds openingBalanceQuantity
+        if (isQuantityExceeded) {
+          alert('Total Quantity exceeds Opening Balance Quantity. Please correct the quantities.');
+          return; // Do not proceed with adding a new row
+        }
+  
+        // Add a new row when Enter is pressed on the last row net-amount with a value
+        // unless openingBalanceQuantity equals totalQuantity
+        if (!isQuantityEqual) {
+          addNewRowGodown();
+          setTimeout(() => {
+            inputGodownRef.current[(rowIndex + 1) * 6]?.focus();
+          }, 0);
+          return;
+        }
       }
-
+  
       // Move to the next cell
       const nextCell = rowIndex * 6 + colIndex + 1;
       if (inputGodownRef.current[nextCell] && nextCell < inputGodownRef.current.length) {
         inputGodownRef.current[nextCell]?.focus();
-      } else{
+      } else {
         totalRefs.current[0].focus();
       }
     } else if (key === 'Backspace') {
@@ -651,7 +660,7 @@ const StockItemCreate = () => {
       // Clear the current row when Escape is pressed
       setGodownSubFormModal(false);
     }
-  };
+  };  
 
   const handleKeyDownTotal = (e, index) => {
     const key = e.key;
@@ -1529,8 +1538,8 @@ const StockItemCreate = () => {
               <div className="bg-white w-[600px] h-[500px] border border-black">
                 <div className="h-[470px] overflow-y-scroll">
                   <div className="text-sm ml-5 mt-2 mb-1 flex">
-                    <label htmlFor="allocationsOf" className="w-[15%]">
-                      Allocations of
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
                     </label>
                     <span>:</span>
                     <input
@@ -1665,8 +1674,8 @@ const StockItemCreate = () => {
               <div className="bg-white w-[600px] h-[500px] border border-black">
                 <div className="h-[470px] overflow-y-scroll">
                   <div className="text-sm ml-5 mt-2 mb-1 flex">
-                    <label htmlFor="allocationsOf" className="w-[15%]">
-                      Allocations of
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Prodcut
                     </label>
                     <span>:</span>
                     <input
@@ -1851,8 +1860,8 @@ const StockItemCreate = () => {
               <div className="bg-white w-[700px] h-[500px] border border-black relative">
                 <div className="">
                   <div className="text-sm ml-5 mt-2 flex">
-                    <label htmlFor="allocationsOf" className="w-[15%]">
-                      Allocations of
+                    <label htmlFor="allocationsOf" className="w-[22%]">
+                      Allocations of Product
                     </label>
                     <span>:</span>
                     <input
@@ -1864,14 +1873,14 @@ const StockItemCreate = () => {
                     />
                   </div>
                   <div className="text-sm ml-5 flex">
-                    <label htmlFor="for" className="w-[15%]">
-                      for
+                    <label htmlFor="for" className="w-[22%]">
+                      For
                     </label>
                     <span>:</span>
                     <input
                       type="text"
                       name="for"
-                      value={stockItem.openingBalanceQuantity}
+                      value={stockItem.openingBalanceQuantityDisplay}
                       className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                       autoComplete="off"
                     />

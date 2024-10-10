@@ -777,24 +777,35 @@ console.log(stockItem)
   const handleKeyDownGodownSubForm = (e, rowIndex, colIndex) => {
     const key = e.key;
   
-    // Helper function to parse quantities
-    const parseQuantity = (value) => parseFloat(value) || 0;
-  
-    // Ensure both quantities are parsed correctly
-    const openingBalanceQuantity = parseQuantity(stockItem.openingBalanceQuantity);
-    const totalQuantity = parseQuantity(stockItem.totalQuantity);
-    
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
   
       // Check if the current field is net-amount and its value is not empty
       const isNetAmount = e.target.name === 'netAmount';
       const isLastRowNetAmount = rowIndex === stockItem.godownSubForm.length - 1;
+
+      const openingBalanceQuantity = parseFloat(stockItem.openingBalanceQuantity) || 0;
+      const totalQuantity = parseFloat(stockItem.totalQuantity) || 0;
   
-      // Check if openingBalanceQuantity equals totalQuantity
+      // Check if openingBalanceQuantity equals or exceeds totalQuantity
       const isQuantityEqual = openingBalanceQuantity === totalQuantity;
+      const isQuantityExceeded = totalQuantity > openingBalanceQuantity;
   
-      if (isNetAmount && isLastRowNetAmount && e.target.value.trim() !== '' && !isQuantityEqual) {
+      // Alert the user if the total quantity exceeds the opening balance quantity
+      if (isNetAmount && isLastRowNetAmount && e.target.value.trim() !== '') {
+        if (isQuantityExceeded) {
+          alert('Total Quantity exceeds Opening Balance Quantity. Please correct the quantities.');
+          return; // Prevent adding a new row
+        }
+  
+        // Prevent adding a new row if openingBalanceQuantity equals totalQuantity
+        if (isQuantityEqual) {
+          alert('Cannot add a new row because total quantity equals opening balance quantity.');
+          totalRefs.current[0].focus();
+          return; // Prevent adding a new row
+        }
+  
+        // At this point, we know that the quantity is valid and we can add a new row
         addNewRowGodown();
         setTimeout(() => {
           inputGodownRef.current[(rowIndex + 1) * 6]?.focus();
@@ -802,12 +813,10 @@ console.log(stockItem)
         return;
       }
   
-      // Move to the next cell
+      // Move to the next cell if not in the last row's net amount
       const nextCell = rowIndex * 6 + colIndex + 1;
       if (inputGodownRef.current[nextCell] && nextCell < inputGodownRef.current.length) {
         inputGodownRef.current[nextCell]?.focus();
-      } else {
-        totalRefs.current[0].focus();
       }
     } else if (key === 'Backspace') {
       // Remove the current row when Backspace is pressed on the last row
@@ -823,7 +832,7 @@ console.log(stockItem)
       // Clear the current row when Escape is pressed
       setGodownSubFormModal(false);
     }
-  };
+  };      
 
   const handleKeyDownTotal = (e, index) => {
     const key = e.key;
@@ -1064,6 +1073,7 @@ console.log(stockItem)
           sellingCostNetRate: parseFloat(cost.sellingCostNetRate.replace(/,/g, '')) || 0,
         })),
         godownSubForm: stockItem.godownSubForm
+        .filter(godown => parseInt(godown.quantity, 10) > 0)     // Only include if quantity is greater than 0
         .map((godown) => ({
           ...godown,
           quantity: parseInt(godown.quantity, 10) || 0,
@@ -1293,36 +1303,37 @@ console.log(stockItem)
     }
   };
 
-  // useEffect to calculate totals whenever the godownSubForm changes
   useEffect(() => {
     const totalQuantity = stockItem.godownSubForm.reduce((total, row) => {
       const quantity = parseFloat(row.quantity) || 0;
       return total + quantity;
     }, 0);
-
+  
     const totalNetAmount = stockItem.godownSubForm.reduce((total, row) => {
-      const netAmount = parseFloat(row.netAmount.replace(/,/g, '')) || 0; // assuming netAmount is in the correct format
+      // Ensure row.netAmount is a valid string before replacing and parsing
+      const netAmountStr = typeof row.netAmount === 'string' ? row.netAmount : '';
+      const netAmount = parseFloat(netAmountStr.replace(/,/g, '')) || 0; // Handle parsing here
       return total + netAmount;
     }, 0);
-
+  
     // Format the total values with commas and two decimal places
     const formattedTotalQuantity = new Intl.NumberFormat('en-IN', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(totalQuantity);
-
+  
     const formattedTotalNetAmount = new Intl.NumberFormat('en-IN', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(totalNetAmount);
-
+  
     // Update the stockItem state with the calculated totals
     setStockItem((prevState) => ({
       ...prevState,
       totalQuantity: formattedTotalQuantity,
       totalNetAmount: formattedTotalNetAmount,
     }));
-  }, [stockItem.godownSubForm]); // Depend on changes in godownSubForm
+  }, [stockItem.godownSubForm]);  
 
   const percentageFormat = (e, index = null, formType = null) => {
     const { name, value } = e.target;

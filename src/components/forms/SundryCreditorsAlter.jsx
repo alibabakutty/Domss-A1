@@ -520,14 +520,6 @@ const SundryCreditorsAlter = () => {
     });
   };
 
-  // Function to check if totalOutwardReferenceAmount equals openingBalance
-  const checkBalanceMatch = () => {
-    const openingBalance = parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')) || 0;
-    const totalOutwardReferenceAmount = parseFloat(sundryCreditor.totalOutwardReferenceAmount) || 0;
-
-    return totalOutwardReferenceAmount === openingBalance;
-  };
-
   const handleKeyDownForex = async (e, rowIndex, colIndex) => {
     const key = e.key;
     const firstForexDateIndex = 0;

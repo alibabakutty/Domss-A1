@@ -640,6 +640,7 @@ console.log(stockItem)
       }
     } else if (key === 'Escape') {
       setStandardSellingPriceModal(false);
+      setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }))
     } else if (key === 'a' || key === 'A'){
       // Set the value to 'Active' if 'A' or 'a' is pressed
       if (e.target.name === 'sellingPriceStatus'){
@@ -736,6 +737,7 @@ console.log(stockItem)
       }
     } else if (key === 'Escape') {
       setStandardSellingCostModal(false);
+      setStockItem((prev) => ({...prev, standardSellingCost: 'no' }))
     } else if (key === 'a' || key === 'A'){
       if (e.target.name === 'sellingCostStatus'){
         e.preventDefault();
@@ -781,10 +783,6 @@ console.log(stockItem)
     // Ensure both quantities are parsed correctly
     const openingBalanceQuantity = parseQuantity(stockItem.openingBalanceQuantity);
     const totalQuantity = parseQuantity(stockItem.totalQuantity);
-  
-    // Debugging
-    // console.log("Opening Balance Quantity:", openingBalanceQuantity);
-    // console.log("Total Quantity:", totalQuantity);
     
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
@@ -796,11 +794,6 @@ console.log(stockItem)
       // Check if openingBalanceQuantity equals totalQuantity
       const isQuantityEqual = openingBalanceQuantity === totalQuantity;
   
-      // Debugging
-      // console.log("Is Quantity Equal?", isQuantityEqual);
-  
-      // Add a new row when Enter is pressed on the last row net-amount with a value
-      // unless openingBalanceQuantity equals totalQuantity
       if (isNetAmount && isLastRowNetAmount && e.target.value.trim() !== '' && !isQuantityEqual) {
         addNewRowGodown();
         setTimeout(() => {
@@ -1365,10 +1358,14 @@ console.log(stockItem)
 
   const dateConvert = (e, index, type) => {
     const dateValue = e.target.value;
-    const datePattern = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2}|\d{4})$/;
 
-    if (datePattern.test(dateValue)) {
-        let [_, day, month, year] = datePattern.exec(dateValue);
+    // Regular expression patterns for date formats
+    const standardDatePattern = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2}|\d{4})$/; // DD/MM/YYYY or DD-MM-YYYY
+    const displayDatePattern = /^(\d{1,2})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{4})$/; // DD-MMM-YYYY
+
+    if (standardDatePattern.test(dateValue)) {
+        // Handle DD/MM/YYYY or DD-MM-YYYY
+        let [_, day, month, year] = standardDatePattern.exec(dateValue);
         if (year.length === 2) year = `20${year}`;
         day = day.padStart(2, '0');
         month = month.padStart(2, '0');
@@ -1376,6 +1373,30 @@ console.log(stockItem)
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         const monthIndex = parseInt(month) - 1;
         const formattedDisplayDate = `${day}-${monthNames[monthIndex]}-${year}`; // Format for display
+        const convertedDate = `${year}-${month}-${day}`; // Format for database
+
+        setStockItem((prevState) => {
+            const updatedSubForm = [...prevState[type]];
+            updatedSubForm[index] = {
+                ...updatedSubForm[index],
+                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDate' : 'sellingCostDate'}`]: convertedDate, // Actual date for database
+                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDateDisplay' : 'sellingCostDateDisplay'}`]: formattedDisplayDate, // Formatted date for display
+            };
+            return {
+                ...prevState,
+                [type]: updatedSubForm,
+            };
+        });
+    } else if (displayDatePattern.test(dateValue)) {
+        // Handle DD-MMM-YYYY format
+        let [_, day, monthStr, year] = displayDatePattern.exec(dateValue);
+        day = day.padStart(2, '0');
+        const monthNamesMap = {
+            Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+            Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+        };
+        const month = monthNamesMap[monthStr]; // Get month in MM format
+        const formattedDisplayDate = `${day}-${monthStr}-${year}`; // Format for display
         const convertedDate = `${year}-${month}-${day}`; // Format for database
 
         setStockItem((prevState) => {
@@ -1404,8 +1425,10 @@ const handleFormattedDateChange = (e, index, field, type) => {
       const updatedSubForm = [...prevState[type]];
       updatedSubForm[index][field] = newValue; // Update the specific row and field
 
-      // Additionally, call dateConvert to ensure display date is formatted
-      dateConvert({ target: { value: newValue } }, index, type); // Call dateConvert directly with the new value
+      // Additionally, call dateConvert to ensure the display date is formatted
+      // Modify the event object to match what dateConvert expects
+      const event = { target: { value: newValue } };
+      dateConvert(event, index, type); // Call dateConvert with the modified event
 
       return { ...prevState, [type]: updatedSubForm };
   });
@@ -1433,7 +1456,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
               ref={input => (inputRefs.current[0] = input)}
               onKeyDown={e => handleKeyDown(e, 0)}
               onChange={handleInputChange}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>
@@ -1645,8 +1668,8 @@ const handleFormattedDateChange = (e, index, field, type) => {
                             <input
                               type="text"
                               name="sellingPriceDate"
-                              value={row.sellingPriceDate || ''}
-                              onChange={e => handleFormattedDateChange(e, index, 'sellingPriceDate', 'standardSellingPriceSubForm')}
+                              value={row.sellingPriceDateDisplay || ''}
+                              onChange={e => handleFormattedDateChange(e, index, 'sellingPriceDateDisplay', 'standardSellingPriceSubForm')}
                               ref={input => (inputSellingPriceRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index, 'standardSellingPriceSubForm')}}
@@ -1781,8 +1804,8 @@ const handleFormattedDateChange = (e, index, field, type) => {
                             <input
                               type="text"
                               name="sellingCostDate"
-                              value={row.sellingCostDate || ''}
-                              onChange={e => handleFormattedDateChange(e, index, 'sellingCostDate', 'standardSellingCostSubForm')}
+                              value={row.sellingCostDateDisplay || ''}
+                              onChange={e => handleFormattedDateChange(e, index, 'sellingCostDateDisplay', 'standardSellingCostSubForm')}
                               ref={input => (inputSellingCostRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index, 'standardSellingCostSubForm')}}

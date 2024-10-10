@@ -375,6 +375,7 @@ const StockItemDisplay = () => {
     } else if (key === 'Escape') {
       // Close the modal on Escape key
       setStandardSellingPriceModal(false);
+      setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }))
     }
   };    
 
@@ -427,6 +428,7 @@ const StockItemDisplay = () => {
     } else if (key === 'Escape') {
       // Close the modal on Escape key
       setStandardSellingCostModal(false);
+      setStockItem((prev) => ({ ...prev, standardSellingCost: 'no' }) );
     }
   };  
 

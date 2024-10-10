@@ -473,6 +473,7 @@ const StockItemCreate = () => {
       }
     } else if (key === 'Escape') {
       setStandardSellingPriceModal(false);
+      setStockItem((prev) => ({...prev, standardSellingPrice: 'no' }));
     } else if (key === 'a' || key === 'A'){
       // Set the value to 'Active' if 'A' or 'a' is pressed
       if (e.target.name === 'sellingPriceStatus'){
@@ -569,6 +570,7 @@ const StockItemCreate = () => {
       }
     } else if (key === 'Escape') {
       setStandardSellingCostModal(false);
+      setStockItem((prev) => ({...prev, standardSellingCost: 'no' }));
     } else if (key === 'a' || key === 'A'){
       if (e.target.name === 'sellingCostStatus'){
         e.preventDefault();
@@ -1347,7 +1349,7 @@ const StockItemCreate = () => {
               ref={input => (inputRefs.current[0] = input)}
               onKeyDown={e => handleKeyDown(e, 0)}
               onChange={handleInputChange}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
             />
           </div>

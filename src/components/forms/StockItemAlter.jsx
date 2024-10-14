@@ -581,23 +581,21 @@ console.log(stockItem)
   const handleKeyDownSellingPrice = (e, rowIndex, colIndex) => {
     const key = e.key;
     const firstSellingPriceDate = 0;
-
+  
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
-
-      // Check if the current input is the first sellingpriceDate and ensure it has a value
-      if (rowIndex === 0 && colIndex === firstSellingPriceDate && e.target.value.trim() === ''){
+  
+      if (rowIndex === 0 && colIndex === firstSellingPriceDate && e.target.value.trim() === '') {
         alert('Please enter the selling price date before proceeding');
         inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus();  // Refocus on the empty sellingpricedate field
         return;
       }
-
-      // If it's not the first row, and the sellingPriceDate is empty, confirm to close the subform
-      if (colIndex === firstSellingPriceDate && e.target.value.trim() === '' && rowIndex > 0){
+  
+      if (colIndex === firstSellingPriceDate && e.target.value.trim() === '' && rowIndex > 0) {
         const confirmationClose = window.confirm('Do you want to close this subform?');
         if (confirmationClose) {
           setStandardSellingPriceModal(false);
-          setStockItem((prev) => ({...prev, standardSellingPrice: 'no' }))
+          setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }));
           inputRefs.current[6]?.focus();
           return;
         } else {
@@ -605,13 +603,11 @@ console.log(stockItem)
           return;
         }
       }
-
-      // Check if the current field is sellingpricestatus and its value is not empty
+  
       const isSellingPriceStatus = e.target.name === 'sellingPriceStatus';
       const isLastRowSelingPriceStatus =
         rowIndex === stockItem.standardSellingPriceSubForm.length - 1;
-
-      // Add a new row when Enter is pressed on the last row sellingpricestatus with a value
+  
       if (isSellingPriceStatus && e.target.value.trim() !== '' && isLastRowSelingPriceStatus) {
         addNewRowSellingPrice();
         setTimeout(() => {
@@ -619,17 +615,12 @@ console.log(stockItem)
         }, 0);
         return;
       }
-
-      // Move to the next cell
+  
       const nextCell = rowIndex * 5 + colIndex + 1;
-      if (
-        inputSellingPriceRef.current[nextCell] &&
-        nextCell < inputSellingPriceRef.current.length
-      ) {
+      if (inputSellingPriceRef.current[nextCell] && nextCell < inputSellingPriceRef.current.length) {
         inputSellingPriceRef.current[nextCell]?.focus();
       }
     } else if (key === 'Backspace') {
-      // Move focus to the previous input if the current input is empty
       if (e.target.value.trim() === '') {
         e.preventDefault();
         const prevCell = rowIndex * 5 + colIndex - 1;
@@ -640,25 +631,58 @@ console.log(stockItem)
       }
     } else if (key === 'Escape') {
       setStandardSellingPriceModal(false);
-      setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }))
-    } else if (key === 'a' || key === 'A'){
-      // Set the value to 'Active' if 'A' or 'a' is pressed
-      if (e.target.name === 'sellingPriceStatus'){
+      setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }));
+    } else if (key === 'a' || key === 'A') {
+      if (e.target.name === 'sellingPriceStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingPriceSubForm];
         newRow[rowIndex].sellingPriceStatus = 'active';    // Update the status in the row
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
       }
-    } else if (key === 'n' || key === 'N'){
-      // Set the value to 'Not Active' if 'N' or 'n' is pressed
-      if (e.target.name === 'sellingPriceStatus'){
+    } else if (key === 'n' || key === 'N') {
+      if (e.target.name === 'sellingPriceStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingPriceSubForm];
         newRow[rowIndex].sellingPriceStatus = 'not active';  // Update the status in the row
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
       }
-    }
-  };
+    } else if (key === 'ArrowUp') {
+      // Move focus to the cell above (previous row, same column)
+      const prevRow = (rowIndex - 1) * 5 + colIndex;
+      if (inputSellingPriceRef.current[prevRow] && rowIndex > 0) {
+        inputSellingPriceRef.current[prevRow].focus();
+      }
+    } else if (key === 'ArrowDown') {
+      // Move focus to the cell below (next row, same column)
+      const nextRow = (rowIndex + 1) * 5 + colIndex;
+      if (inputSellingPriceRef.current[nextRow] && rowIndex < stockItem.standardSellingPriceSubForm.length - 1) {
+        inputSellingPriceRef.current[nextRow].focus();
+      }
+    } else if (key === 'ArrowLeft') {
+      // Move focus to the cell on the left (same row, previous column)
+      e.preventDefault();
+      const prevCell = rowIndex * 5 + colIndex - 1;
+      if (inputSellingPriceRef.current[prevCell] && prevCell >= 0) {
+        inputSellingPriceRef.current[prevCell].focus();
+      }
+    } else if (key === 'ArrowRight') {
+      // Prevent default behavior of ArrowRight
+      e.preventDefault();
+    
+      // Calculate the next cell index
+      const nextCell = rowIndex * 5 + colIndex + 1;
+    
+      // Check if the next cell exists within the current row (colIndex < 4)
+      if (inputSellingPriceRef.current[nextCell] && colIndex < 4) {
+        // Focus on the next input
+        inputSellingPriceRef.current[nextCell].focus();
+      } else if (colIndex === 4 && rowIndex < stockItem.standardSellingPriceSubForm.length - 1) {
+        // Move to the first column of the next row if we are at the last column
+        const firstCellOfNextRow = (rowIndex + 1) * 5;
+        inputSellingPriceRef.current[firstCellOfNextRow]?.focus();
+      }
+    }    
+  };  
 
   // add new row function
   const addNewRowSellingCost = () => {
@@ -681,45 +705,45 @@ console.log(stockItem)
   const handleKeyDownSellingCost = (e, rowIndex, colIndex) => {
     const key = e.key;
     const firstSellingCostDate = 0;
-
+  
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
-
-      // Check if the current input is the first sellingcostDate and ensure it has a value
-      if (rowIndex === 0 && colIndex === firstSellingCostDate && e.target.value.trim() === ''){
-        alert('The Selling Cost Date field must have a value before proceeding.')
-        inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus();   // Refocus on the empty forexDate field
+  
+      // Check if the current input is the first sellingCostDate and ensure it has a value
+      if (rowIndex === 0 && colIndex === firstSellingCostDate && e.target.value.trim() === '') {
+        alert('The Selling Cost Date field must have a value before proceeding.');
+        inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus on the empty sellingCostDate field
         return;
       }
-
+  
       // If it's not the first row, and the sellingCostDate is empty, confirm to close the subform
-      if (colIndex === firstSellingCostDate && e.target.value.trim() === '' && rowIndex > 0){
+      if (colIndex === firstSellingCostDate && e.target.value.trim() === '' && rowIndex > 0) {
         const confirmationClose = window.confirm('Do you want to close this subform?');
-        if (confirmationClose){
+        if (confirmationClose) {
           setStandardSellingCostModal(false);
-          setStockItem((prev) => ({...prev, standardSellingCost: 'no' }))
+          setStockItem((prev) => ({ ...prev, standardSellingCost: 'no' }));
           inputRefs.current[7]?.focus();
           return;
         } else {
-          inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus();   // Refocus if they choose not to close
+          inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus if they choose not to close
           return;
         }
       }
-
-      // Check if the current field is sellingcoststatus and its value is not empty
+  
+      // Check if the current field is sellingCostStatus and its value is not empty
       const isSellingCostStatus = e.target.name === 'sellingCostStatus';
-      const isLastRowSelingCostStatus =
+      const isLastRowSellingCostStatus =
         rowIndex === stockItem.standardSellingCostSubForm.length - 1;
-
-      // Add a new row when Enter is pressed on the last row sellingpricestatus with a value
-      if (isSellingCostStatus && e.target.value.trim() !== '' && isLastRowSelingCostStatus) {
+  
+      // Add a new row when Enter is pressed on the last row sellingCostStatus with a value
+      if (isSellingCostStatus && e.target.value.trim() !== '' && isLastRowSellingCostStatus) {
         addNewRowSellingCost();
         setTimeout(() => {
           inputSellingCostRef.current[(rowIndex + 1) * 5]?.focus();
         }, 0);
         return;
       }
-
+  
       // Move to the next cell
       const nextCell = rowIndex * 5 + colIndex + 1;
       if (inputSellingCostRef.current[nextCell] && nextCell < inputSellingCostRef.current.length) {
@@ -732,28 +756,59 @@ console.log(stockItem)
         const prevCell = rowIndex * 5 + colIndex - 1;
         if (inputSellingCostRef.current[prevCell] && prevCell >= 0) {
           inputSellingCostRef.current[prevCell].focus();
-          inputSellingPriceRef.current[prevCell].setSelectionRange(0, 0);
+          inputSellingCostRef.current[prevCell].setSelectionRange(0, 0);
         }
       }
     } else if (key === 'Escape') {
       setStandardSellingCostModal(false);
-      setStockItem((prev) => ({...prev, standardSellingCost: 'no' }))
-    } else if (key === 'a' || key === 'A'){
-      if (e.target.name === 'sellingCostStatus'){
+      setStockItem((prev) => ({ ...prev, standardSellingCost: 'no' }));
+    } else if (key === 'a' || key === 'A') {
+      if (e.target.name === 'sellingCostStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingCostSubForm];
         newRow[rowIndex].sellingCostStatus = 'active';
         setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
       }
-    } else if (key === 'n' || key === 'N'){
-      if (e.target.name === 'sellingCostStatus'){
+    } else if (key === 'n' || key === 'N') {
+      if (e.target.name === 'sellingCostStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingCostSubForm];
         newRow[rowIndex].sellingCostStatus = 'not active';
         setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
       }
+    } else if (key === 'ArrowUp') {
+      // Move focus to the cell above (previous row, same column)
+      const prevRow = (rowIndex - 1) * 5 + colIndex;
+      if (inputSellingCostRef.current[prevRow] && rowIndex > 0) {
+        inputSellingCostRef.current[prevRow].focus();
+      }
+    } else if (key === 'ArrowDown') {
+      // Move focus to the cell below (next row, same column)
+      const nextRow = (rowIndex + 1) * 5 + colIndex;
+      if (inputSellingCostRef.current[nextRow] && rowIndex < stockItem.standardSellingCostSubForm.length - 1) {
+        inputSellingCostRef.current[nextRow].focus();
+      }
+    } else if (key === 'ArrowLeft') {
+      // Move focus to the cell on the left (same row, previous column)
+      e.preventDefault();
+      const prevCell = rowIndex * 5 + colIndex - 1;
+      if (inputSellingCostRef.current[prevCell] && prevCell >= 0) {
+        inputSellingCostRef.current[prevCell].focus();
+      }
+    } else if (key === 'ArrowRight') {
+      // Move focus to the cell on the right (same row, next column)
+      e.preventDefault();
+      const nextCell = rowIndex * 5 + colIndex + 1;
+      if (inputSellingCostRef.current[nextCell] && colIndex < 4) {
+        // Focus on the next input in the same row
+        inputSellingCostRef.current[nextCell].focus();
+      } else if (colIndex === 4 && rowIndex < stockItem.standardSellingCostSubForm.length - 1) {
+        // Move to the first column of the next row if we are at the last column
+        const firstCellOfNextRow = (rowIndex + 1) * 5;
+        inputSellingCostRef.current[firstCellOfNextRow]?.focus();
+      }
     }
-  };
+  };  
 
   // add new row function
   const addNewRowGodown = () => {
@@ -776,63 +831,87 @@ console.log(stockItem)
 
   const handleKeyDownGodownSubForm = (e, rowIndex, colIndex) => {
     const key = e.key;
-  
-    if (key === 'Enter') {
-      e.preventDefault(); // Prevent default Enter key behavior
-  
-      // Check if the current field is net-amount and its value is not empty
-      const isNetAmount = e.target.name === 'netAmount';
-      const isLastRowNetAmount = rowIndex === stockItem.godownSubForm.length - 1;
 
-      const openingBalanceQuantity = parseFloat(stockItem.openingBalanceQuantity) || 0;
-      const totalQuantity = parseFloat(stockItem.totalQuantity) || 0;
-  
-      // Check if openingBalanceQuantity equals or exceeds totalQuantity
-      const isQuantityEqual = openingBalanceQuantity === totalQuantity;
-      const isQuantityExceeded = totalQuantity > openingBalanceQuantity;
-  
-      // Alert the user if the total quantity exceeds the opening balance quantity
-      if (isNetAmount && isLastRowNetAmount && e.target.value.trim() !== '') {
-        if (isQuantityExceeded) {
-          alert('Total Quantity exceeds Opening Balance Quantity. Please correct the quantities.');
-          return; // Prevent adding a new row
+    if (key === 'Enter') {
+        e.preventDefault(); // Prevent default Enter key behavior
+
+        // Check if the current field is net-amount and its value is not empty
+        const isNetAmount = e.target.name === 'netAmount';
+        const isLastRowNetAmount = rowIndex === stockItem.godownSubForm.length - 1;
+
+        const openingBalanceQuantity = parseFloat(stockItem.openingBalanceQuantity) || 0;
+        const totalQuantity = parseFloat(stockItem.totalQuantity) || 0;
+
+        // Check if openingBalanceQuantity equals or exceeds totalQuantity
+        const isQuantityEqual = openingBalanceQuantity === totalQuantity;
+        const isQuantityExceeded = totalQuantity > openingBalanceQuantity;
+
+        // Alert the user if the total quantity exceeds the opening balance quantity
+        if (isNetAmount && isLastRowNetAmount && e.target.value.trim() !== '') {
+            if (isQuantityExceeded) {
+                alert('Total Quantity exceeds Opening Balance Quantity. Please correct the quantities.');
+                return; // Prevent adding a new row
+            }
+
+            // Prevent adding a new row if openingBalanceQuantity equals totalQuantity
+            if (isQuantityEqual) {
+                alert('Cannot add a new row because total quantity equals opening balance quantity.');
+                totalRefs.current[0].focus();
+                return; // Prevent adding a new row
+            }
+
+            // At this point, we know that the quantity is valid and we can add a new row
+            addNewRowGodown();
+            setTimeout(() => {
+                inputGodownRef.current[(rowIndex + 1) * 6]?.focus();
+            }, 0);
+            return;
         }
-  
-        // Prevent adding a new row if openingBalanceQuantity equals totalQuantity
-        if (isQuantityEqual) {
-          alert('Cannot add a new row because total quantity equals opening balance quantity.');
-          totalRefs.current[0].focus();
-          return; // Prevent adding a new row
+
+        // Move to the next cell if not in the last row's net amount
+        const nextCell = rowIndex * 6 + colIndex + 1;
+        if (inputGodownRef.current[nextCell] && nextCell < inputGodownRef.current.length) {
+            inputGodownRef.current[nextCell]?.focus();
         }
-  
-        // At this point, we know that the quantity is valid and we can add a new row
-        addNewRowGodown();
-        setTimeout(() => {
-          inputGodownRef.current[(rowIndex + 1) * 6]?.focus();
-        }, 0);
-        return;
-      }
-  
-      // Move to the next cell if not in the last row's net amount
-      const nextCell = rowIndex * 6 + colIndex + 1;
-      if (inputGodownRef.current[nextCell] && nextCell < inputGodownRef.current.length) {
-        inputGodownRef.current[nextCell]?.focus();
-      }
     } else if (key === 'Backspace') {
-      // Remove the current row when Backspace is pressed on the last row
-      if (e.target.value.trim() === '') {
-        e.preventDefault();
-        const prevCell = rowIndex * 6 + colIndex - 1;
-        if (inputGodownRef.current[prevCell] && prevCell >= 0) {
-          inputGodownRef.current[prevCell]?.focus();
-          inputGodownRef.current[prevCell].setSelectionRange(0, 0);
+        // Remove the current row when Backspace is pressed on the last row
+        if (e.target.value.trim() === '') {
+            e.preventDefault();
+            const prevCell = rowIndex * 6 + colIndex - 1;
+            if (inputGodownRef.current[prevCell] && prevCell >= 0) {
+                inputGodownRef.current[prevCell]?.focus();
+                inputGodownRef.current[prevCell].setSelectionRange(0, 0);
+            }
         }
-      }
     } else if (key === 'Escape') {
-      // Clear the current row when Escape is pressed
-      setGodownSubFormModal(false);
+        // Clear the current row when Escape is pressed
+        setGodownSubFormModal(false);
+    } else if (key === 'ArrowUp') {
+        // Move focus to the cell above (previous row, same column)
+        if (rowIndex > 0) {
+            const prevRowCell = (rowIndex - 1) * 6 + colIndex;
+            inputGodownRef.current[prevRowCell]?.focus();
+        }
+    } else if (key === 'ArrowDown') {
+        // Move focus to the cell below (next row, same column)
+        if (rowIndex < stockItem.godownSubForm.length - 1) {
+            const nextRowCell = (rowIndex + 1) * 6 + colIndex;
+            inputGodownRef.current[nextRowCell]?.focus();
+        }
+    } else if (key === 'ArrowLeft') {
+        // Move focus to the cell on the left (same row, previous column)
+        if (colIndex > 0) {
+            const leftCell = rowIndex * 6 + colIndex - 1;
+            inputGodownRef.current[leftCell]?.focus();
+        }
+    } else if (key === 'ArrowRight') {
+        // Move focus to the cell on the right (same row, next column)
+        if (colIndex < 5) { // Assuming there are 6 columns, index 0 to 5
+            const rightCell = rowIndex * 6 + colIndex + 1;
+            inputGodownRef.current[rightCell]?.focus();
+        }
     }
-  };      
+};      
 
   const handleKeyDownTotal = (e, index) => {
     const key = e.key;

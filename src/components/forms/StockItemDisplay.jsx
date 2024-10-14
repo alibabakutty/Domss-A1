@@ -334,6 +334,12 @@ const StockItemDisplay = () => {
     const statusInputs = inputSellingPriceRef.current.filter(input => input?.name === 'sellingPriceStatus');
     const isLastStatusInput = statusInputs.length - 1 === rowIndex; // Check if it's the last status input
   
+    const totalColumns = 5; // Number of columns in the subform
+    const nextCell = rowIndex * totalColumns + colIndex + 1;
+    const prevCell = rowIndex * totalColumns + colIndex - 1;
+    const nextRowCell = (rowIndex + 1) * totalColumns + colIndex;
+    const prevRowCell = (rowIndex - 1) * totalColumns + colIndex;
+  
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
   
@@ -348,36 +354,61 @@ const StockItemDisplay = () => {
             inputRefs.current[6]?.focus();  // Focus outside the subform after closing
             return;
           } else {
-            inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus if user chooses not to close
+            inputSellingPriceRef.current[rowIndex * totalColumns + colIndex]?.focus(); // Refocus if user chooses not to close
             return;
           }
         }
       }
   
       // Move to the next cell
-      const nextCell = rowIndex * 5 + colIndex + 1;
-      if (
-        inputSellingPriceRef.current[nextCell] &&
-        nextCell < inputSellingPriceRef.current.length
-      ) {
-        inputSellingPriceRef.current[nextCell]?.focus(); // Focus on the next input
+      if (inputSellingPriceRef.current[nextCell]) {
+        inputSellingPriceRef.current[nextCell].focus(); // Focus on the next input
       }
-    } else if (key === 'Backspace') {
+    } 
+    else if (key === 'Backspace') {
       // Move focus to the previous input if the current input is empty
       if (e.target.value.trim() === '') {
         e.preventDefault();
-        const prevCell = rowIndex * 5 + colIndex - 1;
         if (inputSellingPriceRef.current[prevCell] && prevCell >= 0) {
           inputSellingPriceRef.current[prevCell]?.focus();
           inputSellingPriceRef.current[prevCell]?.setSelectionRange(0, 0); // Set cursor to the beginning
         }
       }
-    } else if (key === 'Escape') {
+    } 
+    else if (key === 'ArrowRight') {
+      // Move focus to the next input
+      e.preventDefault();
+      if (inputSellingPriceRef.current[nextCell]) {
+        inputSellingPriceRef.current[nextCell]?.focus();
+      }
+    } 
+    else if (key === 'ArrowLeft') {
+      // Move focus to the previous input
+      e.preventDefault();
+      if (inputSellingPriceRef.current[prevCell] && prevCell >= 0) {
+        inputSellingPriceRef.current[prevCell]?.focus();
+      }
+    } 
+    else if (key === 'ArrowDown') {
+      // Move to the input directly below in the next row
+      e.preventDefault();
+      if (inputSellingPriceRef.current[nextRowCell]) {
+        inputSellingPriceRef.current[nextRowCell]?.focus();
+      }
+    } 
+    else if (key === 'ArrowUp') {
+      // Move to the input directly above in the previous row
+      e.preventDefault();
+      if (inputSellingPriceRef.current[prevRowCell] && prevRowCell >= 0) {
+        inputSellingPriceRef.current[prevRowCell]?.focus();
+      }
+    } 
+    else if (key === 'Escape') {
       // Close the modal on Escape key
       setStandardSellingPriceModal(false);
-      setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }))
+      setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }));
     }
-  };    
+  };      
 
   const handleKeyDownSellingCost = (e, rowIndex, colIndex) => {
     const key = e.key;
@@ -386,6 +417,12 @@ const StockItemDisplay = () => {
     // Find all 'sellingCostStatus' inputs
     const statusInputs = inputSellingCostRef.current.filter(input => input?.name === 'sellingCostStatus');
     const isLastStatusInput = statusInputs.length - 1 === rowIndex; // Check if it's the last 'sellingCostStatus' input
+  
+    const totalColumns = 5; // Number of columns in the subform
+    const nextCell = rowIndex * totalColumns + colIndex + 1;
+    const prevCell = rowIndex * totalColumns + colIndex - 1;
+    const nextRowCell = (rowIndex + 1) * totalColumns + colIndex;
+    const prevRowCell = (rowIndex - 1) * totalColumns + colIndex;
   
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
@@ -401,63 +438,104 @@ const StockItemDisplay = () => {
             inputRefs.current[7]?.focus();  // Focus outside the subform after closing
             return;
           } else {
-            inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus if user chooses not to close
+            inputSellingCostRef.current[rowIndex * totalColumns + colIndex]?.focus(); // Refocus if user chooses not to close
             return;
           }
         }
       }
   
       // Move to the next cell
-      const nextCell = rowIndex * 5 + colIndex + 1;
-      if (
-        inputSellingCostRef.current[nextCell] &&
-        nextCell < inputSellingCostRef.current.length
-      ) {
+      if (inputSellingCostRef.current[nextCell]) {
         inputSellingCostRef.current[nextCell]?.focus(); // Focus on the next input
       }
-    } else if (key === 'Backspace') {
+    } 
+    else if (key === 'Backspace') {
       // Move focus to the previous input if the current input is empty
       if (e.target.value.trim() === '') {
         e.preventDefault();
-        const prevCell = rowIndex * 5 + colIndex - 1;
         if (inputSellingCostRef.current[prevCell] && prevCell >= 0) {
           inputSellingCostRef.current[prevCell]?.focus();
           inputSellingCostRef.current[prevCell]?.setSelectionRange(0, 0); // Set cursor to the beginning
         }
       }
-    } else if (key === 'Escape') {
+    } 
+    else if (key === 'ArrowRight') {
+      // Move focus to the next input
+      e.preventDefault();
+      if (inputSellingCostRef.current[nextCell]) {
+        inputSellingCostRef.current[nextCell]?.focus();
+      }
+    } 
+    else if (key === 'ArrowLeft') {
+      // Move focus to the previous input
+      e.preventDefault();
+      if (inputSellingCostRef.current[prevCell] && prevCell >= 0) {
+        inputSellingCostRef.current[prevCell]?.focus();
+      }
+    } 
+    else if (key === 'ArrowDown') {
+      // Move to the input directly below in the next row
+      e.preventDefault();
+      if (inputSellingCostRef.current[nextRowCell]) {
+        inputSellingCostRef.current[nextRowCell]?.focus();
+      }
+    } 
+    else if (key === 'ArrowUp') {
+      // Move to the input directly above in the previous row
+      e.preventDefault();
+      if (inputSellingCostRef.current[prevRowCell] && prevRowCell >= 0) {
+        inputSellingCostRef.current[prevRowCell]?.focus();
+      }
+    } 
+    else if (key === 'Escape') {
       // Close the modal on Escape key
       setStandardSellingCostModal(false);
-      setStockItem((prev) => ({ ...prev, standardSellingCost: 'no' }) );
+      setStockItem((prev) => ({ ...prev, standardSellingCost: 'no' }));
     }
-  };  
+  };    
 
+  // Handle key navigation for the godownSubForm inputs
   const handleKeyDownGodownSubForm = (e, rowIndex, colIndex) => {
     const key = e.key;
+    const totalColumns = 6; // Adjust this based on the actual number of columns
+    const currentCellIndex = rowIndex * totalColumns + colIndex;
+    const totalRows = stockItem.godownSubForm.length;
 
-    if (key === 'Enter') {
-      e.preventDefault(); // Prevent default Enter key behavior
-
-      // Move to the next cell
-      const nextCell = rowIndex * 6 + colIndex + 1;
-      if (inputGodownRef.current[nextCell] && nextCell < inputGodownRef.current.length) {
-        inputGodownRef.current[nextCell]?.focus();
+    if (key === 'Enter' || key === 'ArrowRight') {
+      e.preventDefault();
+      const nextCellIndex = currentCellIndex + 1;
+      if (inputGodownRef.current[nextCellIndex]) {
+        inputGodownRef.current[nextCellIndex].focus();
       } else {
-        totalRefs.current[0]?.focus();
+        totalRefs.current[0]?.focus(); // Focus total if out of bounds
       }
-    } else if (key === 'Backspace') {
-      // Remove the current row when Backspace is pressed on the last row
-      if (e.target.value.trim() === '') {
-        e.preventDefault();
-        const prevCell = rowIndex * 6 + colIndex - 1;
-        if (inputGodownRef.current[prevCell] && prevCell >= 0) {
-          inputGodownRef.current[prevCell]?.focus();
-          inputGodownRef.current[prevCell].setSelectionRange(0, 0);
-        }
+    } else if (key === 'ArrowLeft') {
+      e.preventDefault();
+      const prevCellIndex = currentCellIndex - 1;
+      if (inputGodownRef.current[prevCellIndex] && prevCellIndex >= 0) {
+        inputGodownRef.current[prevCellIndex].focus();
+      }
+    } else if (key === 'ArrowUp') {
+      e.preventDefault();
+      const prevRowCellIndex = currentCellIndex - totalColumns;
+      if (inputGodownRef.current[prevRowCellIndex] && prevRowCellIndex >= 0) {
+        inputGodownRef.current[prevRowCellIndex].focus();
+      }
+    } else if (key === 'ArrowDown') {
+      e.preventDefault();
+      const nextRowCellIndex = currentCellIndex + totalColumns;
+      if (inputGodownRef.current[nextRowCellIndex] && nextRowCellIndex < inputGodownRef.current.length) {
+        inputGodownRef.current[nextRowCellIndex].focus();
+      }
+    } else if (key === 'Backspace' && e.target.value.trim() === '') {
+      e.preventDefault();
+      const prevCellIndex = currentCellIndex - 1;
+      if (inputGodownRef.current[prevCellIndex] && prevCellIndex >= 0) {
+        inputGodownRef.current[prevCellIndex].focus();
+        inputGodownRef.current[prevCellIndex].setSelectionRange(0, 0);
       }
     } else if (key === 'Escape') {
-      // Clear the current row when Escape is pressed
-      setGodownSubFormModal(false);
+      setGodownSubFormModal(false); // Close modal on Escape
     }
   };
 

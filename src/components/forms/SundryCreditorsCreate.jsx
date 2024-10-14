@@ -333,14 +333,6 @@ const SundryCreditorsCreate = () => {
     });
   };  
 
-  // Function to check if totalOutwardReferenceAmount equals openingBalance
-  const checkBalanceMatch = () => {
-    const openingBalance = parseFloat(sundryCreditor.openingBalance) || 0;
-    const totalOutwardReferenceAmount = parseFloat(sundryCreditor.totalOutwardReferenceAmount) || 0;
-
-    return totalOutwardReferenceAmount === openingBalance;
-  };
-
   const handleKeyDownForex = async (e, rowIndex, colIndex) => {
     const key = e.key;
     const firstForexDateIndex = 0;
@@ -423,30 +415,12 @@ const SundryCreditorsCreate = () => {
           const confirmSubmit = window.confirm('Do you want to proceed with submit?');
 
           if (confirmSubmit) {
-            const isBalanceMatched = checkBalanceMatch(); // Check if balances match
-            if (isBalanceMatched) {
-              // Submit the form if the balance matches
-              await handleSubmit(e);
-              setForexSubFormModal(false); // Close the modal
-            } else {
-              alert(
-                'The opening balance does not match the total outward reference amount. Please correct it before submitting.',
-              );
-              setForexSubFormModal(true); // Keep the modal open
-              if (totalRefs.current[0]) {
-                totalRefs.current[0].focus(); // Focus on the first input in the form
-              }
-            }
-          } else {
-            // Return focus to the current input if the user cancels
-            if (totalRefs.current[currentIndex]) {
-              totalRefs.current[currentIndex].focus();
-            }
+            handleSubmit(e);
+            navigate(-1);
           }
           return;
         }
         break;
-
       case 'Backspace':
         // Move focus to the previous input if Backspace is pressed and the current input is empty
         if (e.target.value.trim() === '' && currentIndex > 0) {
@@ -525,43 +499,6 @@ const SundryCreditorsCreate = () => {
       e.preventDefault();
       setCurrencyFocused(false);
     }
-  }
-
-  // Utility function to parse numbers and remove commas
-  const parseNumber = value => {
-    if (value) {
-      return parseFloat(value.replace(/,/g, '')) || 0;
-    }
-    return 0;
-  };
-
-  // Function to sanitize and prepare data for backend
-  const prepareDataForBackend = sundryCreditor => {
-    return {
-      ...sundryCreditor,
-      openingBalance: parseNumber(sundryCreditor.openingBalance),
-      totalForexAmount: parseNumber(sundryCreditor.totalForexAmount),
-      totalInwardReferenceAmount: parseNumber(sundryCreditor.totalInwardReferenceAmount),
-      totalOutwardReferenceAmount: parseNumber(sundryCreditor.totalOutwardReferenceAmount),
-      sundryCreditorBankDetails: {
-        accountName: sundryCreditor.bank?.accountName,
-        accountNumber: sundryCreditor.bank?.accountNumber,
-        bankName: sundryCreditor.bank?.bankName,
-        branchName: sundryCreditor.bank?.branchName,
-        ifscCode: sundryCreditor.bank?.ifscCode,
-        accountType: sundryCreditor.bank?.accountType,
-        swiftCode: sundryCreditor.bank?.swiftCode,
-      },
-      sundryCreditorForexDetails: sundryCreditor.forexSubForm.filter(forex => forex.forexDate.trim() !== '')  // Filter out rows with empty forexDate
-      .map(forex => ({
-        ...forex,
-        forexCurrencySymbol: forex.forexCurrencySymbol,
-        forexAmount: parseNumber(forex.forexAmount),
-        exchangeRate: parseNumber(forex.exchangeRate),
-        outwardReferenceAmount: parseNumber(forex.outwardReferenceAmount),
-        inwardReferenceAmount: parseNumber(forex.inwardReferenceAmount),
-      })),
-    };
   };
 
   const handleSubmit = async (e) => {
@@ -578,7 +515,31 @@ const SundryCreditorsCreate = () => {
     }
     try {
       // Prepare data for backend
-      const sanitizedData = prepareDataForBackend(sundryCreditor);
+      const sanitizedData = {
+        ...sundryCreditor,
+        openingBalance: parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')) || 0,
+        totalForexAmount: parseFloat(sundryCreditor.totalForexAmount.replace(/,/g, '')) || 0,
+        totalInwardReferenceAmount: parseFloat(sundryCreditor.totalInwardReferenceAmount.replace(/,/g, '')) || 0,
+        totalOutwardReferenceAmount: parseFloat(sundryCreditor.totalOutwardReferenceAmount.replace(/,/g, '')) || 0,
+        sundryCreditorBankDetails: {
+          accountName: sundryCreditor.bank?.accountName,
+          accountNumber: sundryCreditor.bank?.accountNumber,
+          bankName: sundryCreditor.bank?.bankName,
+          branchName: sundryCreditor.bank?.branchName,
+          ifscCode: sundryCreditor.bank?.ifscCode,
+          accountType: sundryCreditor.bank?.accountType,
+          swiftCode: sundryCreditor.bank?.swiftCode,
+        },
+        sundryCreditorForexDetails: sundryCreditor.forexSubForm.filter(forex => forex.forexDate.trim() !== '')
+        .map(forex => ({
+          ...forex,
+          forexCurrencySymbol: forex.forexCurrencySymbol,
+          forexAmount: parseFloat(forex.forexAmount.replace(/,/g, '')) || 0,
+          exchangeRate: parseFloat(forex.exchangeRate.replace(/,/g, '')) || 0,
+          outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount.replace(/,/g, '')) || 0,
+          inwardReferenceAmount: parseFloat(forex.inwardReferenceAmount.replace(/,/g, '')) || 0,
+        })),
+      };
 
       // Send sanitized data to backend
       const response = await createSundryCreditorMaster(sanitizedData);

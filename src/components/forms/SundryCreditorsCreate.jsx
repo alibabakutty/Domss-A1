@@ -1375,19 +1375,19 @@ useEffect(() => {
                       autoComplete="off"
                     />
                   </div>
-                  <table className="border-collapse border border-slate-400 w-full table-fixed">
+                  <table className="border-collapse border border-slate-400 w-full">
                   <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th className="w-[13%]">Date</th>
-                        <th className="w-[35%]">Bill Ref. Name</th>
-                        <th className="w-[13%]">Due Date</th>
+                        <th className=" ">Date</th>
+                        <th className=" ">Bill Ref. Name</th>
+                        <th className=" ">Due Date</th>
                         {sundryCreditor.forexApplicable !== 'no' && (
                           <>
-                            <th className="w-[25%]">Forex Currency Type</th>
-                            <th className="w-[20%]">Forex Amount</th>
-                            <th className="w-[5%]">Cr/Dr</th>
-                            <th className="w-[20%]">Exchange Rate</th>
-                            <th className="w-[20%]">Amount</th>
+                            <th className="pl-28">Forex Currency Type</th>
+                            <th className="pl-5">Forex Amount</th>
+                            <th className=" ">Cr/Dr</th>
+                            <th className="pl-5">Exchange Rate</th>
+                            <th className="pl-20 ">Amount</th>
                           </>
                         )}
                         {sundryCreditor.forexApplicable !== 'yes' && (
@@ -1412,7 +1412,7 @@ useEffect(() => {
                               ref={input => (inputRefsForex.current[0 + index * 10] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index)}}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1448,7 +1448,7 @@ useEffect(() => {
                                 }
                               }}
                               onBlur={(e) => {dateConvert(e, index)}}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1474,7 +1474,7 @@ useEffect(() => {
                                     }
                                   }}
                                   onBlur={() => setCurrencyFocused(false)}
-                                  className="w-[140px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                                  className="w-[120px] h-5 pl-1 ml-28 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                                 {/* Currency Suggestion Dropdown */}
@@ -1567,7 +1567,7 @@ useEffect(() => {
 
                               {/* Reference Amount Input */}
                               <td>
-                                <span className='ml-10'>₹</span>
+                                <span className='ml-7'>₹</span>
                                 <input
                                   type="text"
                                   id="outwardReferenceAmount"
@@ -1582,7 +1582,7 @@ useEffect(() => {
                                     }
                                   }}
                                   onBlur={(e) => {numberFormat(e, index)}}
-                                  className="w-[45%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                                  className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1623,7 +1623,7 @@ useEffect(() => {
                               onChange={e => handleInputForexChange(e, index)}
                               ref={input => (inputRefsForex.current[9 + index * 10] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 9)}
-                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[30px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1639,7 +1639,7 @@ useEffect(() => {
                           <label htmlFor="totalForexAmount" className="text-[12px] mr-1 mt-1">
                             Total
                           </label>
-                          <span className="text-sm mt-1">($)</span>
+                          <span className="text-sm mt-1">({sundryCreditor.forexSubForm[0].forexCurrencySymbol || ''})</span>
                           <span className="absolute top-0 left-[50px] bottom-0">:</span>
                           <input
                             type="text"

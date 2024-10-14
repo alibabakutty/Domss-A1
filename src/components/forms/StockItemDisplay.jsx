@@ -597,10 +597,10 @@ const StockItemDisplay = () => {
               <div className="bg-white w-[600px] h-[500px] border border-black">
                 <div className="h-[470px] overflow-y-scroll">
                   <div className="text-sm ml-5 mt-2 mb-1 flex">
-                    <label htmlFor="allocationsOf" className="w-[15%]">
-                      Allocations of
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
                     </label>
-                    <span>:</span>
+                    <span className='mr-3'>:</span>
                     <input
                       type="text"
                       name="allocationsOf"
@@ -612,13 +612,13 @@ const StockItemDisplay = () => {
                   <table className="border border-slate-400 w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th>Date</th>
-                        <th className='pl-10'>Rate</th>
+                        <th className='pr-3'>Date</th>
+                        <th className='pl-8'>Rate</th>
                         <th className='pl-6'>
                           Percentage <span>(%)</span>
                         </th>
-                        <th className='pl-8'>Net-Rate</th>
-                        <th>Status</th>
+                        <th className='pl-6'>Net-Rate</th>
+                        <th className='pl-10'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -662,9 +662,6 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[2 + index * 5] = input)}
                               onKeyDown={(e) => {handleKeyDownSellingPrice(e, index, 2)}}
-                              onBlur={e => {
-                                percentageFormat(e, index, 'standardSellingPriceSubForm')
-                              }}
                               className="w-[40px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
@@ -679,7 +676,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 3)}
-                              className="w-[190px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               
                               autoComplete="off"
                             />
@@ -694,7 +691,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 4)}
-                              className="w-[70px] h-5 pl-1 ml-3 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 ml-5 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -728,10 +725,10 @@ const StockItemDisplay = () => {
               <div className="bg-white w-[600px] h-[500px] border border-black">
                 <div className="h-[470px] overflow-y-scroll">
                   <div className="text-sm ml-5 mt-2 mb-1 flex">
-                    <label htmlFor="allocationsOf" className="w-[15%]">
-                      Allocations of
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
                     </label>
-                    <span>:</span>
+                    <span className='mr-3'>:</span>
                     <input
                       type="text"
                       name="allocationsOf"
@@ -740,7 +737,7 @@ const StockItemDisplay = () => {
                       autoComplete="off"
                     />
                   </div>
-                  <table className="border border-slate-400 border-collapse w-full">
+                  <table className="border border-slate-400 w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
                         <th>Date</th>
@@ -749,7 +746,7 @@ const StockItemDisplay = () => {
                           Percentage <span>(%)</span>
                         </th>
                         <th className='pl-8'>Net-Rate</th>
-                        <th>Status</th>
+                        <th className='pl-10'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -793,9 +790,6 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[2 + index * 5] = input)}
                               onKeyDown={(e) => {handleKeyDownSellingCost(e, index, 2)}}
-                              onBlur={e => {
-                                percentageFormat(e, index, 'standardSellingCostSubForm')
-                              }}
                               className="w-[40px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
@@ -810,7 +804,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 3)}
-                              className="w-[190px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               
                               autoComplete="off"
                             />
@@ -825,7 +819,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 4)}
-                              className="w-[70px] h-5 pl-1 ml-6 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 ml-7 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -838,7 +832,7 @@ const StockItemDisplay = () => {
             </div>
           )}
           <div className="flex items-center text-sm font-bold mt-2">
-            <p className="ml-[284px]">Quantity</p>
+            <p className="ml-[267px]">Quantity</p>
             <p className="ml-12">Rate</p>
             <p className="ml-8">Unit</p>
             <p className="ml-[70px]">Value</p>
@@ -905,10 +899,10 @@ const StockItemDisplay = () => {
               <div className="bg-white w-[700px] h-[500px] border border-black relative">
                 <div className="">
                   <div className="text-sm ml-5 mt-2 flex">
-                    <label htmlFor="allocationsOf" className="w-[15%]">
-                      Allocations of
+                    <label htmlFor="allocationsOf" className="w-[21%]">
+                      Allocations of Product
                     </label>
-                    <span>:</span>
+                    <span className='mr-3'>:</span>
                     <input
                       type="text"
                       name="allocationsOf"
@@ -918,10 +912,10 @@ const StockItemDisplay = () => {
                     />
                   </div>
                   <div className="text-sm ml-5 flex">
-                    <label htmlFor="for" className="w-[15%]">
-                      for
+                    <label htmlFor="for" className="w-[21%]">
+                      For
                     </label>
-                    <span>:</span>
+                    <span className='mr-3'>:</span>
                     <input
                       type="text"
                       name="for"
@@ -935,10 +929,10 @@ const StockItemDisplay = () => {
                       <tr className="border-t border-b border-slate-400">
                         <th className='w-[20%]'>Location</th>
                         <th>Batch</th>
-                        <th>Quantity</th>
-                        <th>Uom</th>
-                        <th>Rate</th>
-                        <th>Amount</th>
+                        <th className='pl-6'>Quantity</th>
+                        <th className='pr-2'>Uom</th>
+                        <th className='pl-8'>Rate</th>
+                        <th className='pl-24'>Amount</th>
                       </tr>
                     </thead>
                     <tbody>

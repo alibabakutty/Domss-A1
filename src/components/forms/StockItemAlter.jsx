@@ -1326,12 +1326,16 @@ console.log(stockItem)
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(totalNetAmount);
+
+    // Calculate opening balance rate (if totalQuantity is non-zero)
+    const openingBalanceRate = totalQuantity > 0 ? (totalNetAmount / totalQuantity).toFixed(2) : '';
   
     // Update the stockItem state with the calculated totals
     setStockItem((prevState) => ({
       ...prevState,
       totalQuantity: formattedTotalQuantity,
       totalNetAmount: formattedTotalNetAmount,
+      openingBalanceRate: openingBalanceRate,        // Set calculated opening balance rate
     }));
   }, [stockItem.godownSubForm]);  
 
@@ -1647,10 +1651,10 @@ const handleFormattedDateChange = (e, index, field, type) => {
               <div className="bg-white w-[600px] h-[500px] border border-black">
                 <div className="h-[470px] overflow-y-scroll">
                   <div className="text-sm ml-5 mt-2 mb-1 flex">
-                    <label htmlFor="allocationsOf" className="w-[15%]">
-                      Allocations of
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
                     </label>
-                    <span>:</span>
+                    <span className='mr-3'>:</span>
                     <input
                       type="text"
                       name="allocationsOf"
@@ -1663,12 +1667,12 @@ const handleFormattedDateChange = (e, index, field, type) => {
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
                         <th>Date</th>
-                        <th className='pl-10'>Rate</th>
-                        <th className='pl-6'>
+                        <th className='pl-8'>Rate</th>
+                        <th className='pl-5'>
                           Percentage <span>(%)</span>
                         </th>
-                        <th className='pl-8'>Net-Rate</th>
-                        <th>Status</th>
+                        <th className='pl-6'>Net-Rate</th>
+                        <th className='pl-8'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1684,7 +1688,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               ref={input => (inputSellingPriceRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index, 'standardSellingPriceSubForm')}}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1732,7 +1736,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 3)}
-                              className="w-[190px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingPriceSubForm');
                               }}
@@ -1749,7 +1753,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               onChange={e => handleInputSellingPriceChange(e, index)}
                               ref={input => (inputSellingPriceRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 4)}
-                              className="w-[70px] h-5 pl-1 ml-3 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1783,10 +1787,10 @@ const handleFormattedDateChange = (e, index, field, type) => {
               <div className="bg-white w-[600px] h-[500px] border border-black">
                 <div className="h-[470px] overflow-y-scroll">
                   <div className="text-sm ml-5 mt-2 mb-1 flex">
-                    <label htmlFor="allocationsOf" className="w-[15%]">
-                      Allocations of
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
                     </label>
-                    <span>:</span>
+                    <span className='mr-3'>:</span>
                     <input
                       type="text"
                       name="allocationsOf"
@@ -1795,11 +1799,11 @@ const handleFormattedDateChange = (e, index, field, type) => {
                       autoComplete="off"
                     />
                   </div>
-                  <table className="border border-slate-400 border-collapse w-full">
+                  <table className="border border-slate-400 w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
                         <th>Date</th>
-                        <th className='pl-10'>Rate</th>
+                        <th className='pl-8'>Rate</th>
                         <th className='pl-6'>
                           Percentage <span>(%)</span>
                         </th>
@@ -1820,7 +1824,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               ref={input => (inputSellingCostRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index, 'standardSellingCostSubForm')}}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               autoComplete="off"
                             />
                           </td>
@@ -1868,7 +1872,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 3)}
-                              className="w-[190px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingCostSubForm');
                               }}
@@ -1968,10 +1972,10 @@ const handleFormattedDateChange = (e, index, field, type) => {
               <div className="bg-white w-[700px] h-[500px] border border-black relative">
                 <div className="">
                   <div className="text-sm ml-5 mt-2 flex">
-                    <label htmlFor="allocationsOf" className="w-[15%]">
-                      Allocations of
+                    <label htmlFor="allocationsOf" className="w-[21%]">
+                      Allocations of Product
                     </label>
-                    <span>:</span>
+                    <span className='mr-3'>:</span>
                     <input
                       type="text"
                       name="allocationsOf"
@@ -1981,10 +1985,10 @@ const handleFormattedDateChange = (e, index, field, type) => {
                     />
                   </div>
                   <div className="text-sm ml-5 flex">
-                    <label htmlFor="for" className="w-[15%]">
-                      for
+                    <label htmlFor="for" className="w-[21%]">
+                      For
                     </label>
-                    <span>:</span>
+                    <span className='mr-3'>:</span>
                     <input
                       type="text"
                       name="for"
@@ -1996,12 +2000,12 @@ const handleFormattedDateChange = (e, index, field, type) => {
                   <table className="border border-slate-400 w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th className='w-[20%]'>Location</th>
+                        <th className='pr-5'>Location</th>
                         <th>Batch</th>
-                        <th>Quantity</th>
-                        <th>Uom</th>
-                        <th>Rate</th>
-                        <th>Amount</th>
+                        <th className='pl-6'>Quantity</th>
+                        <th className='pr-2'>Uom</th>
+                        <th className='pl-8'>Rate</th>
+                        <th className='pl-24'>Amount</th>
                       </tr>
                     </thead>
                     <tbody>

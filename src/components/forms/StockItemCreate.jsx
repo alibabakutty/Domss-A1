@@ -1194,11 +1194,15 @@ const StockItemCreate = () => {
       maximumFractionDigits: 2,
     }).format(totalNetAmount);
 
+    // Calculate opening balance rate (if totalQuantity is non-zero)
+    const openingBalanceRate = totalQuantity > 0 ? (totalNetAmount / totalQuantity).toFixed(2) : '';
+
     // Update the stockItem state with the calculated totals
     setStockItem((prevState) => ({
       ...prevState,
       totalQuantity: formattedTotalQuantity,
       totalNetAmount: formattedTotalNetAmount,
+      openingBalanceRate: openingBalanceRate,
     }));
   }, [stockItem.godownSubForm]); // Depend on changes in godownSubForm
 
@@ -1888,12 +1892,12 @@ const StockItemCreate = () => {
                   <table className="border border-slate-400 w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th className='w-[20%]'>Location</th>
+                        <th className='pr-8'>Location</th>
                         <th>Batch</th>
-                        <th>Quantity</th>
+                        <th className='pl-6'>Quantity</th>
                         <th>Uom</th>
-                        <th>Rate</th>
-                        <th>Amount</th>
+                        <th className='pl-5'>Rate</th>
+                        <th className='pl-24'>Amount</th>
                       </tr>
                     </thead>
                     <tbody>

@@ -1761,7 +1761,7 @@ const SundryCreditorsAlter = () => {
                           <label htmlFor="totalForexAmount" className="text-[12px] mr-1 mt-1">
                             Total
                           </label>
-                          <span className="text-sm mt-1">($)</span>
+                          <span className="text-sm mt-1">({sundryCreditor.forexCurrencySymbol})</span>
                           <span className="absolute top-0 left-[50px] bottom-0">:</span>
                           <input
                             type="text"

@@ -10,6 +10,8 @@ import {
   listOfStockGroups,
   listOfUnits,
 } from '../services/MasterService';
+import { WiNa } from 'react-icons/wi';
+
 
 const StockItemCreate = () => {
   const [stockItem, setStockItem] = useState({
@@ -36,6 +38,24 @@ const StockItemCreate = () => {
         sellingCostPercentage: '',
         sellingCostNetRate: '',
         sellingCostStatus: 'active',
+      },
+    ],
+    gstApplicable: 'no',
+    gstStockItemSubForm: [
+      {
+        gstDate: '',
+        hsnCode: '',
+        gstPercentage: '',
+        gstStatus: '',
+      },
+    ],
+    vatApplicable: 'no',
+    vatStockItemSubForm: [
+      {
+        vatDate: '',
+        vatCode: '',
+        vatPercentage: '',
+        vatStatus: '',
       },
     ],
     openingBalanceQuantity: '',
@@ -78,6 +98,8 @@ const StockItemCreate = () => {
   const [highlightedBatch, setHighlightedBatch] = useState(0);
   const [standardSellingPriceModal, setStandardSellingPriceModal] = useState(false);
   const [standardSellingCostModal, setStandardSellingCostModal] = useState(false);
+  const [gstStockItemSubFormModal, setGstStockItemSubFormModal] = useState(false);
+  const [vatStockItemSubFormModal, setVatStockItemSubFormModal] = useState(false);
   const [godownSubFormModal, setGodownSubFormModal] = useState(false);
   const inputRefs = useRef([]);
   const stockGroupOptionsRef = useRef(null);
@@ -87,9 +109,13 @@ const StockItemCreate = () => {
   const batchRef = useRef(null);
   const inputSellingPriceRef = useRef([]);
   const inputSellingCostRef = useRef([]);
+  const inputGstRef = useRef([]);
+  const inputVatRef = useRef([]);
   const inputGodownRef = useRef([]);
   const prevSellingPriceModal = useRef(false);
   const prevSellingCostModal = useRef(false);
+  const prevGstModal = useRef(false);
+  const prevVatModal = useRef(false);
   const prevGodownModal = useRef(false);
   const totalRefs = useRef([]);
   const navigate = useNavigate();
@@ -98,17 +124,31 @@ const StockItemCreate = () => {
     // Set initial focus if the input exists
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
+      inputRefs.current[0].setSelectionRange(0, 0);
     }
 
     if (standardSellingPriceModal && inputSellingPriceRef.current[0]) {
       inputSellingPriceRef.current[0].focus();
+      inputSellingPriceRef.current[0].setSelectionRange(0, 0);
     }
 
     if (standardSellingCostModal && inputSellingCostRef.current[0]) {
       inputSellingCostRef.current[0].focus();
+      inputSellingCostRef.current[0].focus();
+    }
+
+    if (gstStockItemSubFormModal && inputGstRef.current[0]){
+      inputGstRef.current[0].focus();
+      inputGstRef.current[0].setSelectionRange(0, 0);
+    }
+
+    if (vatStockItemSubFormModal && inputVatRef.current[0]){
+      inputVatRef.current[0].focus();
+      inputVatRef.current[0].setSelectionRange(0, 0);
     }
 
     if (godownSubFormModal && inputGodownRef.current[0]) {
+      inputGodownRef.current[0].focus();
       inputGodownRef.current[0].focus();
     }
 
@@ -127,10 +167,28 @@ const StockItemCreate = () => {
     if (prevSellingCostModal.current && !standardSellingCostModal){
       // Focus on the standard selling price input when standardsellingcostModal closes
       const sellingPriceInputIndex = inputRefs.current.findIndex(
-        ref => ref && ref.name === 'openingBalanceQuantity'
+        ref => ref && ref.name === 'gstApplicable'
       );
       if (sellingPriceInputIndex !== -1 && inputRefs.current[sellingPriceInputIndex]){
         inputRefs.current[sellingPriceInputIndex].focus();
+      }
+    }
+
+    if (prevGstModal.current && !gstStockItemSubFormModal){
+      const gstInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'vatApplicable'
+      );
+      if (gstInputIndex !== -1 && inputRefs.current[gstInputIndex]){
+        inputRefs.current[gstInputIndex].focus();
+      }
+    }
+
+    if (prevVatModal.current && !vatStockItemSubFormModal){
+      const vatInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'openingBalanceQuantity'
+      );
+      if (vatInputIndex !== -1 && inputRefs.current[vatInputIndex]){
+        inputRefs.current[vatInputIndex].focus();
       }
     }
 
@@ -148,6 +206,8 @@ const StockItemCreate = () => {
     // Update the previous state value
     prevSellingPriceModal.current = standardSellingPriceModal;
     prevSellingCostModal.current = standardSellingCostModal;
+    prevGstModal.current = gstStockItemSubFormModal;
+    prevVatModal.current = vatStockItemSubFormModal;
     prevGodownModal.current = godownSubFormModal;
 
     // Fetch stock categories and units concurrently
@@ -172,13 +232,6 @@ const StockItemCreate = () => {
         setUnitSuggestion(unitResponse.data);
         setGodownSuggestion(godownResponse.data);
         setBatchSuggestion(batchResponse.data);
-
-        // Optional: Remove console logs if not necessary
-        console.log('Stock Groups:', stockGroupResponse.data);
-        console.log('Stock Categories:', stockCategoryResponse.data);
-        console.log('Units:', unitResponse.data);
-        console.log('Godowns:', godownResponse.data);
-        console.log('Batchs:', batchResponse.data);
       } catch (error) {
         console.error(error);
       }
@@ -190,7 +243,7 @@ const StockItemCreate = () => {
     return () => {
       // Clean up code here
     };
-  }, [standardSellingPriceModal, standardSellingCostModal, godownSubFormModal]);
+  }, [standardSellingPriceModal, standardSellingCostModal, godownSubFormModal, gstStockItemSubFormModal, vatStockItemSubFormModal]);
 
   const handleKeyDown = (e, index) => {
     const key = e.key;
@@ -218,6 +271,10 @@ const StockItemCreate = () => {
           setStandardSellingPriceModal(true);
         } else if (e.target.name === 'standardSellingCost' && e.target.value.trim() === 'yes') {
           setStandardSellingCostModal(true);
+        } else if (e.target.name === 'gstApplicable' && e.target.value.trim() === 'yes'){
+          setGstStockItemSubFormModal(true);
+        } else if (e.target.name === 'vatApplicable' && e.target.value.trim() === 'yes'){
+          setVatStockItemSubFormModal(true);
         } else if (e.target.name === 'openingBalanceQuantity' && e.target.value.trim() !== '') {
           setGodownSubFormModal(true);
         }
@@ -245,6 +302,20 @@ const StockItemCreate = () => {
         ...stockItem,
         standardSellingCost: value,
       });
+    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'gstApplicable'){
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
+      setStockItem({
+        ...stockItem,
+        gstApplicable: value,
+      })
+    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'vatApplicable'){
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
+      setStockItem({
+        ...stockItem,
+        vatApplicable: value,
+      })
     } else if (key === 'Escape') {
       e.preventDefault();
       navigate(-1);
@@ -588,6 +659,157 @@ const StockItemCreate = () => {
     }
   };
 
+  // Function to add a new row
+const addNewRowGst = () => {
+  setStockItem(prevState => {
+    const newRowGst = {
+      gstDate: '',
+      hsnCode: '',
+      gstPercentage: '',
+      gstStatus: '',
+    };
+    return {
+      ...prevState,
+      gstStockItemSubForm: [...prevState.gstStockItemSubForm, newRowGst],
+    };
+  });
+};
+
+// Function to handle keydown events for GST subform
+const handleKeyDownGstSubForm = (e, rowIndex, colIndex) => {
+  const key = e.key;
+  const firstGstDate = 0;
+  const lastGstStatusIndex = 3; // The index of gstStatus in the row (0-based index)
+
+  if (key === 'Enter') {
+    e.preventDefault();
+
+    // Ensure GST Date is not empty in the first row
+    if (rowIndex === 0 && colIndex === firstGstDate && e.target.value.trim() === '') {
+      alert('The GST Date field must have a value before proceeding.');
+      inputGstRef.current[rowIndex * 4 + colIndex]?.focus();
+      return;
+    }
+
+    // Handle closing the form if GST Date is empty in subsequent rows
+    if (colIndex === firstGstDate && e.target.value.trim() === '' && rowIndex > 0) {
+      const confirmationClose = window.confirm('Do you want to close this subform?');
+      if (confirmationClose) {
+        setGstStockItemSubFormModal(false);
+        setStockItem(prev => ({ ...prev, gstApplicable: 'no' }));
+        inputRefs.current[9]?.focus();
+        return;
+      } else {
+        inputGstRef.current[rowIndex * 4 + colIndex]?.focus();
+        return;
+      }
+    }
+
+    // Handle new row addition when pressing Enter on the last column (gstStatus)
+    const isGstStatus = colIndex === lastGstStatusIndex;
+    const isLastRow = rowIndex === stockItem.gstStockItemSubForm.length - 1;
+
+    if (isGstStatus && isLastRow && e.target.value.trim() !== '') {
+      addNewRowGst();
+      setTimeout(() => {
+        inputGstRef.current[(rowIndex + 1) * 4]?.focus(); // Focus on the first column of the new row
+      }, 0);
+      return;
+    }
+
+    // Move to the next input field
+    const nextCell = rowIndex * 4 + colIndex + 1;
+    if (inputGstRef.current[nextCell] && nextCell < inputGstRef.current.length) {
+      inputGstRef.current[nextCell]?.focus();
+    }
+  } else if (key === 'Backspace') {
+    // Move focus to the previous field if the current field is empty
+    if (e.target.value.trim() === '') {
+      e.preventDefault();
+      const prevCell = rowIndex * 4 + colIndex - 1;
+      if (inputGstRef.current[prevCell] && prevCell >= 0) {
+        inputGstRef.current[prevCell]?.focus();
+        inputGstRef.current[prevCell].setSelectionRange(0, 0); // Set cursor position
+      }
+    }
+  } else if (key === 'Escape') {
+    // Close the subform modal on Escape key press
+    setGstStockItemSubFormModal(false);
+  }
+};
+
+  // add new row function
+  const addNewRowVat = () => {
+    setStockItem(prevState => {
+      const newRowVat = {
+        vatDate: '',
+        vatCode: '',
+        vatPercentage: '',
+        vatStatus: '',
+      };
+      return {
+        ...prevState,
+        vatStockItemSubForm: [...prevState.vatStockItemSubForm, newRowVat],
+      }
+    })
+  };
+
+
+  const handleKeyDownVatSubForm = (e, rowIndex, colIndex) => {
+    const key = e.key;
+    const firstVatDate = 0;
+
+    if (key === 'Enter'){
+      e.preventDefault();
+
+      if (rowIndex === 0 && colIndex === firstVatDate && e.target.value.trim() === ''){
+        alert('The vat date field must have a value before procedding.');
+        inputVatRef.current[rowIndex * 4 + colIndex]?.focus();
+        return;
+      }
+
+      if (colIndex === firstVatDate && e.target.value.trim() === '' && rowIndex > 0){
+        const confirmationClose = window.confirm('Do you want to close this subform?');
+        if (confirmationClose){
+          setVatStockItemSubFormModal(false);
+          setStockItem((prev) => ({ ...prev, vatApplicable: 'no'}))
+          inputRefs.current[10]?.focus();
+          return;
+        } else {
+          inputVatRef.current[rowIndex * 4 + colIndex]?.focus();
+          return;
+        }
+      }
+
+      const isVatStatus = e.target.name = 'vatStatus';
+      const isLastVatStatus = rowIndex === stockItem.vatStockItemSubForm.length - 1;
+
+      if (isVatStatus && isLastVatStatus && e.target.value.trim() !== ''){
+        addNewRowVat();
+        setTimeout(() => {
+          inputVatRef.current[rowIndex * 4 + colIndex + 1]?.focus();
+        }, 0);
+        return;
+      }
+
+      const nextCell = rowIndex * 4 + colIndex + 1;
+      if (inputVatRef.current[nextCell] && nextCell < inputVatRef.current.length){
+        inputVatRef.current[nextCell]?.focus();
+      }
+    } else if (key === 'Backspace'){
+      if (e.target.value.trim() === ''){
+        e.preventDefault();
+        const prevCell = rowIndex * 4 + colIndex - 1;
+        if (inputVatRef.current[prevCell] && prevCell >= 0){
+          inputVatRef.current[prevCell]?.focus();
+          inputVatRef.current[prevCell].setSelectionRange(0, 0);
+        }
+      }
+    } else if (key === 'Escape'){
+      setVatStockItemSubFormModal(false);
+    }
+  }
+
   // add new row function
   const addNewRowGodown = () => {
     setStockItem(prevState => {
@@ -743,6 +965,40 @@ const StockItemCreate = () => {
         standardSellingCostSubForm: updatedSubForm, // Update the subform array in the state
       };
     });
+  };
+
+  // Handle input changes for gst Subform
+  const handleInputGstChange = (e, index) => {
+    const {name, value} = e.target;
+
+    setStockItem(prevState => {
+      const updatedGstSubForm = [...prevState.gstStockItemSubForm];
+      updatedGstSubForm[index] = {
+        ...updatedGstSubForm[index],
+        [name]: value,
+      };
+      return {
+        ...prevState,
+        gstStockItemSubForm: updatedGstSubForm,    // update the subform
+      }
+    })
+  }
+
+  // Handle input changes for vat Subform
+  const handleInputVatChange = (e, index) => {
+    const {name,value} = e.target;
+
+    setStockItem(prevState => {
+      const updatedVatSubForm = [...prevState.vatStockItemSubForm];
+      updatedVatSubForm[index] = {
+        ...updatedVatSubForm[index],
+        [name]: value,
+      };
+      return {
+        ...prevState,
+        vatStockItemSubForm: updatedVatSubForm,    // update the subform
+      }
+    })
   };
 
   // Handle input changes for quantity Subform
@@ -1034,24 +1290,7 @@ const StockItemCreate = () => {
       };
     });
   };    
-
-  // useEffect to update openingBalanceValue whenever quantity or rate changes
-  useEffect(() => {
-    const quantity = parseFloat(stockItem.openingBalanceQuantity.replace(/,/g, '')) || 0;
-    const rate = parseFloat(stockItem.openingBalanceRate.replace(/,/g, '')) || 0;
-    const value = quantity * rate;
-
-    // Format the value with commas
-    const formattedValue = new Intl.NumberFormat('en-IN', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-
-    setStockItem(prevState => ({
-      ...prevState,
-      openingBalanceValue: formattedValue,
-    }));
-  }, [stockItem.openingBalanceQuantity, stockItem.openingBalanceRate]);
+  
   
   const calculateSellingPriceNetRate = (index) => {
     // Parse rate and percentage inputs from the current row
@@ -1202,6 +1441,7 @@ const StockItemCreate = () => {
       ...prevState,
       totalQuantity: formattedTotalQuantity,
       totalNetAmount: formattedTotalNetAmount,
+      openingBalanceValue: formattedTotalNetAmount,
       openingBalanceRate: openingBalanceRate,
     }));
   }, [stockItem.godownSubForm]); // Depend on changes in godownSubForm
@@ -1338,7 +1578,108 @@ const StockItemCreate = () => {
       };
     });
   };
+
+  const dateConvertForGst = (e, index) => {
+    const dateValue = e.target.value;
+    const fieldName = e.target.name; // gstDate
   
+    // Validate and format date
+    const datePattern = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2}|\d{4})$/;
+    if (datePattern.test(dateValue)) {
+      let [_, day, month, year] = datePattern.exec(dateValue);
+  
+      if (year.length === 2) year = `20${year}`;
+      day = day.padStart(2, '0');
+      month = month.padStart(2, '0');
+  
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthIndex = parseInt(month) - 1;
+      const formattedDisplayDate = `${day}-${monthNames[monthIndex]}-${year}`;
+      const convertedDate = `${year}-${month}-${day}`;
+  
+      setStockItem((prevState) => {
+        const updatedGstSubForm = [...prevState.gstStockItemSubForm];
+        updatedGstSubForm[index] = {
+          ...updatedGstSubForm[index],
+          [fieldName]: convertedDate, // Save the converted date (YYYY-MM-DD format)
+          [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: formattedDisplayDate, // Save the formatted date (DD-MMM-YYYY format)
+        };
+        return {
+          ...prevState,
+          gstStockItemSubForm: updatedGstSubForm,
+        };
+      });
+    }
+  };
+  
+  const handleFormattedDateChangeForGst = (e, index, fieldName) => {
+    const dateValue = e.target.value;
+  
+    // Update the gstStockItemSubForm state for the specific row and field (gstDate)
+    setStockItem((prevState) => {
+      const updatedGstSubForm = [...prevState.gstStockItemSubForm];
+      updatedGstSubForm[index] = {
+        ...updatedGstSubForm[index],
+        [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: dateValue,
+      };
+      return {
+        ...prevState,
+        gstStockItemSubForm: updatedGstSubForm,
+      };
+    });
+  };  
+  
+  // VAT Date Conversion Function
+const dateConvertForVat = (e, index) => {
+  const dateValue = e.target.value;
+  const fieldName = e.target.name; // vatDate
+
+  // Validate and format date
+  const datePattern = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2}|\d{4})$/;
+  if (datePattern.test(dateValue)) {
+    let [_, day, month, year] = datePattern.exec(dateValue);
+
+    if (year.length === 2) year = `20${year}`;
+    day = day.padStart(2, '0');
+    month = month.padStart(2, '0');
+
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthIndex = parseInt(month) - 1;
+    const formattedDisplayDate = `${day}-${monthNames[monthIndex]}-${year}`;
+    const convertedDate = `${year}-${month}-${day}`;
+
+    setStockItem((prevState) => {
+      const updatedVatSubForm = [...prevState.vatStockItemSubForm];
+      updatedVatSubForm[index] = {
+        ...updatedVatSubForm[index],
+        [fieldName]: convertedDate, // Save the converted date (YYYY-MM-DD format)
+        [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: formattedDisplayDate, // Save the formatted date (DD-MMM-YYYY format)
+      };
+      return {
+        ...prevState,
+        vatStockItemSubForm: updatedVatSubForm,
+      };
+    });
+  }
+};
+
+// Handle formatted VAT date change
+const handleFormattedDateChangeForVat = (e, index, fieldName) => {
+  const dateValue = e.target.value;
+
+  // Update the vatStockItemSubForm state for the specific row and field (vatDate)
+  setStockItem((prevState) => {
+    const updatedVatSubForm = [...prevState.vatStockItemSubForm];
+    updatedVatSubForm[index] = {
+      ...updatedVatSubForm[index],
+      [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: dateValue,
+    };
+    return {
+      ...prevState,
+      vatStockItemSubForm: updatedVatSubForm,
+    };
+  });
+};
   
 
   return (
@@ -1347,7 +1688,7 @@ const StockItemCreate = () => {
         <LeftSideMenu />
         <form
           action=""
-          className="border border-slate-500 w-[45.5%] h-[35vh] absolute left-[44.5%]"
+          className="border border-slate-500 w-[45.5%] h-[50vh] absolute left-[44.5%]"
           onSubmit={handleSubmit}
         >
           <div className="text-sm flex mt-2 ml-2">
@@ -1792,6 +2133,106 @@ const StockItemCreate = () => {
               </div>
             </div>
           )}
+          <div className='text-sm flex ml-2'>
+            <label htmlFor="gstApplicable" className='w-[40%]'>GST Applicable</label>
+            <span>:</span>
+            <input type="text" name='gstApplicable' value={stockItem.gstApplicable} ref={(input) => (inputRefs.current[7] = input)} onKeyDown={e => handleKeyDown(e, 7)} onChange={handleInputChange} className='w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+          </div>
+          {gstStockItemSubFormModal && (
+            <div className='fixed top-[44px] right-[137px] bottom-0 left-0 bg-slate-300 bg-opacity-90 z-10 flex justify-center items-center'>
+              <div className='bg-white w-[600px] h-[500px] border border-black'>
+                <div>
+                  <div className='text-sm ml-5 mb-1 flex'>
+                    <label htmlFor="allocationsOf" className='w-[25%]'>Allocations of Product</label>
+                    <span>:</span>
+                    <input type="text" name='allocationsOf' value={stockItem.stockItemName} className='w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                  </div>
+                  <table className='border border-slate-400 border-collapse w-full'>
+                    <thead className='text-[12px]'>
+                      <tr className='border-t border-b border-slate-400'>
+                        <th>Date</th>
+                        <th>HSN Code</th>
+                        <th>Percentage <span>(%)</span></th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stockItem.gstStockItemSubForm.map((row, index) => (
+                        <tr>
+                          {/* date Input */}
+                          <td>
+                            <input type="text" name='gstDate' value={row.formattedGstDate} ref={(input) => (inputGstRef.current[0 + index * 4] = input)} onChange={e => handleFormattedDateChangeForGst(e, index, 'gstDate')} onKeyDown={e => handleKeyDownGstSubForm(e, index, 0)} onBlur={e => dateConvertForGst(e, index, 0)} className='w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                          </td>
+                          {/* hsn code Input */}
+                          <td>
+                            <input type="text" name='hsnCode' value={row.hsnCode} ref={(input) => (inputGstRef.current[1 + index * 4] = input)} onChange={e => handleInputGstChange(e, index)} onKeyDown={e => handleKeyDownGstSubForm(e, index, 1)} className='w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                          </td>
+                          {/* percentage Input */}
+                          <td>
+                            <input type="text" name='gstPercentage' value={row.gstPercentage} ref={(input) => (inputGstRef.current[2 + index * 4] = input)} onChange={e => handleInputGstChange(e, index)} onKeyDown={e => handleKeyDownGstSubForm(e, index, 2)} className='w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                          </td>
+                          {/* status Input */}
+                          <td>
+                            <input type="text" name='gstStatus' value={row.gstStatus} ref={(input) => (inputGstRef.current[3 + index * 4] = input)} onChange={e => handleInputGstChange(e, index)} onKeyDown={e => handleKeyDownGstSubForm(e, index, 3)} className='w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className='text-sm flex ml-2'>
+            <label htmlFor="vatApplicable" className='w-[40%]'>VAT Applicable</label>
+            <span>:</span>
+            <input type="text" name='vatApplicable' value={stockItem.vatApplicable} ref={(input) => (inputRefs.current[8] = input)} onKeyDown={e => handleKeyDown(e, 8)} onChange={handleInputChange} className='w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+          </div>
+          {vatStockItemSubFormModal && (
+            <div className='fixed top-[44px] right-[137px] bottom-0 left-0 bg-slate-300 z-10 opacity-90 flex justify-center items-center'>
+              <div className='bg-white w-[600px] h-[500px] border border-black'>
+                <div>
+                  <div className='text-sm ml-5 mt-2 mb-1 flex'>
+                    <label htmlFor="allocationsOf" className='w-[25%]'>Allocations of Product</label>
+                    <span>:</span>
+                    <input type="text" name='allocationsOf' value={stockItem.stockItemName} className='w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                  </div>
+                  <table className='border border-slate-400 border-collapse w-full'>
+                    <thead className='text-[12px]'>
+                      <tr className='border-t border-b border-slate-400'>
+                        <th>Date</th>
+                        <th>VAT Code</th>
+                        <th>Percentage <span>(%)</span></th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stockItem.vatStockItemSubForm.map((row, index) => (
+                        <tr>
+                          {/* date Input */}
+                          <td>
+                            <input type="text" name='vatDate' value={row.formattedVatDate} onChange={e => handleFormattedDateChangeForVat(e, index, 'vatDate')} ref={(input) => (inputVatRef.current[0 + index * 4] = input)} onKeyDown={e => handleKeyDownVatSubForm(e, index, 0)} onBlur={e => dateConvertForVat(e, index, 0)} className='w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                          </td>
+                          {/* vat code Input */}
+                          <td>
+                            <input type="text" name='vatCode' value={row.vatCode} ref={(input) => (inputVatRef.current[1 + index * 4] = input)} onChange={e => handleInputVatChange(e, index)} onKeyDown={e => handleKeyDownVatSubForm(e, index, 1)} className='w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                          </td>
+                          {/* percentage Input */}
+                          <td>
+                            <input type="text" name='vatPercentage' value={row.vatPercentage} ref={(input) => (inputVatRef.current[2 + index * 4] = input)} onChange={e => handleInputVatChange(e, index)} onKeyDown={e => handleKeyDownVatSubForm(e, index, 2)} className='w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                          </td>
+                          {/* status Input */}
+                          <td>
+                            <input type="text" name='vatStatus' value={row.vatStatus} ref={ (input) => (inputVatRef.current[3 + index * 4] = input)} onChange={e => handleInputVatChange(e, index)} onKeyDown={ e => handleKeyDownVatSubForm(e, index, 3)} className='w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="flex items-center text-sm font-bold mt-2">
             <p className="ml-[284px]">Quantity</p>
             <p className="ml-12">Rate</p>
@@ -1807,10 +2248,10 @@ const StockItemCreate = () => {
               name="openingBalanceQuantity"
               value={stockItem.openingBalanceQuantityDisplay}
               onChange={handleUnitFormattedChange}
-              ref={input => (inputRefs.current[7] = input)}
-              onKeyDown={e => {handleKeyDown(e, 7);
+              ref={input => (inputRefs.current[9] = input)}
+              onKeyDown={e => {handleKeyDown(e, 9);
                 if (e.key === 'Enter'){
-                  inputRefs.current[8].focus(); // Adjust the index based on your input structure
+                  inputRefs.current[10].focus(); // Adjust the index based on your input structure
                 }
               }}
               onBlur={(e) => unitFormat(e)}
@@ -1824,8 +2265,8 @@ const StockItemCreate = () => {
               name="openingBalanceRate"
               value={stockItem.openingBalanceRate}
               onChange={handleInputChange}
-              ref={input => (inputRefs.current[8] = input)}
-              onKeyDown={e => handleKeyDown(e, 8)}
+              ref={input => (inputRefs.current[10] = input)}
+              onKeyDown={e => handleKeyDown(e, 10)}
               onBlur={numberFormat}
               className="w-[76px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
@@ -1837,8 +2278,8 @@ const StockItemCreate = () => {
               name="openingBalanceUnit"
               value={stockItem.openingBalanceUnit}
               onChange={handleInputChange}
-              ref={input => (inputRefs.current[9] = input)}
-              onKeyDown={e => handleKeyDown(e, 9)}
+              ref={input => (inputRefs.current[11] = input)}
+              onKeyDown={e => handleKeyDown(e, 11)}
               onBlur={numberFormat}
               className="w-[50px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"
@@ -1850,8 +2291,8 @@ const StockItemCreate = () => {
               name="openingBalanceValue"
               value={stockItem.openingBalanceValue}
               onChange={handleInputChange}
-              ref={input => (inputRefs.current[10] = input)}
-              onKeyDown={e => handleKeyDown(e, 10)}
+              ref={input => (inputRefs.current[12] = input)}
+              onKeyDown={e => handleKeyDown(e, 12)}
               onBlur={numberFormat}
               className="w-[100px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
               autoComplete="off"

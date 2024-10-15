@@ -110,14 +110,17 @@ console.log(stockItem)
 
     if (standardSellingPriceModal && inputSellingPriceRef.current[0]) {
       inputSellingPriceRef.current[0].focus();
+      inputSellingPriceRef.current[0].setSelectionRange(0,0);
     }
 
     if (standardSellingCostModal && inputSellingCostRef.current[0]) {
       inputSellingCostRef.current[0].focus();
+      inputSellingCostRef.current[0].setSelectionRange(0, 0);
     }
 
     if (godownSubFormModal && inputGodownRef.current[0]) {
       inputGodownRef.current[0].focus();
+      inputGodownRef.current[0].setSelectionRange(0, 0);
     }
 
     // Detect if the sellingpriceSubFormModal is closed
@@ -390,7 +393,7 @@ console.log(stockItem)
         }
       }
     } else if (key === 'Backspace') {
-      if (e.target.value.trim() === '' && index > 0) {
+      if (e.target.value.trim() !== '' && index > 0) {
         e.preventDefault();
         const prevField = index - 1;
         if (inputRefs.current[prevField]) {
@@ -422,143 +425,197 @@ console.log(stockItem)
     const key = e.key;
 
     if (key === 'Enter') {
-      e.preventDefault();
-      if (filteredStockGroup.length >= 0) {
-        // Select the highlighted suggestion for stock group
-        const selectedGroup = filteredStockGroup[highlightedStockGroup];
-        handleStockGroupSuggestionClick(selectedGroup); // Define this function for handling the selection
-        inputRefs.current[0].blur(); // Blur the input after selection
-      }
+        e.preventDefault();
+        if (filteredStockGroup.length > 0) {
+            // Select the highlighted suggestion for stock group
+            const selectedGroup = filteredStockGroup[highlightedStockGroup];
+            handleStockGroupSuggestionClick(selectedGroup); // Define this function for handling the selection
+            inputRefs.current[0].blur(); // Blur the input after selection
+        }
     } else if (key === 'ArrowDown') {
-      if (filteredStockGroup.length > 0) {
-        e.preventDefault();
-        setHighlightedStockGroup(prev => Math.min(prev + 1, filteredStockGroup.length - 1));
-      }
+        if (filteredStockGroup.length > 0) {
+            e.preventDefault();
+            setHighlightedStockGroup(prev => Math.min(prev + 1, filteredStockGroup.length - 1));
+        }
     } else if (key === 'ArrowUp') {
-      if (filteredStockGroup.length > 0) {
+        if (filteredStockGroup.length > 0) {
+            e.preventDefault();
+            setHighlightedStockGroup(prev => Math.max(prev - 1, 0));
+        }
+    } else if (key === ' ') {
         e.preventDefault();
-        setHighlightedStockGroup(prev => Math.max(prev - 1, 0));
-      }
-    } else if (key === ' '){
-      e.preventDefault();
-      inputRefs.current[3].value = '';  // Clear the input field
+        inputRefs.current[3].value = '';  // Clear the input field
     } else if (key === 'Escape') {
-      // Close the dropdown on Escape key
-      setFilteredStockGroup([]);
-      inputRefs.current[0].blur(); // Optionally blur the input field
+        // Close the dropdown on Escape key
+        setFilteredStockGroup([]);
+        inputRefs.current[0].blur(); // Optionally blur the input field
+    } else if (key === 'Backspace') {
+        e.preventDefault();
+        const currentInputIndex = 3; // Index of the current input
+
+        // Get the current input value
+        const currentInputValue = inputRefs.current[currentInputIndex].value;
+
+        if (currentInputValue !== '' && currentInputIndex > 0) {
+            // Move to the previous input if current input is empty and not the first
+            inputRefs.current[currentInputIndex - 1].focus();
+        }
     }
-  };
+};
 
-  const handleKeyDownCategory = (e) => {
-    const key = e.key;
+const handleKeyDownCategory = (e) => {
+  const key = e.key;
 
-    if (key === 'Enter') {
+  if (key === 'Enter') {
       e.preventDefault();
-      if (filteredStockCategory.length >= 0) {
-        // Select the highlighted suggestion for stock group
-        const selectedCategory = filteredStockCategory[highlightedStockCategory];
-
-        handleStockCategorySuggestionClick(selectedCategory); // Define this function for handling the selection
-        inputRefs.current[1].blur(); // Blur the input after selection
-      }
-    } else if (key === 'ArrowDown') {
       if (filteredStockCategory.length > 0) {
-        e.preventDefault();
-        setHighlightedStockCategory(prev => Math.min(prev + 1, filteredStockCategory.length - 1));
+          // Select the highlighted suggestion for stock category
+          const selectedCategory = filteredStockCategory[highlightedStockCategory];
+          handleStockCategorySuggestionClick(selectedCategory); // Define this function for handling the selection
+          inputRefs.current[1].blur(); // Blur the input after selection
       }
-    } else if (key === 'ArrowUp') {
+  } else if (key === 'ArrowDown') {
       if (filteredStockCategory.length > 0) {
-        e.preventDefault();
-        setHighlightedStockCategory(prev => Math.max(prev - 1, 0));
+          e.preventDefault();
+          setHighlightedStockCategory(prev => Math.min(prev + 1, filteredStockCategory.length - 1));
       }
-    } else if (key === ' '){
+  } else if (key === 'ArrowUp') {
+      if (filteredStockCategory.length > 0) {
+          e.preventDefault();
+          setHighlightedStockCategory(prev => Math.max(prev - 1, 0));
+      }
+  } else if (key === ' ') {
       e.preventDefault();
       inputRefs.current[2].value = '';  // Clear the input field
-    } else if (key === 'Escape') {
+  } else if (key === 'Escape') {
       // Close the dropdown on Escape key
       setFilteredStockCategory([]);
       inputRefs.current[1].blur(); // Optionally blur the input field
-    }
-  };
-
-  const handleKeyDownUnit = (e) => {
-    const key = e.key;
-
-    if (key === 'Enter') {
+  } else if (key === 'Backspace') {
       e.preventDefault();
-      if (filteredUnit.length >= 0) {
-        // Select the highlighted suggestion for unit
-        const selectedUnit = filteredUnit[highlightedUnit];
-        handleUnitSuggestionClick(selectedUnit); // Define this function for handling the selection
-        inputRefs.current[2].blur(); // Blur the input after selection
+      const currentInputIndex = 2; // Adjust to the current input index for category
+
+      // Get the current input value
+      const currentInputValue = inputRefs.current[currentInputIndex].value;
+
+      if (currentInputValue !== '' && currentInputIndex > 0) {
+          // Move to the previous input if current input is empty and not the first
+          inputRefs.current[currentInputIndex - 1].focus();
       }
-    } else if (key === 'ArrowDown') {
+  }
+};
+
+const handleKeyDownUnit = (e) => {
+  const key = e.key;
+
+  if (key === 'Enter') {
+      e.preventDefault();
       if (filteredUnit.length > 0) {
-        e.preventDefault();
-        setHighlightedUnit(prev => Math.min(prev + 1, filteredUnit.length - 1));
+          // Select the highlighted suggestion for unit
+          const selectedUnit = filteredUnit[highlightedUnit];
+          handleUnitSuggestionClick(selectedUnit); // Define this function for handling the selection
+          inputRefs.current[4].blur(); // Blur the input after selection
       }
-    } else if (key === 'ArrowUp') {
+  } else if (key === 'ArrowDown') {
       if (filteredUnit.length > 0) {
-        e.preventDefault();
-        setHighlightedUnit(prev => Math.max(prev - 1, 0));
+          e.preventDefault();
+          setHighlightedUnit(prev => Math.min(prev + 1, filteredUnit.length - 1));
       }
-    } else if (key === ' '){
+  } else if (key === 'ArrowUp') {
+      if (filteredUnit.length > 0) {
+          e.preventDefault();
+          setHighlightedUnit(prev => Math.max(prev - 1, 0));
+      }
+  } else if (key === ' ') {
       e.preventDefault();
       inputRefs.current[4].value = '';  // Clear the input field
-    } else if (key === 'Escape') {
+  } else if (key === 'Escape') {
       // Close the dropdown on Escape key
       setFilteredUnit([]);
-      inputRefs.current[2].blur(); // Optionally blur the input field
-    }
-  };
-
-  const handleKeyDownGodown = (e, index) => {
-    const key = e.key;
-
-    if (key === 'Enter') {
+      inputRefs.current[4].blur(); // Optionally blur the input field
+  } else if (key === 'Backspace') {
       e.preventDefault();
-      if (filteredGodown.length > 0) {
-        // Select the highlighted suggestion for godown
-        const selectedGodown = filteredGodown[highlightedGodown];
-        handleGodownSuggestionClick(selectedGodown, index); // Define this function for handling the selection
-        inputGodownRef.current[index * 6].blur(); // Blur the input after selection
+      const currentInputIndex = 4; // Adjust this index according to your inputRefs
+
+      // Get the current input value
+      const currentInputValue = inputRefs.current[currentInputIndex].value;
+
+      if (currentInputValue !== '' && currentInputIndex > 0) {
+          // Move to the previous input if current input is empty and not the first
+          inputRefs.current[currentInputIndex - 1].focus();
       }
-    } else if (key === 'ArrowDown') {
-      if (filteredGodown.length > 0) {
-        e.preventDefault();
-        setHighlightedGodown(prev => Math.min(prev + 1, filteredGodown.length - 1));
-      }
-    } else if (key === 'ArrowUp') {
-      if (filteredGodown.length > 0) {
-        e.preventDefault();
-        setHighlightedGodown(prev => Math.max(prev - 1, 0));
-      }
+  }
+};
+
+const handleKeyDownGodown = (e, index) => {
+  const key = e.key;
+
+  if (key === 'Enter') {
+    e.preventDefault();
+    if (filteredGodown.length > 0) {
+      // Select the highlighted suggestion for godown
+      const selectedGodown = filteredGodown[highlightedGodown];
+      handleGodownSuggestionClick(selectedGodown, index);
+      inputGodownRef.current[index * 6].blur(); // Blur the input after selection
+      inputGodownRef.current[index * 6].setSelectionRange(0, 0);
     }
-  };
-
-  const handleKeyDownBatch = (e, index) => {
-    const key = e.key;
-
-    if (key === 'Enter') {
+  } else if (key === 'ArrowDown') {
+    if (filteredGodown.length > 0) {
       e.preventDefault();
-      if (filteredBatch.length > 0) {
-        // Select the highlighted suggestion for batch
-        const selectedBatch = filteredBatch[highlightedBatch];
-        handleBatchSuggestionClick(selectedBatch, index); // Define this function for handling the selection
-        inputGodownRef.current[index * 6].blur(); // Blur the input after selection
-      }
-    } else if (key === 'ArrowDown') {
-      if (filteredBatch.length > 0) {
-        e.preventDefault();
-        setHighlightedBatch(prev => Math.min(prev + 1, filteredBatch.length - 1));
-      }
-    } else if (key === 'ArrowUp') {
-      if (filteredBatch.length > 0) {
-        e.preventDefault();
-        setHighlightedBatch(prev => Math.max(prev - 1, 0));
-      }
+      setHighlightedGodown(prev => Math.min(prev + 1, filteredGodown.length - 1));
     }
-  };
+  } else if (key === 'ArrowUp') {
+    if (filteredGodown.length > 0) {
+      e.preventDefault();
+      setHighlightedGodown(prev => Math.max(prev - 1, 0));
+    }
+  } else if (key === 'Backspace') {
+    // Move focus to the previous input if the current input is empty
+    const currentInput = inputGodownRef.current[index * 6];
+
+    if (currentInput.value !== '' && index > 0) {
+      e.preventDefault(); // Prevent default behavior
+      const previousInputIndex = (index - 1) * 6; // Calculate previous input index
+      inputGodownRef.current[previousInputIndex].focus(); // Focus on the previous input
+      inputGodownRef.current[previousInputIndex].setSelectionRange(0, 0); // Set selection range to start
+    }
+  }
+};
+
+const handleKeyDownBatch = (e, index) => {
+  const key = e.key;
+
+  if (key === 'Enter') {
+    e.preventDefault();
+    if (filteredBatch.length > 0) {
+      // Select the highlighted suggestion for batch
+      const selectedBatch = filteredBatch[highlightedBatch];
+      handleBatchSuggestionClick(selectedBatch, index);
+      inputGodownRef.current[index * 6 + 1].blur(); // Blur the input after selection
+      inputGodownRef.current[index * 6 + 1].setSelectionRange(0, 0);
+    }
+  } else if (key === 'ArrowDown') {
+    if (filteredBatch.length > 0) {
+      e.preventDefault();
+      setHighlightedBatch(prev => Math.min(prev + 1, filteredBatch.length - 1));
+    }
+  } else if (key === 'ArrowUp') {
+    if (filteredBatch.length > 0) {
+      e.preventDefault();
+      setHighlightedBatch(prev => Math.max(prev - 1, 0));
+    }
+  } else if (key === 'Backspace') {
+    // Move focus to the previous input if the current input is empty
+    const currentInput = inputGodownRef.current[index * 6 + 1]; // Adjust the index for batch
+
+    if (currentInput.value !== '' && index > 0) {
+      e.preventDefault(); // Prevent default behavior
+      const previousInputIndex = (index - 1) * 6 + 1; // Calculate previous input index for batch
+      inputGodownRef.current[previousInputIndex].focus(); // Focus on the previous input
+      inputGodownRef.current[previousInputIndex].setSelectionRange(0, 0); // Set selection range to start
+    }
+  }
+};  
 
   // add new row function
   const addNewRowSellingPrice = () => {
@@ -587,7 +644,8 @@ console.log(stockItem)
   
       if (rowIndex === 0 && colIndex === firstSellingPriceDate && e.target.value.trim() === '') {
         alert('Please enter the selling price date before proceeding');
-        inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus();  // Refocus on the empty sellingpricedate field
+        inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus on the empty sellingpricedate field
+        inputSellingPriceRef.current[rowIndex * 5 + colIndex].setSelectionRange(0, 0);
         return;
       }
   
@@ -597,16 +655,17 @@ console.log(stockItem)
           setStandardSellingPriceModal(false);
           setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }));
           inputRefs.current[6]?.focus();
+          inputRefs.current[6].setSelectionRange(0, 0);
           return;
         } else {
-          inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus();  // Refocus if they choose not to close
+          inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus if they choose not to close
+          inputSellingPriceRef.current[rowIndex * 5 + colIndex].setSelectionRange(0, 0);
           return;
         }
       }
   
       const isSellingPriceStatus = e.target.name === 'sellingPriceStatus';
-      const isLastRowSelingPriceStatus =
-        rowIndex === stockItem.standardSellingPriceSubForm.length - 1;
+      const isLastRowSelingPriceStatus = rowIndex === stockItem.standardSellingPriceSubForm.length - 1;
   
       if (isSellingPriceStatus && e.target.value.trim() !== '' && isLastRowSelingPriceStatus) {
         addNewRowSellingPrice();
@@ -619,6 +678,7 @@ console.log(stockItem)
       const nextCell = rowIndex * 5 + colIndex + 1;
       if (inputSellingPriceRef.current[nextCell] && nextCell < inputSellingPriceRef.current.length) {
         inputSellingPriceRef.current[nextCell]?.focus();
+        inputSellingPriceRef.current[nextCell].setSelectionRange(0, 0);
       }
     } else if (key === 'Backspace') {
       if (e.target.value.trim() === '') {
@@ -636,14 +696,14 @@ console.log(stockItem)
       if (e.target.name === 'sellingPriceStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingPriceSubForm];
-        newRow[rowIndex].sellingPriceStatus = 'active';    // Update the status in the row
+        newRow[rowIndex].sellingPriceStatus = 'active'; // Update the status in the row
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
       }
     } else if (key === 'n' || key === 'N') {
       if (e.target.name === 'sellingPriceStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingPriceSubForm];
-        newRow[rowIndex].sellingPriceStatus = 'not active';  // Update the status in the row
+        newRow[rowIndex].sellingPriceStatus = 'not active'; // Update the status in the row
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
       }
     } else if (key === 'ArrowUp') {
@@ -651,12 +711,14 @@ console.log(stockItem)
       const prevRow = (rowIndex - 1) * 5 + colIndex;
       if (inputSellingPriceRef.current[prevRow] && rowIndex > 0) {
         inputSellingPriceRef.current[prevRow].focus();
+        inputSellingPriceRef.current[prevRow].setSelectionRange(0, 0);
       }
     } else if (key === 'ArrowDown') {
       // Move focus to the cell below (next row, same column)
       const nextRow = (rowIndex + 1) * 5 + colIndex;
       if (inputSellingPriceRef.current[nextRow] && rowIndex < stockItem.standardSellingPriceSubForm.length - 1) {
         inputSellingPriceRef.current[nextRow].focus();
+        inputSellingPriceRef.current[nextRow].setSelectionRange(0, 0);
       }
     } else if (key === 'ArrowLeft') {
       // Move focus to the cell on the left (same row, previous column)
@@ -664,14 +726,15 @@ console.log(stockItem)
       const prevCell = rowIndex * 5 + colIndex - 1;
       if (inputSellingPriceRef.current[prevCell] && prevCell >= 0) {
         inputSellingPriceRef.current[prevCell].focus();
+        inputSellingPriceRef.current[prevCell].setSelectionRange(0, 0);
       }
     } else if (key === 'ArrowRight') {
       // Prevent default behavior of ArrowRight
       e.preventDefault();
-    
+  
       // Calculate the next cell index
       const nextCell = rowIndex * 5 + colIndex + 1;
-    
+  
       // Check if the next cell exists within the current row (colIndex < 4)
       if (inputSellingPriceRef.current[nextCell] && colIndex < 4) {
         // Focus on the next input
@@ -680,9 +743,18 @@ console.log(stockItem)
         // Move to the first column of the next row if we are at the last column
         const firstCellOfNextRow = (rowIndex + 1) * 5;
         inputSellingPriceRef.current[firstCellOfNextRow]?.focus();
+        inputSellingPriceRef.current[firstCellOfNextRow].setSelectionRange(0, 0);
       }
-    }    
-  };  
+    } else if (key === ' ') {
+      // Clear value when Spacebar is pressed in sellingPriceRate or sellingPricePercentage input
+      if (e.target.name === 'sellingPriceRate' || e.target.name === 'sellingPricePercentage') {
+        e.preventDefault(); // Prevent default spacebar behavior
+        const updatedRows = [...stockItem.standardSellingPriceSubForm];
+        updatedRows[rowIndex][e.target.name] = ''; // Clear the input value
+        setStockItem({ ...stockItem, standardSellingPriceSubForm: updatedRows });
+      }
+    }
+  };    
 
   // add new row function
   const addNewRowSellingCost = () => {
@@ -713,6 +785,7 @@ console.log(stockItem)
       if (rowIndex === 0 && colIndex === firstSellingCostDate && e.target.value.trim() === '') {
         alert('The Selling Cost Date field must have a value before proceeding.');
         inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus on the empty sellingCostDate field
+        inputSellingCostRef.current[rowIndex * 5 + colIndex].setSelectionRange(0, 0);
         return;
       }
   
@@ -723,9 +796,11 @@ console.log(stockItem)
           setStandardSellingCostModal(false);
           setStockItem((prev) => ({ ...prev, standardSellingCost: 'no' }));
           inputRefs.current[7]?.focus();
+          inputRefs.current[7].setSelectionRange(0, 0);
           return;
         } else {
           inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus if they choose not to close
+          inputSellingCostRef.current[rowIndex * 5 + colIndex].setSelectionRange(0, 0);
           return;
         }
       }
@@ -740,6 +815,7 @@ console.log(stockItem)
         addNewRowSellingCost();
         setTimeout(() => {
           inputSellingCostRef.current[(rowIndex + 1) * 5]?.focus();
+          inputSellingCostRef.current[(rowIndex + 1) * 5].setSelectionRange(0, 0);
         }, 0);
         return;
       }
@@ -748,6 +824,7 @@ console.log(stockItem)
       const nextCell = rowIndex * 5 + colIndex + 1;
       if (inputSellingCostRef.current[nextCell] && nextCell < inputSellingCostRef.current.length) {
         inputSellingCostRef.current[nextCell]?.focus();
+        inputSellingCostRef.current[nextCell].setSelectionRange(0, 0);
       }
     } else if (key === 'Backspace') {
       // Move focus to the previous input if the current input is empty
@@ -781,12 +858,14 @@ console.log(stockItem)
       const prevRow = (rowIndex - 1) * 5 + colIndex;
       if (inputSellingCostRef.current[prevRow] && rowIndex > 0) {
         inputSellingCostRef.current[prevRow].focus();
+        inputSellingCostRef.current[prevRow].setSelectionRange(0, 0);
       }
     } else if (key === 'ArrowDown') {
       // Move focus to the cell below (next row, same column)
       const nextRow = (rowIndex + 1) * 5 + colIndex;
       if (inputSellingCostRef.current[nextRow] && rowIndex < stockItem.standardSellingCostSubForm.length - 1) {
         inputSellingCostRef.current[nextRow].focus();
+        inputSellingCostRef.current[nextRow].setSelectionRange(0, 0);
       }
     } else if (key === 'ArrowLeft') {
       // Move focus to the cell on the left (same row, previous column)
@@ -794,6 +873,7 @@ console.log(stockItem)
       const prevCell = rowIndex * 5 + colIndex - 1;
       if (inputSellingCostRef.current[prevCell] && prevCell >= 0) {
         inputSellingCostRef.current[prevCell].focus();
+        inputSellingCostRef.current[prevCell].setSelectionRange(0, 0);
       }
     } else if (key === 'ArrowRight') {
       // Move focus to the cell on the right (same row, next column)
@@ -802,10 +882,19 @@ console.log(stockItem)
       if (inputSellingCostRef.current[nextCell] && colIndex < 4) {
         // Focus on the next input in the same row
         inputSellingCostRef.current[nextCell].focus();
+        inputSellingCostRef.current[nextCell].setSelectionRange(0, 0);
       } else if (colIndex === 4 && rowIndex < stockItem.standardSellingCostSubForm.length - 1) {
         // Move to the first column of the next row if we are at the last column
         const firstCellOfNextRow = (rowIndex + 1) * 5;
         inputSellingCostRef.current[firstCellOfNextRow]?.focus();
+        inputSellingCostRef.current[firstCellOfNextRow]?.setSelectionRange(0, 0);
+      }
+    } else if (key === ' '){
+      if (e.target.name === 'sellingCostRate' || e.target.name === 'sellingCostPercentage'){
+        e.preventDefault();
+        const newRow = [...stockItem.standardSellingCostSubForm];
+        newRow[rowIndex][e.target.name] = '';   // make value empty
+        setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
       }
     }
   };  
@@ -857,6 +946,7 @@ console.log(stockItem)
             if (isQuantityEqual) {
                 alert('Cannot add a new row because total quantity equals opening balance quantity.');
                 totalRefs.current[0].focus();
+                totalRefs.current[0].setSelectionRange(0, 0);
                 return; // Prevent adding a new row
             }
 
@@ -864,6 +954,7 @@ console.log(stockItem)
             addNewRowGodown();
             setTimeout(() => {
                 inputGodownRef.current[(rowIndex + 1) * 6]?.focus();
+                inputGodownRef.current[(rowIndex + 1) * 6].setSelectionRange(0, 0);
             }, 0);
             return;
         }
@@ -872,15 +963,16 @@ console.log(stockItem)
         const nextCell = rowIndex * 6 + colIndex + 1;
         if (inputGodownRef.current[nextCell] && nextCell < inputGodownRef.current.length) {
             inputGodownRef.current[nextCell]?.focus();
+            inputGodownRef.current[nextCell].setSelectionRange(0, 0);
         }
     } else if (key === 'Backspace') {
         // Remove the current row when Backspace is pressed on the last row
-        if (e.target.value.trim() === '') {
+        if (e.target.value.trim() !== '') {
             e.preventDefault();
             const prevCell = rowIndex * 6 + colIndex - 1;
             if (inputGodownRef.current[prevCell] && prevCell >= 0) {
-                inputGodownRef.current[prevCell]?.focus();
-                inputGodownRef.current[prevCell].setSelectionRange(0, 0);
+              inputGodownRef.current[prevCell]?.focus();
+              inputGodownRef.current[prevCell].setSelectionRange(0, 0);
             }
         }
     } else if (key === 'Escape') {
@@ -891,24 +983,28 @@ console.log(stockItem)
         if (rowIndex > 0) {
             const prevRowCell = (rowIndex - 1) * 6 + colIndex;
             inputGodownRef.current[prevRowCell]?.focus();
+            inputGodownRef.current[prevRowCell].setSelectionRange(0, 0);
         }
     } else if (key === 'ArrowDown') {
         // Move focus to the cell below (next row, same column)
         if (rowIndex < stockItem.godownSubForm.length - 1) {
             const nextRowCell = (rowIndex + 1) * 6 + colIndex;
             inputGodownRef.current[nextRowCell]?.focus();
+            inputGodownRef.current[nextRowCell].setSelectionRange(0, 0);
         }
     } else if (key === 'ArrowLeft') {
         // Move focus to the cell on the left (same row, previous column)
         if (colIndex > 0) {
             const leftCell = rowIndex * 6 + colIndex - 1;
             inputGodownRef.current[leftCell]?.focus();
+            inputGodownRef.current[leftCell].setSelectionRange(0, 0);
         }
     } else if (key === 'ArrowRight') {
         // Move focus to the cell on the right (same row, next column)
         if (colIndex < 5) { // Assuming there are 6 columns, index 0 to 5
             const rightCell = rowIndex * 6 + colIndex + 1;
             inputGodownRef.current[rightCell]?.focus();
+            inputGodownRef.current[rightCell].setSelectionRange(0, 0);
         }
     }
 };      
@@ -921,6 +1017,7 @@ console.log(stockItem)
       const nextIndex = index +1;
       if (totalRefs.current[nextIndex]){
         totalRefs.current[nextIndex].focus();
+        totalRefs.current[nextIndex].setSelectionRange(0, 0);
       } else if (e.target.name === 'totalNetAmount'){
         const userConfirmed = window.confirm('Do you want to confirm this submit?');
         if (userConfirmed){
@@ -1245,24 +1342,6 @@ console.log(stockItem)
       openingBalanceQuantityDisplay: `${numericValue} ${prevState.openingBalanceUnit || ''}`.trim(),
   }));
 };      
-
-  // useEffect to update openingBalanceValue whenever quantity or rate changes
-  useEffect(() => {
-    const quantity = parseFloat(stockItem.openingBalanceQuantity) || 0;
-    const rate = parseFloat(stockItem.openingBalanceRate.replace(/,/g, '')) || 0;
-    const value = quantity * rate;
-
-    // Format the value with commas
-    const formattedValue = new Intl.NumberFormat('en-IN', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
-
-    setStockItem(prevState => ({
-      ...prevState,
-      openingBalanceValue: formattedValue,
-    }));
-  }, [stockItem.openingBalanceQuantity, stockItem.openingBalanceRate]);
   
   const calculateSellingPriceNetRate = (index) => {
     // Parse rate and percentage inputs from the current row
@@ -1414,6 +1493,7 @@ console.log(stockItem)
       ...prevState,
       totalQuantity: formattedTotalQuantity,
       totalNetAmount: formattedTotalNetAmount,
+      openingBalanceValue: formattedTotalNetAmount,
       openingBalanceRate: openingBalanceRate,        // Set calculated opening balance rate
     }));
   }, [stockItem.godownSubForm]);  

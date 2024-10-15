@@ -336,102 +336,139 @@ const SundryCreditorsCreate = () => {
   const handleKeyDownForex = async (e, rowIndex, colIndex) => {
     const key = e.key;
     const firstForexDateIndex = 0;
-  
+
     // Helper function to parse amounts
-    const parseAmount = (value) => parseFloat(value) || 0;
-  
+    const parseAmount = (value) => parseFloat(value.replace(/,/g, '').trim()) || 0;
+
     // Ensure both quantities are parsed correctly
     const openingBalance = parseAmount(sundryCreditor.openingBalance);
     const totalOutwardReferenceAmount = parseAmount(sundryCreditor.totalOutwardReferenceAmount);
-  
+
     if (key === 'Enter') {
-      e.preventDefault(); // Prevent default Enter key behavior
-  
-      // Check if the current input is the first forexDate and ensure it has a value
-      if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === '') {
-        alert('The forexDate field must have a value before proceeding.');
-        inputRefsForex.current[rowIndex * 10 + colIndex]?.focus(); // Refocus on the empty forexDate field
-        return;
-      }
-  
-      // Check if the current field is referenceCreditOrDebit and its value is not empty
-      const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
-      const isLastRow = rowIndex === sundryCreditor.forexSubForm.length - 1;
-  
-      // Check if openingBalance is not equal to totalOutwardReferenceAmount
-      const canAddNewRow = openingBalance === totalOutwardReferenceAmount;
-  
-      // Add a new row when Enter is pressed on the last row referenceCreditOrDebit with a value
-      if (isReferenceCreditOrDebit && e.target.value.trim() !== '' && isLastRow && !canAddNewRow) {
-        addNewRow();
-        setTimeout(() => {
-          inputRefsForex.current[(rowIndex + 1) * 10]?.focus();
-        }, 0);
-        return;
-      }
-  
-      // Move to the next cell
-      const nextCell = rowIndex * 10 + colIndex + 1;
-      if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
-        inputRefsForex.current[nextCell]?.focus();
-      } else {
-        // If the next cell is not available, move to the next row
-        totalRefs.current[0].focus();
+        e.preventDefault(); // Prevent default Enter key behavior
 
-      }
+        // Check if the current input is the first forexDate and ensure it has a value
+        if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === '') {
+            alert('The forexDate field must have a value before proceeding.');
+            inputRefsForex.current[rowIndex * 10 + colIndex]?.focus(); // Refocus on the empty forexDate field
+            return;
+        }
+
+        // Check if the current field is referenceCreditOrDebit and its value is not empty
+        const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
+        const isLastRow = rowIndex === sundryCreditor.forexSubForm.length - 1;
+
+        // Calculate whether the opening balance matches the total outward reference amount
+        const canAddNewRow = openingBalance > totalOutwardReferenceAmount;
+
+        // Add a new row if openingBalance is greater than totalOutwardReferenceAmount and it's the last row
+        if (isReferenceCreditOrDebit && e.target.value.trim() !== '' && isLastRow) {
+            if (canAddNewRow) {
+                addNewRow(); // Add the new row if the balance isn't yet reached
+                setTimeout(() => {
+                    inputRefsForex.current[(rowIndex + 1) * 10]?.focus(); // Focus on the first cell of the new row
+                }, 0);
+            } else {
+                // Alert when balance has been reached, and no more rows should be added
+                alert(`You've reached the opening balance amount of ${formattedBalance(openingBalance)}. No more rows can be added.`);
+                totalRefs.current[0].focus(); // Focus on the first total reference input
+            }
+            return;
+        }
+
+        // Move to the next cell if we're not adding a new row
+        const nextCell = rowIndex * 10 + colIndex + 1;
+        if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
+            inputRefsForex.current[nextCell]?.focus();
+        } else {
+            // If the next cell is not available, move to the next row
+            totalRefs.current[0].focus();
+        }
     } else if (key === 'Backspace') {
-      // Move focus to the previous input if the current input is empty
-      if (e.target.value.trim() === '') {
-        e.preventDefault();
-        const prevCell = rowIndex * 10 + colIndex - 1;
-        if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
-          inputRefsForex.current[prevCell].focus();
-          inputRefsForex.current[prevCell].setSelectionRange(0, 0);
+        // Move focus to the previous input if the current input is empty
+        if (e.target.value.trim() === '') {
+            e.preventDefault();
+            const prevCell = rowIndex * 10 + colIndex - 1;
+            if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
+                inputRefsForex.current[prevCell].focus();
+                inputRefsForex.current[prevCell].setSelectionRange(0, 0);
+            }
         }
-      }
     } else if (key === 'Tab') {
-      e.preventDefault();
-      setCurrencyFocused(false);
+        e.preventDefault();
+        setCurrencyFocused(false);
     } else if (key === 'Escape') {
-      setForexSubFormModal(false);
+        setForexSubFormModal(false);
     }
-  };  
+};
 
-  const handleKeyDownTotal = async (e, currentIndex) => {
-    switch (e.key) {
-      case 'Enter':
-        // Move focus to the next input field when Enter is pressed
-        if (currentIndex < totalRefs.current.length - 1) {
-          totalRefs.current[currentIndex + 1].focus();
-        }
+// Helper function to format the balance for alert messages
+const formattedBalance = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(amount);
+};  
 
-        // Check if specific fields are empty and handle submission logic
-        if (
-          (e.target.name === 'totalOutwardReferenceAmountCreditOrDebit' ||
-            e.target.name === 'totalInwardReferenceAmountCreditOrDebit') &&
-          e.target.value.trim() !== ''
-        ) {
-          e.preventDefault(); // Prevent form submission if the field is empty
-          const confirmSubmit = window.confirm('Do you want to proceed with submit?');
+const handleKeyDownTotal = async (e, currentIndex) => {
+  switch (e.key) {
+    case 'Enter':
+      // Move focus to the next input field when Enter is pressed
+      if (currentIndex < totalRefs.current.length - 1) {
+        totalRefs.current[currentIndex + 1].focus();
+      }
 
-          if (confirmSubmit) {
-            handleSubmit(e);
-            navigate(-1);
+      // Check if specific fields are filled and handle submission logic
+      if (
+        (e.target.name === 'totalOutwardReferenceAmountCreditOrDebit' ||
+          e.target.name === 'totalInwardReferenceAmountCreditOrDebit') &&
+        e.target.value.trim() !== ''
+      ) {
+        e.preventDefault(); // Prevent default form submission
+
+        // Parse and sanitize the amounts
+        const openingBalance = parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')) || 0;
+        const totalOutwardReferenceAmount = parseFloat(sundryCreditor.totalOutwardReferenceAmount.replace(/,/g, '')) || 0;
+
+        // Check if totalOutwardReferenceAmount matches openingBalance
+        if (openingBalance !== totalOutwardReferenceAmount) {
+          // Show alert
+          alert(`The total outward reference amount (${totalOutwardReferenceAmount.toFixed(2)}) does not match the opening balance (${openingBalance.toFixed(2)}).`);
+          
+          // Set focus back to the first input in totalRefs after the alert
+          if (totalRefs.current[0]) {
+            totalRefs.current[0].focus();
           }
-          return;
+          return; // Stop the submission process and stay on the first input
         }
-        break;
-      case 'Backspace':
-        // Move focus to the previous input if Backspace is pressed and the current input is empty
-        if (e.target.value.trim() === '' && currentIndex > 0) {
-          totalRefs.current[currentIndex - 1].focus();
-        }
-        break;
 
-      default:
-        break;
-    }
-  };  
+        // Proceed with form submission after confirmation
+        const confirmSubmission = window.confirm('Do you want to proceed with submitting the form despite the mismatch?');
+        if (!confirmSubmission) {
+          if (totalRefs.current[0]) {
+            totalRefs.current[0].focus();  // Refocus on the first input if user cancels
+          }
+          return;  // Do not submit if user cancels
+        }
+
+        // Submit the form and navigate after confirmation
+        handleSubmit(e);
+        navigate(-1);
+        return;
+      }
+      break;
+
+    case 'Backspace':
+      // Move focus to the previous input if Backspace is pressed and the current input is empty
+      if (e.target.value.trim() === '' && currentIndex > 0) {
+        totalRefs.current[currentIndex - 1].focus();
+      }
+      break;
+
+    default:
+      break;
+  }
+};  
 
   const handleSuggestionClick = (suggestion, index) => {
     setSundryCreditor(prevState => {
@@ -503,24 +540,40 @@ const SundryCreditorsCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     // Check if sundryCreditorName is filled
-    if (!sundryCreditor.sundryCreditorName.trim()){
+    if (!sundryCreditor.sundryCreditorName.trim()) {
       alert('Sundry Creditor Name is required!');
       // Optionally focus on the sundryCreditorName input field
-      if (inputRefs.current[0]){
+      if (inputRefs.current[0]) {
         inputRefs.current[0].focus();
       }
       return;  // stop the form submission
     }
+  
+    // Parse and sanitize the amounts
+    const openingBalance = parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')) || 0;
+    const totalOutwardReferenceAmount = parseFloat(sundryCreditor.totalOutwardReferenceAmount.replace(/,/g, '')) || 0;
+  
+    // Check if totalOutwardReferenceAmount is equal to openingBalance
+    if (openingBalance !== totalOutwardReferenceAmount) {
+      const confirmSubmission = window.confirm(
+        `The total outward reference amount (${totalOutwardReferenceAmount.toFixed(2)}) does not match the opening balance (${openingBalance.toFixed(2)}).\n\nAre you sure you want to proceed with submitting the form?`
+      );
+      
+      if (!confirmSubmission) {
+        return; // stop the form submission if the user clicks "Cancel"
+      }
+    }
+  
     try {
       // Prepare data for backend
       const sanitizedData = {
         ...sundryCreditor,
-        openingBalance: parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')) || 0,
+        openingBalance,
         totalForexAmount: parseFloat(sundryCreditor.totalForexAmount.replace(/,/g, '')) || 0,
         totalInwardReferenceAmount: parseFloat(sundryCreditor.totalInwardReferenceAmount.replace(/,/g, '')) || 0,
-        totalOutwardReferenceAmount: parseFloat(sundryCreditor.totalOutwardReferenceAmount.replace(/,/g, '')) || 0,
+        totalOutwardReferenceAmount,
         sundryCreditorBankDetails: {
           accountName: sundryCreditor.bank?.accountName,
           accountNumber: sundryCreditor.bank?.accountNumber,
@@ -531,20 +584,20 @@ const SundryCreditorsCreate = () => {
           swiftCode: sundryCreditor.bank?.swiftCode,
         },
         sundryCreditorForexDetails: sundryCreditor.forexSubForm.filter(forex => forex.forexDate.trim() !== '')
-        .map(forex => ({
-          ...forex,
-          forexCurrencySymbol: forex.forexCurrencySymbol,
-          forexAmount: parseFloat(forex.forexAmount.replace(/,/g, '')) || 0,
-          exchangeRate: parseFloat(forex.exchangeRate.replace(/,/g, '')) || 0,
-          outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount.replace(/,/g, '')) || 0,
-          inwardReferenceAmount: parseFloat(forex.inwardReferenceAmount.replace(/,/g, '')) || 0,
-        })),
+          .map(forex => ({
+            ...forex,
+            forexCurrencySymbol: forex.forexCurrencySymbol,
+            forexAmount: parseFloat(forex.forexAmount.replace(/,/g, '')) || 0,
+            exchangeRate: parseFloat(forex.exchangeRate.replace(/,/g, '')) || 0,
+            outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount.replace(/,/g, '')) || 0,
+            inwardReferenceAmount: parseFloat(forex.inwardReferenceAmount.replace(/,/g, '')) || 0,
+          })),
       };
-
+  
       // Send sanitized data to backend
       const response = await createSundryCreditorMaster(sanitizedData);
       console.log('Response:', response.data);
-
+  
       // Reset form data
       setSundryCreditor({
         sundryCreditorName: '',
@@ -588,7 +641,6 @@ const SundryCreditorsCreate = () => {
         totalOutwardReferenceAmountCreditOrDebit: 'cr',
         forexSubForm: [
           {
-            
             forexDate: '',
             referenceName: '',
             dueDate: '',
@@ -599,11 +651,11 @@ const SundryCreditorsCreate = () => {
             exchangeRate: '',
             outwardReferenceAmount: '',
             inwardReferenceAmount: '',
-            referenceCreditOrDebit: 'cr'
+            referenceCreditOrDebit: 'cr',
           },
         ],
       });
-
+  
       // Focus on the first input field
       if (inputRefs.current && inputRefs.current[0]) {
         inputRefs.current[0].focus();
@@ -611,7 +663,7 @@ const SundryCreditorsCreate = () => {
     } catch (error) {
       console.error('Error submitting data:', error);
     }
-  };
+  };    
 
   const handleBankSubFormBlur = () => {
     const confirmation = window.confirm(
@@ -764,6 +816,8 @@ useEffect(() => {
     totalForexAmount: formattedTotalForexAmount,
     totalOutwardReferenceAmount: formattedTotalOutwardReferenceAmount,
   }));
+  console.log(totalOutwardReferenceAmount);
+  console.log(sundryCreditor.openingBalance);
 }, [sundryCreditor.forexSubForm]);
 
 

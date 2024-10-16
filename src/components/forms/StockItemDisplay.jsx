@@ -33,6 +33,24 @@ const StockItemDisplay = () => {
         sellingCostStatus: '',
       },
     ],
+    gstApplicable: '',
+    gstStockItemSubForm: [
+      {
+        gstDate: '',
+        hsnCode: '',
+        gstPercentage: '',
+        gstStatus: '',
+      },
+    ],
+    vatApplicable: '',
+    vatStockItemSubForm: [
+      {
+        vatDate: '',
+        vatCode: '',
+        vatPercentage: '',
+        vatStatus: '',
+      },
+    ],
     openingBalanceQuantity: '',
     godownSubForm: [
       {
@@ -53,13 +71,19 @@ const StockItemDisplay = () => {
 
   const [standardSellingPriceModal, setStandardSellingPriceModal] = useState(false);
   const [standardSellingCostModal, setStandardSellingCostModal] = useState(false);
+  const [gstStockItemSubFormModal, setGstStockItemSubFormModal] = useState(false);
+  const [vatStockItemSubFormModal, setVatStockItemSubFormModal] = useState(false);
   const [godownSubFormModal, setGodownSubFormModal] = useState(false);
   const inputRefs = useRef([]);
   const inputSellingPriceRef = useRef([]);
   const inputSellingCostRef = useRef([]);
+  const inputGstRef = useRef([]);
+  const inputVatRef = useRef([]);
   const inputGodownRef = useRef([]);
   const prevSellingPriceModal = useRef(false);
   const prevSellingCostModal = useRef(false);
+  const prevGstModal = useRef(false);
+  const prevVatModal = useRef(false);
   const prevGodownModal = useRef(false);
   const totalRefs = useRef([]);
   const navigate = useNavigate();
@@ -121,6 +145,10 @@ const StockItemDisplay = () => {
             standardSellingPriceSubForm,
             standardSellingCost = '',
             standardSellingCostSubForm,
+            gstApplicable = '',
+            gstStockItemSubForm,
+            vatApplicable = '',
+            vatStockItemSubForm,
             openingBalanceQuantity = '',
             godownSubForm,
             totalQuantity = '',
@@ -150,6 +178,24 @@ const StockItemDisplay = () => {
             }
           ];
 
+          let fetchedGstStockItemSubForm = [
+            {
+              gstDate: '',
+              hsnCode: '',
+              gstPercentage: '',
+              gstStatus: '',
+            }
+          ];
+
+          let fetchedVatStockItemSubForm = [
+            {
+              vatDate: '',
+              vatCode: '',
+              vatPercentage: '',
+              vatStatus: '',
+            }
+          ];
+
           let fetchedGodownSubForm = [
             {
               godownName: '',
@@ -170,7 +216,6 @@ const StockItemDisplay = () => {
               sellingPriceNetRate: numberFormatValue(price.sellingPriceNetRate),
               sellingPriceStatus: price.sellingPriceStatus || '',
             }));
-            console.log('fetched selling price subform:', fetchedSellingPriceSubForm);
           }
 
           if (Array.isArray(standardSellingCostSubForm) && standardSellingCostSubForm.length > 0){
@@ -182,7 +227,26 @@ const StockItemDisplay = () => {
               sellingCostNetRate: numberFormatValue(cost.sellingCostNetRate),
               sellingCostStatus: cost.sellingCostStatus || '',
             }));
-            console.log('fetched selling cost subform:', fetchedSellingCostSubForm);
+          }
+
+          if (Array.isArray(gstStockItemSubForm) && gstStockItemSubForm.length > 0){
+            fetchedGstStockItemSubForm = gstStockItemSubForm.map((gst) => ({
+              gstDate: gst.gstDate || '',
+              formattedGstDate: formatDateForDisplay(gst.gstDate),
+              hsnCode: gst.hsnCode || '',
+              gstPercentage: percentageFormatForDisplay(gst.gstPercentage),
+              gstStatus: gst.gstStatus || '',
+            }));
+          }
+
+          if (Array.isArray(vatStockItemSubForm) && vatStockItemSubForm.length > 0){
+            fetchedVatStockItemSubForm = vatStockItemSubForm.map((vat) => ({
+              vatDate: vat.vatDate || '',
+              formattedVatDate: formatDateForDisplay(vat.vatDate),
+              vatCode: vat.vatCode || '',
+              vatPercentage: percentageFormatForDisplay(vat.vatPercentage),
+              vatStatus: vat.vatStatus || '',
+            }));
           }
 
           if (Array.isArray(godownSubForm) && godownSubForm.length > 0){
@@ -194,7 +258,6 @@ const StockItemDisplay = () => {
               perUnit: godown.perUnit || '',
               netAmount: numberFormatValue(godown.netAmount),
             }));
-            console.log('fetched godown subform:', godownSubForm);
           }
 
           // Set the state with the updated values
@@ -208,6 +271,10 @@ const StockItemDisplay = () => {
             standardSellingPriceSubForm: fetchedSellingPriceSubForm,
             standardSellingCost,
             standardSellingCostSubForm: fetchedSellingCostSubForm,
+            gstApplicable,
+            gstStockItemSubForm: fetchedGstStockItemSubForm,
+            vatApplicable,
+            vatStockItemSubForm: fetchedVatStockItemSubForm,
             openingBalanceQuantity: unitFormatFetch(openingBalanceQuantity, units),
             godownSubForm: fetchedGodownSubForm,
             totalQuantity,
@@ -244,6 +311,10 @@ const StockItemDisplay = () => {
       inputSellingPriceRef.current[0].focus();
     } else if (standardSellingCostModal && inputSellingCostRef.current[0]) {
       inputSellingCostRef.current[0].focus();
+    } else if (gstStockItemSubFormModal && inputGstRef.current[0]){
+      inputGstRef.current[0].focus();
+    } else if (vatStockItemSubFormModal && inputVatRef.current[0]){
+      inputVatRef.current[0].focus();
     } else if (godownSubFormModal && inputGodownRef.current[0]) {
       inputGodownRef.current[0].focus();
     }
@@ -256,6 +327,14 @@ const StockItemDisplay = () => {
     if (prevSellingCostModal.current && !standardSellingCostModal) {
       focusInputByName('openingBalanceQuantity');
     }
+
+    if (prevGstModal.current && !gstStockItemSubFormModal){
+      focusInputByName('openingBalanceQuantity');
+    }
+
+    if (prevVatModal.current && !vatStockItemSubFormModal){
+      focusInputByName('openingBalanceQuantity');
+    }
   
     if (prevGodownModal.current && !godownSubFormModal) {
       focusInputByName('openingBalanceRate');
@@ -264,8 +343,10 @@ const StockItemDisplay = () => {
     // Update the previous modal state values
     prevSellingPriceModal.current = standardSellingPriceModal;
     prevSellingCostModal.current = standardSellingCostModal;
+    prevGstModal.current = gstStockItemSubFormModal;
+    prevVatModal.current = vatStockItemSubFormModal;
     prevGodownModal.current = godownSubFormModal;
-  }, [standardSellingPriceModal, standardSellingCostModal, godownSubFormModal]);  
+  }, [standardSellingPriceModal, standardSellingCostModal, gstStockItemSubFormModal, vatStockItemSubFormModal, godownSubFormModal]);  
 
   const handleKeyDown = (e, index) => {
     const key = e.key;
@@ -293,6 +374,10 @@ const StockItemDisplay = () => {
           setStandardSellingPriceModal(true);
         } else if (e.target.name === 'standardSellingCost' && e.target.value.trim() === 'yes') {
           setStandardSellingCostModal(true);
+        } else if (e.target.name === 'gstApplicable' && e.target.value.trim() === 'yes'){
+          setGstStockItemSubFormModal(true);
+        } else if (e.target.name === 'vatApplicable' && e.target.value.trim() === 'yes'){
+          setVatStockItemSubFormModal(true);
         } else if (e.target.name === 'openingBalanceQuantity' && e.target.value.trim() !== '') {
           setGodownSubFormModal(true);
         }
@@ -320,6 +405,20 @@ const StockItemDisplay = () => {
         ...stockItem,
         standardSellingCost: value,
       });
+    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'gstApplicable'){
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
+      setStockItem({
+        ...stockItem,
+        gstApplicable: value,
+      })
+    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'vatApplicable'){
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
+      setStockItem({
+        ...stockItem,
+        vatApplicable: value,
+      })
     } else if (key === 'Escape') {
       e.preventDefault();
       navigate(-1);
@@ -492,7 +591,151 @@ const StockItemDisplay = () => {
       setStandardSellingCostModal(false);
       setStockItem((prev) => ({ ...prev, standardSellingCost: 'no' }));
     }
-  };    
+  };
+  
+  const handleKeyDownGstSubForm = (e, rowIndex, colIndex) => {
+    const key = e.key;
+    const inputName = e.target.name;
+
+    const statsInputs = inputGstRef.current.filter(input => input?.name === 'gstStatus');
+    const isLastStatusInput = statsInputs.length - 1 === rowIndex;
+
+    const totalColumns = 4;
+    const nextCell = rowIndex * totalColumns + colIndex + 1;
+    const prevCell = rowIndex * totalColumns + colIndex - 1;
+    const nextRowCell = (rowIndex + 1) * totalColumns + colIndex;
+    const prevRowCell = (rowIndex - 1) * totalColumns + colIndex;
+
+    if (key === 'Enter') {
+      e.preventDefault();
+
+      if (inputName === 'gstStatus' && e.target.value.trim() !== ''){
+        if (isLastStatusInput){
+          const confirmationClose = window.confirm('Do you want to close this submit?');
+          if (confirmationClose) {
+            setGstStockItemSubFormModal(false);
+            setStockItem((prev) => ({ ...prev, gstApplicable: 'no' }));
+            inputRefs.current[9]?.focus();
+            return;
+          } else {
+            inputGstRef.current[rowIndex * totalColumns + colIndex]?.focus();   // Refocus if user chooses not to close
+            return;
+          }
+        }
+      }
+
+      // Move to the next input field
+      if (inputGstRef.current[nextCell]) {
+        inputGstRef.current[nextCell]?.focus();
+      }
+    } else if (key === 'Backspace') {
+      // Move focus to the previous field if the current field is empty
+      if (e.target.value.trim() === '') {
+        e.preventDefault();
+        if (inputGstRef.current[prevCell] && prevCell >= 0){
+          inputGstRef.current[prevCell]?.focus();
+          inputGstRef.current[prevCell].setSelectionRange(0, 0);
+        }
+      }
+    } else if (key === 'ArrowRight'){
+      // Move focus to the next field
+      e.preventDefault();
+      if (inputGstRef.current[nextCell]){
+        inputGstRef.current[nextCell]?.focus();
+      }
+    } else if (key === 'ArrowLeft'){
+      e.preventDefault();
+      if (inputGstRef.current[prevCell] && prevCell >= 0){
+        inputGstRef.current[prevCell]?.focus();
+      }
+    } else if (key === 'ArrowDown'){
+      e.preventDefault();
+      if (inputGstRef.current[nextRowCell]){
+        inputGstRef.current[nextRowCell]?.focus();
+      }
+    } else if (key === 'ArrowUp'){
+      e.preventDefault();
+      if (inputGstRef.current[prevRowCell] && prevRowCell >= 0){
+        inputGstRef.current[prevRowCell]?.focus();
+      }
+    } else if (key === 'Escape') {
+      // Close the subform modal on Escape key press
+      setGstStockItemSubFormModal(false);
+      setStockItem(prev => ({ ...prev, gstApplicable: 'no' }));
+    }
+  };
+
+  const handleKeyDownVatSubForm = (e, rowIndex, colIndex) => {
+    const key = e.key;
+    const inputName = e.target.name;
+
+    const statsInputs = inputVatRef.current.filter(input => input?.name === 'vatStatus');
+    const isLastStatusInput = statsInputs.length - 1 === rowIndex;
+
+    const totalColumns = 4; // Adjust for the number of columns in the Vat form
+    const nextCell = rowIndex * totalColumns + colIndex + 1;
+    const prevCell = rowIndex * totalColumns + colIndex - 1;
+    const nextRowCell = (rowIndex + 1) * totalColumns + colIndex;
+    const prevRowCell = (rowIndex - 1) * totalColumns + colIndex;
+
+    if (key === 'Enter') {
+      e.preventDefault();
+
+      if (inputName === 'vatStatus' && (e.target.value.trim() !== '' || e.target.value.trim() === '')) {
+        if (isLastStatusInput) {
+          const confirmationClose = window.confirm('Do you want to close this subform?');
+          if (confirmationClose) {
+            setVatStockItemSubFormModal(false);
+            setStockItem(prev => ({ ...prev, vatApplicable: 'no' }));
+            inputRefs.current[10]?.focus(); // Focus on the next input after closing
+            return;
+          } else {
+            inputVatRef.current[rowIndex * totalColumns + colIndex]?.focus();   // Refocus if user chooses not to close
+            return;
+          }
+        }
+      }
+
+      // Move to the next input field
+      if (inputVatRef.current[nextCell]) {
+        inputVatRef.current[nextCell]?.focus();
+      }
+    } else if (key === 'Backspace') {
+      // Move focus to the previous field if the current field is empty
+      if (e.target.value.trim() === '') {
+        e.preventDefault();
+        if (inputVatRef.current[prevCell] && prevCell >= 0) {
+          inputVatRef.current[prevCell]?.focus();
+          inputVatRef.current[prevCell].setSelectionRange(0, 0);
+        }
+      }
+    } else if (key === 'ArrowRight') {
+      // Move focus to the next field
+      e.preventDefault();
+      if (inputVatRef.current[nextCell]) {
+        inputVatRef.current[nextCell]?.focus();
+      }
+    } else if (key === 'ArrowLeft') {
+      e.preventDefault();
+      if (inputVatRef.current[prevCell] && prevCell >= 0) {
+        inputVatRef.current[prevCell]?.focus();
+      }
+    } else if (key === 'ArrowDown') {
+      e.preventDefault();
+      if (inputVatRef.current[nextRowCell]) {
+        inputVatRef.current[nextRowCell]?.focus();
+      }
+    } else if (key === 'ArrowUp') {
+      e.preventDefault();
+      if (inputVatRef.current[prevRowCell] && prevRowCell >= 0) {
+        inputVatRef.current[prevRowCell]?.focus();
+      }
+    } else if (key === 'Escape') {
+      // Close the subform modal on Escape key press
+      setVatStockItemSubFormModal(false);
+      setStockItem(prev => ({ ...prev, vatApplicable: 'no' }));
+    }
+  };
 
   // Handle key navigation for the godownSubForm inputs
   const handleKeyDownGodownSubForm = (e, rowIndex, colIndex) => {
@@ -571,7 +814,7 @@ const StockItemDisplay = () => {
         <LeftSideMenu />
         <form
           action=""
-          className="border border-slate-500 w-[42.5%] h-[35vh] absolute left-[47.5%]"
+          className="border border-slate-500 w-[42.5%] h-[42vh] absolute left-[47.5%]"
         >
           <div className="text-sm flex mt-2 ml-2">
             <label htmlFor="stockItemCode" className="w-[40%]">
@@ -585,7 +828,7 @@ const StockItemDisplay = () => {
               ref={input => (inputRefs.current[0] = input)}
               onKeyDown={e => handleKeyDown(e, 0)}
               readOnly
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -601,7 +844,7 @@ const StockItemDisplay = () => {
               value={stockItem.stockItemName}
               onKeyDown={e => handleKeyDown(e, 1)}
               readOnly
-              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -617,7 +860,7 @@ const StockItemDisplay = () => {
               value={stockItem.category}
               readOnly
               onKeyDown={e => handleKeyDown(e, 2)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -633,7 +876,7 @@ const StockItemDisplay = () => {
               value={stockItem.under}
               readOnly
               onKeyDown={e => handleKeyDown(e, 3)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -649,7 +892,7 @@ const StockItemDisplay = () => {
               value={stockItem.units}
               onKeyDown={e => handleKeyDown(e, 4)}
               readOnly
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -665,7 +908,7 @@ const StockItemDisplay = () => {
               value={stockItem.standardSellingPrice}
               onKeyDown={e => handleKeyDown(e, 5)}
               onChange={handleInputChange}
-              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -683,7 +926,7 @@ const StockItemDisplay = () => {
                       type="text"
                       name="allocationsOf"
                       value={stockItem.stockItemName}
-                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -711,7 +954,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 0)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -725,7 +968,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[1 + index * 5] = input)}
                               onKeyDown={e => {handleKeyDownSellingPrice(e, index, 1)}}
-                              className="w-[80px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               
                               autoComplete="off"
                             />
@@ -740,7 +983,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[2 + index * 5] = input)}
                               onKeyDown={(e) => {handleKeyDownSellingPrice(e, index, 2)}}
-                              className="w-[40px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[40px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -754,7 +997,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               
                               autoComplete="off"
                             />
@@ -769,7 +1012,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 4)}
-                              className="w-[70px] h-5 pl-1 ml-5 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 ml-5 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -793,7 +1036,7 @@ const StockItemDisplay = () => {
               value={stockItem.standardSellingCost}
               onKeyDown={e => handleKeyDown(e, 6)}
               onChange={handleInputChange}
-              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -811,7 +1054,7 @@ const StockItemDisplay = () => {
                       type="text"
                       name="allocationsOf"
                       value={stockItem.stockItemName}
-                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -839,7 +1082,7 @@ const StockItemDisplay = () => {
                               ref={input => (inputSellingCostRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 0)}
                               readOnly
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -853,7 +1096,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[1 + index * 5] = input)}
                               onKeyDown={(e) => {handleKeyDownSellingCost(e, index, 1)}}
-                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               
                               autoComplete="off"
                             />
@@ -868,7 +1111,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[2 + index * 5] = input)}
                               onKeyDown={(e) => {handleKeyDownSellingCost(e, index, 2)}}
-                              className="w-[40px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[40px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -882,7 +1125,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               
                               autoComplete="off"
                             />
@@ -897,8 +1140,222 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 4)}
-                              className="w-[70px] h-5 pl-1 ml-7 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 ml-7 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="text-sm flex ml-2">
+            <label htmlFor="gstApplicable" className="w-[40%]">
+              GST Applicable
+            </label>
+            <span>:</span>
+            <input
+              type="text"
+              name="gstApplicable"
+              value={stockItem.gstApplicable}
+              ref={input => (inputRefs.current[7] = input)}
+              onKeyDown={e => handleKeyDown(e, 7)}
+              onChange={handleInputChange}
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              autoComplete="off"
+            />
+          </div>
+          {gstStockItemSubFormModal && (
+            <div className="fixed top-[44px] right-[137px] bottom-0 left-0 bg-slate-300 bg-opacity-90 z-10 flex justify-center items-center">
+              <div className="bg-white w-[600px] h-[500px] border border-black">
+                <div>
+                  <div className="text-sm ml-5 mb-1 flex">
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
+                    </label>
+                    <span>:</span>
+                    <input
+                      type="text"
+                      name="allocationsOf"
+                      value={stockItem.stockItemName}
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <table className="border border-slate-400 border-collapse w-full">
+                    <thead className="text-[12px]">
+                      <tr className="border-t border-b border-slate-400">
+                        <th>Date</th>
+                        <th>HSN Code</th>
+                        <th>
+                          Percentage <span>(%)</span>
+                        </th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stockItem.gstStockItemSubForm.map((row, index) => (
+                        <tr>
+                          {/* date Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="gstDate"
+                              value={row.formattedGstDate}
+                              ref={input => (inputGstRef.current[0 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownGstSubForm(e, index, 0)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              readOnly
+                            />
+                          </td>
+                          {/* hsn code Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="hsnCode"
+                              value={row.hsnCode}
+                              ref={input => (inputGstRef.current[1 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownGstSubForm(e, index, 1)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              readOnly
+                            />
+                          </td>
+                          {/* percentage Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="gstPercentage"
+                              value={row.gstPercentage}
+                              ref={input => (inputGstRef.current[2 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownGstSubForm(e, index, 2)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              readOnly
+                            />
+                          </td>
+                          {/* status Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="gstStatus"
+                              value={row.gstStatus}
+                              ref={input => (inputGstRef.current[3 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownGstSubForm(e, index, 3)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              readOnly
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="text-sm flex ml-2">
+            <label htmlFor="vatApplicable" className="w-[40%]">
+              VAT Applicable
+            </label>
+            <span>:</span>
+            <input
+              type="text"
+              name="vatApplicable"
+              value={stockItem.vatApplicable}
+              ref={input => (inputRefs.current[8] = input)}
+              onKeyDown={e => handleKeyDown(e, 8)}
+              onChange={handleInputChange}
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              autoComplete="off"
+            />
+          </div>
+          {vatStockItemSubFormModal && (
+            <div className="fixed top-[44px] right-[137px] bottom-0 left-0 bg-slate-300 z-10 opacity-90 flex justify-center items-center">
+              <div className="bg-white w-[600px] h-[500px] border border-black">
+                <div>
+                  <div className="text-sm ml-5 mt-2 mb-1 flex">
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
+                    </label>
+                    <span>:</span>
+                    <input
+                      type="text"
+                      name="allocationsOf"
+                      value={stockItem.stockItemName}
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <table className="border border-slate-400 border-collapse w-full">
+                    <thead className="text-[12px]">
+                      <tr className="border-t border-b border-slate-400">
+                        <th>Date</th>
+                        <th>VAT Code</th>
+                        <th>
+                          Percentage <span>(%)</span>
+                        </th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stockItem.vatStockItemSubForm.map((row, index) => (
+                        <tr>
+                          {/* date Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="vatDate"
+                              value={row.formattedVatDate}
+                              ref={input => (inputVatRef.current[0 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownVatSubForm(e, index, 0)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              readOnly
+                            />
+                          </td>
+                          {/* vat code Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="vatCode"
+                              value={row.vatCode}
+                              ref={input => (inputVatRef.current[1 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownVatSubForm(e, index, 1)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              readOnly
+                            />
+                          </td>
+                          {/* percentage Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="vatPercentage"
+                              value={row.vatPercentage}
+                              ref={input => (inputVatRef.current[2 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownVatSubForm(e, index, 2)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              readOnly
+                            />
+                          </td>
+                          {/* status Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="vatStatus"
+                              value={row.vatStatus}
+                              ref={input => (inputVatRef.current[3 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownVatSubForm(e, index, 3)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              readOnly
                             />
                           </td>
                         </tr>
@@ -924,11 +1381,10 @@ const StockItemDisplay = () => {
               name="openingBalanceQuantity"
               value={stockItem.openingBalanceQuantity}
               
-              ref={input => (inputRefs.current[7] = input)}
-              onKeyDown={e => {handleKeyDown(e, 7);
+              ref={input => (inputRefs.current[9] = input)}
+              onKeyDown={e => {handleKeyDown(e, 9);
               }}
-              // onBlur={(e) => unitFormat(e)}
-              className="w-[75px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[75px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
 
@@ -938,10 +1394,10 @@ const StockItemDisplay = () => {
               name="openingBalanceRate"
               value={stockItem.openingBalanceRate}
               readOnly
-              ref={input => (inputRefs.current[8] = input)}
-              onKeyDown={e => handleKeyDown(e, 8)}
+              ref={input => (inputRefs.current[10] = input)}
+              onKeyDown={e => handleKeyDown(e, 10)}
               
-              className="w-[76px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[76px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
 
@@ -951,10 +1407,10 @@ const StockItemDisplay = () => {
               name="openingBalanceUnit"
               value={stockItem.openingBalanceUnit}
               readOnly
-              ref={input => (inputRefs.current[9] = input)}
-              onKeyDown={e => handleKeyDown(e, 9)}
+              ref={input => (inputRefs.current[11] = input)}
+              onKeyDown={e => handleKeyDown(e, 11)}
               
-              className="w-[50px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[50px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
 
@@ -963,10 +1419,10 @@ const StockItemDisplay = () => {
               type="text"
               name="openingBalanceValue"
               value={stockItem.openingBalanceValue}
-              ref={input => (inputRefs.current[10] = input)}
-              onKeyDown={e => handleKeyDown(e, 10)}
+              ref={input => (inputRefs.current[12] = input)}
+              onKeyDown={e => handleKeyDown(e, 12)}
               
-              className="w-[100px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[100px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
               readOnly
             />
@@ -985,7 +1441,7 @@ const StockItemDisplay = () => {
                       type="text"
                       name="allocationsOf"
                       value={stockItem.stockItemName}
-                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -998,7 +1454,7 @@ const StockItemDisplay = () => {
                       type="text"
                       name="for"
                       value={stockItem.openingBalanceQuantity}
-                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -1024,7 +1480,7 @@ const StockItemDisplay = () => {
                               value={row.godownName}
                               ref={input => (inputGodownRef.current[0 + index * 6] = input)}
                               onKeyDown={e => handleKeyDownGodownSubForm(e, index, 0)}
-                              className="w-[130px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[130px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1038,7 +1494,7 @@ const StockItemDisplay = () => {
                               value={row.batchName}
                               ref={input => (inputGodownRef.current[1 + index * 6] = input)}
                               onKeyDown={e => handleKeyDownGodownSubForm(e, index, 1)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1053,7 +1509,7 @@ const StockItemDisplay = () => {
                               ref={input => (inputGodownRef.current[2 + index * 6] = input)}
                               readOnly
                               onKeyDown={(e) => {handleKeyDownGodownSubForm(e, index, 2)}}
-                              className="w-[60px] h-5 pl-1 ml-4 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[60px] h-5 pl-1 ml-4 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1067,7 +1523,7 @@ const StockItemDisplay = () => {
                               ref={input => (inputGodownRef.current[3 + index * 6] = input)}
                               readOnly
                               onKeyDown={e => handleKeyDownGodownSubForm(e, index, 3)}
-                              className="w-[50px] h-5 pl-1 ml-3 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[50px] h-5 pl-1 ml-3 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1081,7 +1537,7 @@ const StockItemDisplay = () => {
                               ref={input => (inputGodownRef.current[4 + index * 6] = input)}
                               readOnly
                               onKeyDown={(e) => {handleKeyDownGodownSubForm(e, index, 4)}}
-                              className="w-[70px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                         
                               autoComplete="off"
                             />
@@ -1096,7 +1552,7 @@ const StockItemDisplay = () => {
                               ref={input => (inputGodownRef.current[5 + index * 6] = input)}
                               readOnly
                               onKeyDown={e => handleKeyDownGodownSubForm(e, index, 5)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] text-right pr-1 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-full h-5 pl-1 font-medium text-[12px] text-right pr-1 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1110,15 +1566,15 @@ const StockItemDisplay = () => {
                   <span className='ml-1'>:</span>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" name='totalQuantity' value={stockItem.totalQuantity} ref={(input) => (totalRefs.current[0] = input)} onKeyDown={e => handleKeyDownTotal(e, 0)} className="w-[50px] h-5 pl-1 ml-4 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
+                    <input type="text" name='totalQuantity' value={stockItem.totalQuantity} ref={(input) => (totalRefs.current[0] = input)} onKeyDown={e => handleKeyDownTotal(e, 0)} className="w-[50px] h-5 pl-1 ml-4 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"  autoComplete="off" readOnly />
                   </div>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" name='totalPerUnit' value={stockItem.units} ref={(input) => (totalRefs.current[1] = input)} onKeyDown={e => handleKeyDownTotal(e, 1)} className="w-[40px] h-5 pl-1 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
+                    <input type="text" name='totalPerUnit' value={stockItem.units} ref={(input) => (totalRefs.current[1] = input)} onKeyDown={e => handleKeyDownTotal(e, 1)} className="w-[40px] h-5 pl-1 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"  autoComplete="off" readOnly />
                   </div>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" name='totalNetAmount' value={stockItem.totalNetAmount} ref={(input) => (totalRefs.current[2] = input)} onKeyDown={e => handleKeyDownTotal(e, 2)} className="w-[110px] h-5 pl-1 ml-[163px] font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
+                    <input type="text" name='totalNetAmount' value={stockItem.totalNetAmount} ref={(input) => (totalRefs.current[2] = input)} onKeyDown={e => handleKeyDownTotal(e, 2)} className="w-[110px] h-5 pl-1 ml-[163px] font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"  autoComplete="off" readOnly />
                   </div>
                 </div>
               </div>

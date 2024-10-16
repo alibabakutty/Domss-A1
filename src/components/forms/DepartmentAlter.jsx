@@ -94,7 +94,7 @@ const DepartmentAlter = () => {
               onChange={handleInputChange}
               ref={el => (inputRefs.current[0] = el)}
               onKeyDown={e => handleKeyDown(e, 0)}
-              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border-transparent"
               autoComplete="off"
             />
           </div>

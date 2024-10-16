@@ -528,7 +528,7 @@ const formatIndianNumber = (value) => {
               value={sundryCreditor.sundryCreditorName}
               
               onKeyDown={e => handleKeyDown(e, 0)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize border border-transparent transition-all focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize border border-transparent focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border"
               autoComplete="off" readOnly
             />
           </div>
@@ -544,7 +544,7 @@ const formatIndianNumber = (value) => {
                 name="underGroup"
                 value={sundryCreditor.underGroup}
                 
-                className="w-[120px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                className="w-[120px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                 autoComplete="off" readOnly
               />
             </div>
@@ -561,7 +561,7 @@ const formatIndianNumber = (value) => {
                 ref={input => (inputRefs.current[1] = input)}
                 
                 onKeyDown={e => handleKeyDown(e, 1)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                 autoComplete="off" readOnly
               />
             </div>
@@ -580,7 +580,7 @@ const formatIndianNumber = (value) => {
                 ref={input => (inputRefs.current[2] = input)}
                 
                 onKeyDown={e => handleKeyDown(e, 2)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                 autoComplete="off" readOnly
               />
             </div>
@@ -597,7 +597,7 @@ const formatIndianNumber = (value) => {
                 ref={input => (inputRefs.current[3] = input)}
                 
                 onKeyDown={e => handleKeyDown(e, 3)}
-                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                className="w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                 autoComplete="off"
               />
             </div>
@@ -620,7 +620,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[0] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 0)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -637,7 +637,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[1] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 1)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -654,7 +654,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[2] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 2)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -671,7 +671,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[3] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 3)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -688,7 +688,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[4] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 4)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -705,7 +705,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[5] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 5)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -722,7 +722,7 @@ const formatIndianNumber = (value) => {
                     ref={input => (inputRefsBank.current[6] = input)}
                     
                     onKeyDown={e => handleKeyDownBank(e, 6)}
-                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                    className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                     autoComplete="off" readOnly
                   />
                 </div>
@@ -743,7 +743,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[4] = input)}
               
               onKeyDown={e => handleKeyDown(e, 4)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -758,7 +758,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[5] = input)}
               
               onKeyDown={e => handleKeyDown(e, 5)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -773,7 +773,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[6] = input)}
               
               onKeyDown={e => handleKeyDown(e, 6)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -788,7 +788,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[7] = input)}
               
               onKeyDown={e => handleKeyDown(e, 7)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -803,7 +803,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[8] = input)}
               
               onKeyDown={e => handleKeyDown(e, 8)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -820,7 +820,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[9] = input)}
               
               onKeyDown={e => handleKeyDown(e, 9)}
-              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[350px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -837,7 +837,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[10] = input)}
               
               onKeyDown={e => handleKeyDown(e, 10)}
-              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -854,7 +854,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[11] = input)}
               
               onKeyDown={e => handleKeyDown(e, 11)}
-              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[250px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -871,7 +871,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[12] = input)}
               
               onKeyDown={e => handleKeyDown(e, 12)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -888,7 +888,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[13] = input)}
               
               onKeyDown={e => handleKeyDown(e, 13)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -905,7 +905,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[14] = input)}
               
               onKeyDown={e => handleKeyDown(e, 14)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -922,7 +922,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[15] = input)}
               
               onKeyDown={e => handleKeyDown(e, 15)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -939,7 +939,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[16] = input)}
               
               onKeyDown={e => handleKeyDown(e, 16)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -956,7 +956,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[17] = input)}
               
               onKeyDown={e => handleKeyDown(e, 17)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -973,7 +973,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[18] = input)}
               
               onKeyDown={e => handleKeyDown(e, 18)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -990,7 +990,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[19] = input)}
               
               onKeyDown={e => handleKeyDown(e, 19)}
-              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
           </div>
@@ -1004,7 +1004,7 @@ const formatIndianNumber = (value) => {
               id="dateForOpening"
               name="dateForOpening"
               value={sundryCreditor.dateForOpening}
-              className="w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[80px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
             )<span className="ml-3">:</span>
@@ -1018,7 +1018,7 @@ const formatIndianNumber = (value) => {
               
               onBlur={formatIndianNumber}
               onKeyDown={e => handleKeyDown(e, 20)}
-              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm text-right uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm text-right uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
             <input
@@ -1029,7 +1029,7 @@ const formatIndianNumber = (value) => {
               ref={input => (inputRefs.current[21] = input)}
               onKeyDown={e => handleKeyDown(e, 21)}
               
-              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -1046,7 +1046,7 @@ const formatIndianNumber = (value) => {
               name="totalForexAmount"
               value={formatIndianNumber(sundryCreditor.totalForexAmount)}
               onBlur={formatIndianNumber}
-              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm text-right uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm text-right uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off" readOnly
             />
             <input
@@ -1055,7 +1055,7 @@ const formatIndianNumber = (value) => {
               name="creditOrDebit"
               value={sundryCreditor.creditOrDebit}
               
-              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -1137,7 +1137,7 @@ const formatIndianNumber = (value) => {
                               
                               ref={input => (inputRefsForex.current[0 + index * 10] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 0)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off" readOnly
                             />
                           </td>
@@ -1152,7 +1152,7 @@ const formatIndianNumber = (value) => {
                               
                               ref={input => (inputRefsForex.current[1 + index * 10] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 1 )}
-                              className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off" readOnly
                             />
                           </td>
@@ -1166,7 +1166,7 @@ const formatIndianNumber = (value) => {
                               value={row.formattedDueDate}
                               ref={input => (inputRefsForex.current[2 + index * 10] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 2)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1185,7 +1185,7 @@ const formatIndianNumber = (value) => {
                                   ref={input => (inputRefsForex.current[3 + index * 10] = input)}
                                   
                                   onKeyDown={e => handleKeyDownForex(e, index, 3)}
-                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1202,7 +1202,7 @@ const formatIndianNumber = (value) => {
                                   ref={input => (inputRefsForex.current[4 + index * 10] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 4)}
                                   onBlur={(e) => {formatIndianNumber(e, index)}} 
-                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1217,7 +1217,7 @@ const formatIndianNumber = (value) => {
                                   onChange={e => handleInputForexChange(e, index)}
                                   ref={input => (inputRefsForex.current[5 + index * 10] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 5)}
-                                  className="w-[30px] h-5 pl-1 pr-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                                  className="w-[30px] h-5 pl-1 pr-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off"
                                   readOnly
                                 />
@@ -1234,7 +1234,7 @@ const formatIndianNumber = (value) => {
                                   
                                   ref={input => (inputRefsForex.current[6 + index * 10] = input)}
                                   onKeyDown={e => handleKeyDownForex(e,  index, 6)}
-                                  className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                                  className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1256,7 +1256,7 @@ const formatIndianNumber = (value) => {
                                     }
                                   }
                                   }
-                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1279,7 +1279,7 @@ const formatIndianNumber = (value) => {
                                   onBlur={(e) => {
                                     formatIndianNumber(e, index);
                                   }}
-                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off" readOnly
                                 />
                               </td>
@@ -1296,7 +1296,7 @@ const formatIndianNumber = (value) => {
                               
                               ref={input => (inputRefsForex.current[9 + index * 10] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 9)}
-                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off" readOnly
                             />
                           </td>
@@ -1321,7 +1321,7 @@ const formatIndianNumber = (value) => {
                             ref={input => (totalRefs.current[0] = input)}
                             onKeyDown={e => handleKeyDownTotal(e, 0)}
                             onBlur={(e) => formatIndianNumber(e, 0)}
-                            className="w-[60px] h-5 pl-1 mt-1 ml-3 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            className="w-[60px] h-5 pl-1 mt-1 ml-3 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                             autoComplete="off"
                             readOnly
                           />
@@ -1332,7 +1332,7 @@ const formatIndianNumber = (value) => {
                             value={sundryCreditor.creditOrDebit}
                             ref={input => (totalRefs.current[1] = input)}
                             onKeyDown={e => handleKeyDownTotal(e, 1)}
-                            className="w-[30px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            className="w-[30px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                             autoComplete="off"
                             readOnly
                           />
@@ -1351,7 +1351,7 @@ const formatIndianNumber = (value) => {
                             ref={input => (totalRefs.current[2] = input)}
                             onKeyDown={e => handleKeyDownTotal(e, 2)}
                             onBlur={(e) => formatIndianNumber(e, 1)}
-                            className="w-[80px] h-5 pl-1 mt-1 ml-5 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            className="w-[80px] h-5 pl-1 mt-1 ml-5 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                             autoComplete="off"
                             readOnly
                           />
@@ -1363,7 +1363,7 @@ const formatIndianNumber = (value) => {
                             ref={input => (totalRefs.current[3] = input)}
                             onKeyDown={e => handleKeyDownTotal(e, 3)}
                             onChange={handleInputForexChange}
-                            className="w-[30px] h-5 pl-1 mt-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            className="w-[30px] h-5 pl-1 mt-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                             autoComplete="off"
                           />
                         </div>
@@ -1384,7 +1384,7 @@ const formatIndianNumber = (value) => {
                             ref={input => (totalRefs.current[4] = input)}
                             onKeyDown={e => handleKeyDownTotal(e, 4)}
                             onBlur={(e) => formatIndianNumber(e, 1)}
-                            className="w-[80px] h-5 mt-1 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            className="w-[80px] h-5 mt-1 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                             autoComplete="off"
                             readOnly
                           />
@@ -1395,7 +1395,7 @@ const formatIndianNumber = (value) => {
                             value={sundryCreditor.totalInwardReferenceAmountCreditOrDebit}
                             ref={input => (totalRefs.current[5] = input)}
                             onKeyDown={e => handleKeyDownTotal(e, 5)}
-                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                             autoComplete="off"
                           />
                       </div>

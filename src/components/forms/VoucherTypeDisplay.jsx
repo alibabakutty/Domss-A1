@@ -135,7 +135,7 @@ const VoucherTypeDisplay = () => {
                       
                       onKeyDown={e => handleKeyDown(e, 0)}
                       onFocus={() => pulseCursor(inputRefs.current[0])}
-                      className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off" readOnly
                     />
                   </div>
@@ -152,7 +152,7 @@ const VoucherTypeDisplay = () => {
                       ref={input => (inputRefs.current[1] = input)}
                       onFocus={() => pulseCursor(inputRefs.current[1])}
                       onKeyDown={e => handleKeyDown(e, 1)}
-                      className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off" readOnly
                     />
                   </div>
@@ -173,7 +173,7 @@ const VoucherTypeDisplay = () => {
                       
                       onKeyDown={e => handleKeyDown(e, 2)}
                       onFocus={() => pulseCursor(inputRefs.current[2])}
-                      className="w-[80px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[80px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off" readOnly
                     />
                   </div>
@@ -191,7 +191,7 @@ const VoucherTypeDisplay = () => {
                       onKeyDown={e => handleKeyDown(e, 3)}
                       
                       onFocus={() => pulseCursor(inputRefs.current[3])}
-                      className="w-[80px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[80px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off" readOnly
                     />
                   </div>
@@ -209,7 +209,7 @@ const VoucherTypeDisplay = () => {
                       
                       onKeyDown={e => handleKeyDown(e, 4)}
                       onFocus={() => pulseCursor(inputRefs.current[4])}
-                      className="w-[80px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[80px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off" readOnly
                     />
                   </div>
@@ -238,7 +238,7 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 5)}
                         onFocus={() => pulseCursor(inputRefs.current[5])}
-                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -253,7 +253,7 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 6)}
                         onFocus={() => pulseCursor(inputRefs.current[6])}
-                        className="w-[100px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -271,7 +271,7 @@ const VoucherTypeDisplay = () => {
                           pulseCursor(inputRefs.current[7])
                         }
                         
-                        className="w-[100px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -297,7 +297,7 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 8)}
                         onFocus={() => pulseCursor(inputRefs.current[8])}
-                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -312,7 +312,7 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 9)}
                         onFocus={() => pulseCursor(inputRefs.current[9])}
-                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -338,7 +338,7 @@ const VoucherTypeDisplay = () => {
                         
                         onKeyDown={e => handleKeyDown(e, 10)}
                         onFocus={() => pulseCursor(inputRefs.current[10])}
-                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -355,7 +355,7 @@ const VoucherTypeDisplay = () => {
                           handleKeyDown(e, 11);
                         }}
                         onFocus={() => pulseCursor(inputRefs.current[11])}
-                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off" readOnly
                       />
                     </div>
@@ -372,11 +372,11 @@ const VoucherTypeDisplay = () => {
                   <div className='flex justify-between'>
                     <div>
                       <label htmlFor="voucherDate"></label>
-                      <input type="text" id='voucherDate' name='voucherDate' value={voucher.voucherDate} ref={input => (inputRefs.current[12] = input)} onKeyDown={e => handleKeyDown(e, 12)} className='w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' readOnly />
+                      <input type="text" id='voucherDate' name='voucherDate' value={voucher.voucherDate} ref={input => (inputRefs.current[12] = input)} onKeyDown={e => handleKeyDown(e, 12)} className='w-[100px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent' autoComplete='off' readOnly />
                     </div>
                     <div>
                       <label htmlFor="voucherNumber"></label>
-                      <input type="text" id='voucherNumber' name='voucherNumber' value={voucher.voucherNumber} ref={input => inputRefs.current[13] = input} onKeyDown={e => handleKeyDown(e, 13)}  className='w-[150px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' autoComplete='off' readOnly />
+                      <input type="text" id='voucherNumber' name='voucherNumber' value={voucher.voucherNumber} ref={input => inputRefs.current[13] = input} onKeyDown={e => handleKeyDown(e, 13)}  className='w-[150px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent' autoComplete='off' readOnly />
                     </div>
                   </div>
                 </div>

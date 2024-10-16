@@ -148,12 +148,12 @@ const ProjectNameCreate = () => {
           <div className='text-sm pl-3 mt-4 flex'>
             <label htmlFor="projectName" className='w-[25%]'>Project Name</label>
             <span>:</span>
-            <input type="text" id='projectName' name='projectName' value={project.projectName} onChange={handleInputChange} ref={input => inputRefs.current[0] = input} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+            <input type="text" id='projectName' name='projectName' value={project.projectName} onChange={handleInputChange} ref={input => inputRefs.current[0] = input} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 border-transparent focus:border' autoComplete='off' />
           </div>
           <div className='text-sm flex pl-3'>
             <label htmlFor="projectCategoryName" className='w-[25%]'>Under</label>
             <span>:</span>
-            <input type="text" id='projectCategoryName' name='projectCategoryName' value={project.projectCategoryName} onChange={handleInputChange} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} onFocus={(e) => {setProjectCategoryFocused(true); handleInputChange(e);}} onBlur={() => setProjectCategoryFocused(false)} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' />
+            <input type="text" id='projectCategoryName' name='projectCategoryName' value={project.projectCategoryName} onChange={handleInputChange} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} onFocus={(e) => {setProjectCategoryFocused(true); handleInputChange(e);}} onBlur={() => setProjectCategoryFocused(false)} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 border-transparent focus:border' />
             {projectCategoryFocused && filteredSuggestion.length > 0 && (
               <div className='w-[40%] h-[92.7vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0'>
                 <div className='text-left bg-[#003285] text-[13.5px] text-white pl-2'>

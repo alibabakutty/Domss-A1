@@ -307,7 +307,7 @@ const VoucherTypeCreate = () => {
                       ref={input => (inputRefs.current[0] = input)}
                       onChange={handleInputChange}
                       onKeyDown={e => handleKeyDown(e, 0)}
-                      className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -326,7 +326,7 @@ const VoucherTypeCreate = () => {
                       onKeyDown={e => handleKeyDown(e, 1)}
                       onFocus={(e) => { setVoucherTypeFocused(true) }}
                       onBlur={() => setVoucherTypeFocused(false)}
-                      className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[250px] ml-2 h-5 font-medium capitalize pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off"
                     />
                     {voucherTypeFocused && voucherTypeSuggestions.length > 0 && (
@@ -374,7 +374,7 @@ const VoucherTypeCreate = () => {
                       ref={input => (inputRefs.current[2] = input)}
                       onChange={handleVoucherNumberInputChange}
                       onKeyDown={e => handleKeyDown(e, 2)}
-                      className="w-[60px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[60px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -391,7 +391,7 @@ const VoucherTypeCreate = () => {
                       ref={input => (inputRefs.current[3] = input)}
                       onKeyDown={e => handleKeyDown(e, 3)}
                       onChange={handleInputChange}
-                      className="w-[60px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[60px] ml-2 h-5 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -408,7 +408,7 @@ const VoucherTypeCreate = () => {
                       ref={input => (inputRefs.current[4] = input)}
                       onChange={handleInputChange}
                       onKeyDown={e => handleKeyDown(e, 4)}
-                      className="w-[60px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                      className="w-[60px] ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -436,7 +436,7 @@ const VoucherTypeCreate = () => {
                         ref={input => (inputRefs.current[5] = input)}
                         onChange={handleDateInputChange}
                         onKeyDown={e => handleKeyDown(e, 5)}
-                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off"
                       />
                     </div>
@@ -450,7 +450,7 @@ const VoucherTypeCreate = () => {
                         ref={input => (inputRefs.current[6] = input)}
                         onChange={handleInputChange}
                         onKeyDown={e => handleKeyDown(e, 6)}
-                        className="w-[80px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[80px] ml-2 h-5 capitalize text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off"
                       />
                     </div>
@@ -467,7 +467,7 @@ const VoucherTypeCreate = () => {
                         onFocus={() => setPeriodicityFocused(true)
                         }
                         onBlur={() => setPeriodicityFocused(false)}
-                        className="w-[100px] ml-2 h-5 text-right mr-1 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 text-right mr-1 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off"
                       />
                       {periodicityFocused && periodicitySuggestions.length > 0 && (
@@ -517,7 +517,7 @@ const VoucherTypeCreate = () => {
                         ref={input => (inputRefs.current[8] = input)}
                         onChange={handleDateInputChange}
                         onKeyDown={e => handleKeyDown(e, 8)}
-                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off"
                       />
                     </div>
@@ -531,7 +531,7 @@ const VoucherTypeCreate = () => {
                         ref={input => (inputRefs.current[9] = input)}
                         onChange={handleVoucherNumberInputChange}
                         onKeyDown={e => handleKeyDown(e, 9)}
-                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pr-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off"
                       />
                     </div>
@@ -556,7 +556,7 @@ const VoucherTypeCreate = () => {
                         ref={input => (inputRefs.current[10] = input)}
                         onChange={handleDateInputChange}
                         onKeyDown={e => handleKeyDown(e, 10)}
-                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off"
                       />
                     </div>
@@ -572,7 +572,7 @@ const VoucherTypeCreate = () => {
                         onKeyDown={e => {
                           handleKeyDown(e, 11);
                         }}
-                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none"
+                        className="w-[100px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent"
                         autoComplete="off"
                       />
                     </div>
@@ -589,11 +589,11 @@ const VoucherTypeCreate = () => {
                   <div className='flex justify-between'>
                     <div>
                       <label htmlFor="voucherDate"></label>
-                      <input type="text" id='voucherDate' name='voucherDate' value={voucher.voucherDate} ref={input => (inputRefs.current[12] = input)} onKeyDown={e => handleKeyDown(e, 12)} onChange={handleDateInputChange} className='w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' />
+                      <input type="text" id='voucherDate' name='voucherDate' value={voucher.voucherDate} ref={input => (inputRefs.current[12] = input)} onKeyDown={e => handleKeyDown(e, 12)} onChange={handleDateInputChange} className='w-[100px] h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent' />
                     </div>
                     <div>
                       <label htmlFor="voucherNumber"></label>
-                      <input type="text" id='voucherNumber' name='voucherNumber' value={voucher.voucherNumber}  onChange={handleVoucherNumberInputChange}  className='w-[150px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none' />
+                      <input type="text" id='voucherNumber' name='voucherNumber' value={voucher.voucherNumber}  onChange={handleVoucherNumberInputChange}  className='w-[150px] ml-2 h-5 uppercase text-right mr-1 font-medium pl-1 text-sm focus:bg-yellow-200 focus:border focus:border-blue-500 focus:outline-none border-transparent' />
                     </div>
                   </div>
                 </div>

@@ -27,7 +27,6 @@ const StockItemAlter = () => {
     standardSellingPriceSubForm: [
       {
         sellingPriceDate: '',
-        sellingPriceDateDisplay: '',
         sellingPriceRate: '',
         sellingPricePercentage: '',
         sellingPriceNetRate: '',
@@ -38,14 +37,30 @@ const StockItemAlter = () => {
     standardSellingCostSubForm: [
       {
         sellingCostDate: '',
-        sellingCostDateDisplay: '',
         sellingCostRate: '',
         sellingCostPercentage: '',
         sellingCostNetRate: '',
         sellingCostStatus: '',
       },
     ],
-    openingBalanceQuantityDisplay: '',
+    gstApplicable: '',
+    gstStockItemSubForm: [
+      {
+        gstDate: '',
+        hsnCode: '',
+        gstPercentage: '',
+        gstStatus: '',
+      },
+    ],
+    vatApplicable: '',
+    vatStockItemSubForm: [
+      {
+        vatDate: '',
+        vatCode: '',
+        vatPercentage: '',
+        vatStatus: '',
+      },
+    ],
     openingBalanceQuantity: '',
     godownSubForm: [
       {
@@ -64,48 +79,55 @@ const StockItemAlter = () => {
     openingBalanceValue: '',
   });
 console.log(stockItem)
-  const [stockGroupSuggestion, setStockGroupSuggestion] = useState([]);
-  const [stockCategorySuggestion, setStockCategorySuggestion] = useState([]);
-  const [unitSuggestion, setUnitSuggestion] = useState([]);
-  const [godownSuggestion, setGodownSuggestion] = useState([]);
-  const [batchSuggestion, setBatchSuggestion] = useState([]);
-  const [filteredStockGroup, setFilteredStockGroup] = useState([]);
-  const [filteredStockCategory, setFilteredStockCategory] = useState([]);
-  const [filteredUnit, setFilteredUnit] = useState([]);
-  const [filteredGodown, setFilteredGodown] = useState([]);
-  const [filteredBatch, setFilteredBatch] = useState([]);
-  const [underFocused, setUnderFocused] = useState(false);
-  const [categoryFocused, setCategoryFocused] = useState(false);
-  const [unitsFocused, setUnitsFocused] = useState(false);
-  const [godownFocused, setGodownFocused] = useState(false);
-  const [batchFocused, setBatchFocused] = useState(false);
-  const [highlightedStockGroup, setHighlightedStockGroup] = useState(0);
-  const [highlightedStockCategory, setHighlightedStockCategory] = useState(0);
-  const [highlightedUnit, setHighlightedUnit] = useState(0);
-  const [highlightedGodown, setHighlightedGodown] = useState(0);
-  const [highlightedBatch, setHighlightedBatch] = useState(0);
-  const [standardSellingPriceModal, setStandardSellingPriceModal] = useState(false);
-  const [standardSellingCostModal, setStandardSellingCostModal] = useState(false);
-  const [godownSubFormModal, setGodownSubFormModal] = useState(false);
-  const inputRefs = useRef([]);
-  const stockGroupOptionsRef = useRef(null);
-  const stockCategoryOptionsRef = useRef(null);
-  const unitOptionsRef = useRef(null);
-  const godownRef = useRef(null);
-  const batchRef = useRef(null);
-  const inputSellingPriceRef = useRef([]);
-  const inputSellingCostRef = useRef([]);
-  const inputGodownRef = useRef([]);
-  const prevSellingPriceModal = useRef(false);
-  const prevSellingCostModal = useRef(false);
-  const prevGodownModal = useRef(false);
-  const totalRefs = useRef([]);
-  const navigate = useNavigate();
+const [stockGroupSuggestion, setStockGroupSuggestion] = useState([]);
+const [stockCategorySuggestion, setStockCategorySuggestion] = useState([]);
+const [unitSuggestion, setUnitSuggestion] = useState([]);
+const [godownSuggestion, setGodownSuggestion] = useState([]);
+const [batchSuggestion, setBatchSuggestion] = useState([]);
+const [filteredStockGroup, setFilteredStockGroup] = useState([]);
+const [filteredStockCategory, setFilteredStockCategory] = useState([]);
+const [filteredUnit, setFilteredUnit] = useState([]);
+const [filteredGodown, setFilteredGodown] = useState([]);
+const [filteredBatch, setFilteredBatch] = useState([]);
+const [underFocused, setUnderFocused] = useState(false);
+const [categoryFocused, setCategoryFocused] = useState(false);
+const [unitsFocused, setUnitsFocused] = useState(false);
+const [godownFocused, setGodownFocused] = useState(false);
+const [batchFocused, setBatchFocused] = useState(false);
+const [highlightedStockGroup, setHighlightedStockGroup] = useState(0);
+const [highlightedStockCategory, setHighlightedStockCategory] = useState(0);
+const [highlightedUnit, setHighlightedUnit] = useState(0);
+const [highlightedGodown, setHighlightedGodown] = useState(0);
+const [highlightedBatch, setHighlightedBatch] = useState(0);
+const [standardSellingPriceModal, setStandardSellingPriceModal] = useState(false);
+const [standardSellingCostModal, setStandardSellingCostModal] = useState(false);
+const [gstStockItemSubFormModal, setGstStockItemSubFormModal] = useState(false);
+const [vatStockItemSubFormModal, setVatStockItemSubFormModal] = useState(false);
+const [godownSubFormModal, setGodownSubFormModal] = useState(false);
+const inputRefs = useRef([]);
+const stockGroupOptionsRef = useRef(null);
+const stockCategoryOptionsRef = useRef(null);
+const unitOptionsRef = useRef(null);
+const godownRef = useRef(null);
+const batchRef = useRef(null);
+const inputSellingPriceRef = useRef([]);
+const inputSellingCostRef = useRef([]);
+const inputGstRef = useRef([]);
+const inputVatRef = useRef([]);
+const inputGodownRef = useRef([]);
+const prevSellingPriceModal = useRef(false);
+const prevSellingCostModal = useRef(false);
+const prevGstModal = useRef(false);
+const prevVatModal = useRef(false);
+const prevGodownModal = useRef(false);
+const totalRefs = useRef([]);
+const navigate = useNavigate();
 
   useEffect(() => {
     // Set initial focus if the input exists
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
+      inputRefs.current[0].setSelectionRange(0, 0);
     }
 
     if (standardSellingPriceModal && inputSellingPriceRef.current[0]) {
@@ -116,6 +138,16 @@ console.log(stockItem)
     if (standardSellingCostModal && inputSellingCostRef.current[0]) {
       inputSellingCostRef.current[0].focus();
       inputSellingCostRef.current[0].setSelectionRange(0, 0);
+    }
+
+    if (gstStockItemSubFormModal && inputGstRef.current[0]) {
+      inputGstRef.current[0].focus();
+      inputGstRef.current[0].setSelectionRange(0, 0);
+    }
+
+    if (vatStockItemSubFormModal && inputVatRef.current[0]) {
+      inputVatRef.current[0].focus();
+      inputVatRef.current[0].setSelectionRange(0, 0);
     }
 
     if (godownSubFormModal && inputGodownRef.current[0]) {
@@ -145,6 +177,24 @@ console.log(stockItem)
       }
     }
 
+    if (prevGstModal.current && !gstStockItemSubFormModal) {
+      const gstInputIndex = inputRefs.current.findIndex(ref => ref && ref.name === 'openingBalanceQuantity');
+      if (gstInputIndex !== -1 && inputRefs.current[gstInputIndex]) {
+        inputRefs.current[gstInputIndex].focus();
+        inputRefs.current[gstInputIndex].setSelectionRange(0, 0);
+      }
+    }
+
+    if (prevVatModal.current && !vatStockItemSubFormModal) {
+      const vatInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'openingBalanceQuantity',
+      );
+      if (vatInputIndex !== -1 && inputRefs.current[vatInputIndex]) {
+        inputRefs.current[vatInputIndex].focus();
+        inputRefs.current[vatInputIndex].setSelectionRange(0, 0);
+      }
+    }
+
     // Detect if the godownSubFormModal is closed
     if (prevGodownModal.current && !godownSubFormModal){
       // Focus on the standard selling price input when godownSubFormModal closes
@@ -159,6 +209,8 @@ console.log(stockItem)
     // Update the previous state value
     prevSellingPriceModal.current = standardSellingPriceModal;
     prevSellingCostModal.current = standardSellingCostModal;
+    prevGstModal.current = gstStockItemSubFormModal;
+    prevVatModal.current = vatStockItemSubFormModal;
     prevGodownModal.current = godownSubFormModal;
 
     // Fetch stock categories and units concurrently
@@ -197,7 +249,7 @@ console.log(stockItem)
     return () => {
       // Clean up code here
     };
-  }, [standardSellingPriceModal, standardSellingCostModal, godownSubFormModal]);
+  }, [standardSellingPriceModal, standardSellingCostModal, gstStockItemSubFormModal, vatStockItemSubFormModal, godownSubFormModal]);
 
   useEffect(() => {
 
@@ -256,6 +308,10 @@ console.log(stockItem)
             standardSellingPriceSubForm,
             standardSellingCost = '',
             standardSellingCostSubForm,
+            gstApplicable = '',
+            gstStockItemSubForm,
+            vatApplicable = '',
+            vatStockItemSubForm,
             openingBalanceQuantity = '',
             godownSubForm,
             totalQuantity = '',
@@ -287,6 +343,24 @@ console.log(stockItem)
             }
           ];
 
+          let fetchedGstStockItemSubForm = [
+            {
+              gstDate: '',
+              hsnCode: '',
+              gstPercentage: '',
+              gstStatus: '',
+            }
+          ];
+
+          let fetchedVatStockItemSubForm = [
+            {
+              vatDate: '',
+              vatCode: '',
+              vatPercentage: '',
+              vatStatus: '',
+            }
+          ];
+
           let fetchedGodownSubForm = [
             {
               godownName: '',
@@ -307,7 +381,6 @@ console.log(stockItem)
               sellingPriceNetRate: numberFormatValue(price.sellingPriceNetRate),
               sellingPriceStatus: price.sellingPriceStatus || '',
             }));
-            // console.log('fetched selling price subform:', fetchedSellingPriceSubForm);
           }
 
           if (Array.isArray(standardSellingCostSubForm) && standardSellingCostSubForm.length > 0){
@@ -319,7 +392,26 @@ console.log(stockItem)
               sellingCostNetRate: numberFormatValue(cost.sellingCostNetRate),
               sellingCostStatus: cost.sellingCostStatus || '',
             }));
-            // console.log('fetched selling cost subform:', fetchedSellingCostSubForm);
+          }
+
+          if (Array.isArray(gstStockItemSubForm) && gstStockItemSubForm.length > 0){
+            fetchedGstStockItemSubForm = gstStockItemSubForm.map((gst) => ({
+              gstDate: gst.gstDate || '',
+              gstDateDisplay: formatDateForDisplay(gst.gstDate),
+              hsnCode: gst.hsnCode || '',
+              gstPercentage: percentageFormatForDisplay(gst.gstPercentage),
+              gstStatus: gst.gstStatus || '',
+            }));
+          }
+
+          if (Array.isArray(vatStockItemSubForm) && vatStockItemSubForm.length > 0){
+            fetchedVatStockItemSubForm = vatStockItemSubForm.map((vat) => ({
+              vatDate: vat.vatDate || '',
+              vatDateDisplay: formatDateForDisplay(vat.vatDate),
+              vatCode: vat.vatCode || '',
+              vatPercentage: percentageFormatForDisplay(vat.vatPercentage),
+              vatStatus: vat.vatStatus || '',
+            }));
           }
 
           if (Array.isArray(godownSubForm) && godownSubForm.length > 0){
@@ -331,7 +423,6 @@ console.log(stockItem)
               perUnit: godown.perUnit || '',
               netAmount: numberFormatValue(godown.netAmount),
             }));
-            // console.log('fetched godown subform:', godownSubForm);
           }
 
           // Set the state with the updated values
@@ -345,6 +436,10 @@ console.log(stockItem)
             standardSellingPriceSubForm: fetchedSellingPriceSubForm,
             standardSellingCost,
             standardSellingCostSubForm: fetchedSellingCostSubForm,
+            gstApplicable,
+            gstStockItemSubForm: fetchedGstStockItemSubForm,
+            vatApplicable,
+            vatStockItemSubForm: fetchedVatStockItemSubForm,
             openingBalanceQuantity,
             openingBalanceQuantityDisplay: formattedFetchedUnit,
             godownSubForm: fetchedGodownSubForm,
@@ -388,6 +483,10 @@ console.log(stockItem)
           setStandardSellingPriceModal(true);
         } else if (e.target.name === 'standardSellingCost' && e.target.value.trim() === 'yes') {
           setStandardSellingCostModal(true);
+        }else if (e.target.name === 'gstApplicable' && e.target.value.trim() === 'yes'){
+          setGstStockItemSubFormModal(true);
+        } else if (e.target.name === 'vatApplicable' && e.target.value.trim() === 'yes'){
+          setVatStockItemSubFormModal(true);
         } else if (e.target.name === 'openingBalanceQuantity' && e.target.value.trim() !== '') {
           setGodownSubFormModal(true);
         }
@@ -415,6 +514,20 @@ console.log(stockItem)
         ...stockItem,
         standardSellingCost: value,
       });
+    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'gstApplicable'){
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
+      setStockItem({
+        ...stockItem,
+        gstApplicable: value,
+      })
+    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'vatApplicable'){
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
+      setStockItem({
+        ...stockItem,
+        vatApplicable: value,
+      })
     } else if (key === 'Escape') {
       e.preventDefault();
       navigate(-1);
@@ -699,11 +812,11 @@ const handleKeyDownBatch = (e, index) => {
         newRow[rowIndex].sellingPriceStatus = 'active'; // Update the status in the row
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
       }
-    } else if (key === 'n' || key === 'N') {
+    } else if (key === 'i' || key === 'I') {
       if (e.target.name === 'sellingPriceStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingPriceSubForm];
-        newRow[rowIndex].sellingPriceStatus = 'not active'; // Update the status in the row
+        newRow[rowIndex].sellingPriceStatus = 'Inactive'; // Update the status in the row
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
       }
     } else if (key === 'ArrowUp') {
@@ -846,11 +959,11 @@ const handleKeyDownBatch = (e, index) => {
         newRow[rowIndex].sellingCostStatus = 'active';
         setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
       }
-    } else if (key === 'n' || key === 'N') {
+    } else if (key === 'i' || key === 'I') {
       if (e.target.name === 'sellingCostStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingCostSubForm];
-        newRow[rowIndex].sellingCostStatus = 'not active';
+        newRow[rowIndex].sellingCostStatus = 'Inactive';
         setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
       }
     } else if (key === 'ArrowUp') {
@@ -897,7 +1010,195 @@ const handleKeyDownBatch = (e, index) => {
         setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
       }
     }
-  };  
+  };
+  
+  // Function to add a new row
+  const addNewRowGst = () => {
+    setStockItem(prevState => {
+      const newRowGst = {
+        gstDate: '',
+        hsnCode: '',
+        gstPercentage: '',
+        gstStatus: 'active',
+      };
+      return {
+        ...prevState,
+        gstStockItemSubForm: [...prevState.gstStockItemSubForm, newRowGst],
+      };
+    });
+  };
+
+  // Function to handle keydown events for GST subform
+  const handleKeyDownGstSubForm = (e, rowIndex, colIndex) => {
+    const key = e.key;
+    const firstGstDate = 0;
+    const lastGstStatusIndex = 3; // The index of gstStatus in the row (0-based index)
+
+    if (key === 'Enter') {
+      e.preventDefault();
+
+      // Ensure GST Date is not empty in the first row
+      if (rowIndex === 0 && colIndex === firstGstDate && e.target.value.trim() === '') {
+        alert('The GST Date field must have a value before proceeding.');
+        inputGstRef.current[rowIndex * 4 + colIndex]?.focus();
+        return;
+      }
+
+      // Handle closing the form if GST Date is empty in subsequent rows
+      if (colIndex === firstGstDate && e.target.value.trim() === '' && rowIndex > 0) {
+        const confirmationClose = window.confirm('Do you want to close this subform?');
+        if (confirmationClose) {
+          setGstStockItemSubFormModal(false);
+          setStockItem(prev => ({ ...prev, gstApplicable: 'no' }));
+          inputRefs.current[9]?.focus();
+          return;
+        } else {
+          inputGstRef.current[rowIndex * 4 + colIndex]?.focus();
+          inputGstRef.current[rowIndex * 4 + colIndex].setSelectionRange(0, 0);
+          return;
+        }
+      }
+
+      // Handle new row addition when pressing Enter on the last column (gstStatus)
+      const isGstStatus = colIndex === lastGstStatusIndex;
+      const isLastRow = rowIndex === stockItem.gstStockItemSubForm.length - 1;
+
+      if (isGstStatus && isLastRow && e.target.value.trim() !== '') {
+        addNewRowGst();
+        setTimeout(() => {
+          inputGstRef.current[(rowIndex + 1) * 4]?.focus(); // Focus on the first column of the new row
+          inputGstRef.current[(rowIndex + 1) * 4].setSelectionRange(0, 0);
+        }, 0);
+        return;
+      }
+
+      // Move to the next input field
+      const nextCell = rowIndex * 4 + colIndex + 1;
+      if (inputGstRef.current[nextCell] && nextCell < inputGstRef.current.length) {
+        inputGstRef.current[nextCell]?.focus();
+      }
+    } else if (key === 'Backspace') {
+      // Move focus to the previous field if the current field is empty
+      if (e.target.value.trim() === '') {
+        e.preventDefault();
+        const prevCell = rowIndex * 4 + colIndex - 1;
+        if (inputGstRef.current[prevCell] && prevCell >= 0) {
+          inputGstRef.current[prevCell]?.focus();
+          inputGstRef.current[prevCell].setSelectionRange(0, 0); // Set cursor position
+        }
+      }
+    } else if (key === 'Escape') {
+      // Close the subform modal on Escape key press
+      setGstStockItemSubFormModal(false);
+      setStockItem(prev => ({ ...prev, gstApplicable: 'no' }));
+    } else if (key === 'a' || key === 'A') {
+      if (e.target.name === 'gstStatus') {
+        e.preventDefault();
+        const newRow = [...stockItem.gstStockItemSubForm];
+        newRow[rowIndex].gstStatus = 'active';
+        setStockItem({ ...stockItem, gstStockItemSubForm: newRow });
+      }
+    } else if (key === 'i' || key === 'I') {
+      if (e.target.name === 'gstStatus') {
+        e.preventDefault();
+        const newRow = [...stockItem.gstStockItemSubForm];
+        newRow[rowIndex].gstStatus = 'inactive';
+        setStockItem({ ...stockItem, gstStockItemSubForm: newRow });
+      }
+    }
+  };
+
+  // add new row function
+  const addNewRowVat = () => {
+    setStockItem(prevState => {
+      const newRowVat = {
+        vatDate: '',
+        vatCode: '',
+        vatPercentage: '',
+        vatStatus: 'active',
+      };
+      return {
+        ...prevState,
+        vatStockItemSubForm: [...prevState.vatStockItemSubForm, newRowVat],
+      };
+    });
+  };
+
+  const handleKeyDownVatSubForm = (e, rowIndex, colIndex) => {
+    const key = e.key;
+    const firstVatDate = 0;
+    const lastVatStatusIndex = 3; // The index of vatstatus in the row
+
+    if (key === 'Enter') {
+      e.preventDefault();
+
+      if (rowIndex === 0 && colIndex === firstVatDate && (e.target.value.trim() === '' || e.target.value.trim() !== '')) {
+        alert('The vat date field must have a value before procedding.');
+        inputVatRef.current[rowIndex * 4 + colIndex]?.focus();
+        inputVatRef.current[rowIndex * 4 + colIndex].setSelectionRange(0, 0);
+        return;
+      }
+
+      if (colIndex === firstVatDate && e.target.value.trim() === '' && rowIndex > 0) {
+        const confirmationClose = window.confirm('Do you want to close this subform?');
+        if (confirmationClose) {
+          setVatStockItemSubFormModal(false);
+          setStockItem(prev => ({ ...prev, vatApplicable: 'no' }));
+          inputRefs.current[10]?.focus();
+          inputRefs.current[10].setSelectionRange(0, 0);
+          return;
+        } else {
+          inputVatRef.current[rowIndex * 4 + colIndex]?.focus();
+          inputVatRef.current[rowIndex * 4 + colIndex].setSelectionRange(0, 0);
+          return;
+        }
+      }
+
+      const isVatStatus = colIndex === lastVatStatusIndex;
+      const isLastVatStatus = rowIndex === stockItem.vatStockItemSubForm.length - 1;
+
+      if (isVatStatus && isLastVatStatus && e.target.value.trim() !== '') {
+        addNewRowVat();
+        setTimeout(() => {
+          inputVatRef.current[rowIndex * 4 + colIndex + 1]?.focus();
+          inputVatRef.current[rowIndex * 4 + colIndex + 1].setSelectionRange(0, 0);
+        }, 0);
+        return;
+      }
+
+      const nextCell = rowIndex * 4 + colIndex + 1;
+      if (inputVatRef.current[nextCell] && nextCell < inputVatRef.current.length) {
+        inputVatRef.current[nextCell]?.focus();
+        inputVatRef.current[nextCell].setSelectionRange(0, 0);
+      }
+    } else if (key === 'Backspace') {
+      if (e.target.value.trim() === '') {
+        e.preventDefault();
+        const prevCell = rowIndex * 4 + colIndex - 1;
+        if (inputVatRef.current[prevCell] && prevCell >= 0) {
+          inputVatRef.current[prevCell]?.focus();
+          inputVatRef.current[prevCell].setSelectionRange(0, 0);
+        }
+      }
+    } else if (key === 'Escape') {
+      setVatStockItemSubFormModal(false);
+      setStockItem(prev => ({ ...prev, vatApplicable: 'no' }));
+    } else if (key === 'a' || key === 'A') {
+      if (e.target.name === 'vatStatus') {
+        e.preventDefault();
+        const newRow = [...stockItem.vatStockItemSubForm];
+        newRow[rowIndex].vatStatus = 'active';
+        setStockItem({ ...stockItem, vatStockItemSubForm: newRow });
+      }
+    } else if (key === 'i' || key === 'I') {
+      if (e.target.name === 'vatStatus') {
+        e.preventDefault();
+        const newRow = [...stockItem.vatStockItemSubForm];
+        newRow[rowIndex].vatStatus = 'inactive';
+        setStockItem({ ...stockItem, vatStockItemSubForm: newRow });
+      }
+    }
+  };
 
   // add new row function
   const addNewRowGodown = () => {
@@ -1093,6 +1394,40 @@ const handleKeyDownBatch = (e, index) => {
     });
   };
 
+  // Handle input changes for gst Subform
+  const handleInputGstChange = (e, index) => {
+    const { name, value } = e.target;
+
+    setStockItem(prevState => {
+      const updatedGstSubForm = [...prevState.gstStockItemSubForm];
+      updatedGstSubForm[index] = {
+        ...updatedGstSubForm[index],
+        [name]: value,
+      };
+      return {
+        ...prevState,
+        gstStockItemSubForm: updatedGstSubForm, // update the subform
+      };
+    });
+  };
+
+  // Handle input changes for vat Subform
+  const handleInputVatChange = (e, index) => {
+    const { name, value } = e.target;
+
+    setStockItem(prevState => {
+      const updatedVatSubForm = [...prevState.vatStockItemSubForm];
+      updatedVatSubForm[index] = {
+        ...updatedVatSubForm[index],
+        [name]: value,
+      };
+      return {
+        ...prevState,
+        vatStockItemSubForm: updatedVatSubForm, // update the subform
+      };
+    });
+  };
+
   // Handle input changes for quantity Subform
   const handleInputGodownSubFormChange = (e, index) => {
     const { name, value } = e.target;
@@ -1247,6 +1582,20 @@ const handleKeyDownBatch = (e, index) => {
           sellingCostRate: parseFloat(cost.sellingCostRate.replace(/,/g, '')) || 0,
           sellingCostPercentage: parseFloat(cost.sellingCostPercentage.replace(/,/g, '')) || 0,
           sellingCostNetRate: parseFloat(cost.sellingCostNetRate.replace(/,/g, '')) || 0,
+        })),
+        gstStockItemSubForm: stockItem.gstStockItemSubForm
+        .filter(gst => gst.gstDate.trim() !== '')
+        .map((gst) => ({
+          ...gst,
+          hsnCode: parseInt(gst.hsnCode, 10) || 0,
+          gstPercentage: parseFloat(gst.gstPercentage.replace(/,/g, '')) || 0,
+        })),
+        vatStockItemSubForm: stockItem.vatStockItemSubForm
+        .filter(vat => vat.vatDate.trim() !== '')
+        .map((vat) => ({
+          ...vat,
+          vatCode: parseInt(vat.vatCode, 10) || 0,
+          vatPercentage: parseFloat(vat.vatPercentage.replace(/,/g, '')) || 0
         })),
         godownSubForm: stockItem.godownSubForm
         .filter(godown => parseInt(godown.quantity, 10) > 0)     // Only include if quantity is greater than 0
@@ -1540,7 +1889,7 @@ const handleKeyDownBatch = (e, index) => {
     if (standardDatePattern.test(dateValue)) {
         // Handle DD/MM/YYYY or DD-MM-YYYY
         let [_, day, month, year] = standardDatePattern.exec(dateValue);
-        if (year.length === 2) year = `20${year}`;
+        if (year.length === 2) year = `20${year}`; // Convert 2-digit year to 4 digits
         day = day.padStart(2, '0');
         month = month.padStart(2, '0');
 
@@ -1553,8 +1902,13 @@ const handleKeyDownBatch = (e, index) => {
             const updatedSubForm = [...prevState[type]];
             updatedSubForm[index] = {
                 ...updatedSubForm[index],
-                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDate' : 'sellingCostDate'}`]: convertedDate, // Actual date for database
-                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDateDisplay' : 'sellingCostDateDisplay'}`]: formattedDisplayDate, // Formatted date for display
+                // Assign date fields based on type
+                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDate' : 
+                   type === 'gstStockItemSubForm' ? 'gstDate' : 
+                   'vatDate'}`]: convertedDate, // Actual date for database
+                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDateDisplay' : 
+                   type === 'gstStockItemSubForm' ? 'gstDateDisplay' : 
+                   'vatDateDisplay'}`]: formattedDisplayDate, // Formatted date for display
             };
             return {
                 ...prevState,
@@ -1577,8 +1931,12 @@ const handleKeyDownBatch = (e, index) => {
             const updatedSubForm = [...prevState[type]];
             updatedSubForm[index] = {
                 ...updatedSubForm[index],
-                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDate' : 'sellingCostDate'}`]: convertedDate, // Actual date for database
-                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDateDisplay' : 'sellingCostDateDisplay'}`]: formattedDisplayDate, // Formatted date for display
+                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDate' : 
+                   type === 'gstStockItemSubForm' ? 'gstDate' : 
+                   'vatDate'}`]: convertedDate, // Actual date for database
+                [`${type === 'standardSellingPriceSubForm' ? 'sellingPriceDateDisplay' : 
+                   type === 'gstStockItemSubForm' ? 'gstDateDisplay' : 
+                   'vatDateDisplay'}`]: formattedDisplayDate, // Formatted date for display
             };
             return {
                 ...prevState,
@@ -1600,7 +1958,6 @@ const handleFormattedDateChange = (e, index, field, type) => {
       updatedSubForm[index][field] = newValue; // Update the specific row and field
 
       // Additionally, call dateConvert to ensure the display date is formatted
-      // Modify the event object to match what dateConvert expects
       const event = { target: { value: newValue } };
       dateConvert(event, index, type); // Call dateConvert with the modified event
 
@@ -1615,7 +1972,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
         <LeftSideMenu />
         <form
           action=""
-          className="border border-slate-500 w-[42.5%] h-[35vh] absolute left-[47.5%]"
+          className="border border-slate-500 w-[42.5%] h-[42vh] absolute left-[47.5%]"
           onSubmit={handleSubmit}
         >
           <div className="text-sm flex mt-2 ml-2">
@@ -1630,7 +1987,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
               ref={input => (inputRefs.current[0] = input)}
               onKeyDown={e => handleKeyDown(e, 0)}
               onChange={handleInputChange}
-              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -1646,7 +2003,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
               value={stockItem.stockItemName}
               onKeyDown={e => handleKeyDown(e, 1)}
               onChange={handleInputChange}
-              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -1667,7 +2024,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                 handleInputChange(e);
               }}
               onBlur={() => setCategoryFocused(false)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
             {categoryFocused && filteredStockCategory.length >= 0 && (
@@ -1713,7 +2070,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                 handleInputChange(e);
               }}
               onBlur={() => setUnderFocused(false)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
             {underFocused && filteredStockGroup.length >= 0 && (
@@ -1759,7 +2116,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                 handleInputChange(e);
               }}
               onBlur={() => setUnitsFocused(false)}
-              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
             {unitsFocused && filteredUnit.length >= 0 && (
@@ -1800,7 +2157,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
               value={stockItem.standardSellingPrice}
               onKeyDown={e => handleKeyDown(e, 5)}
               onChange={handleInputChange}
-              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -1818,7 +2175,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                       type="text"
                       name="allocationsOf"
                       value={stockItem.stockItemName}
-                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -1847,7 +2204,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               ref={input => (inputSellingPriceRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index, 'standardSellingPriceSubForm')}}
-                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1861,7 +2218,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               onChange={e => handleInputSellingPriceChange(e, index)}
                               ref={input => (inputSellingPriceRef.current[1 + index * 5] = input)}
                               onKeyDown={e => {handleKeyDownSellingPrice(e, index, 1); calculateSellingPriceNetRate(index);}}
-                              className="w-[80px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingPriceSubForm');
                               }}
@@ -1881,7 +2238,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               onBlur={e => {
                                 percentageFormat(e, index, 'standardSellingPriceSubForm')
                               }}
-                              className="w-[40px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[40px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1895,7 +2252,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingPriceSubForm');
                               }}
@@ -1912,7 +2269,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               onChange={e => handleInputSellingPriceChange(e, index)}
                               ref={input => (inputSellingPriceRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 4)}
-                              className="w-[70px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1936,7 +2293,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
               value={stockItem.standardSellingCost}
               onKeyDown={e => handleKeyDown(e, 6)}
               onChange={handleInputChange}
-              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
           </div>
@@ -1954,7 +2311,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                       type="text"
                       name="allocationsOf"
                       value={stockItem.stockItemName}
-                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -1983,7 +2340,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               ref={input => (inputSellingCostRef.current[0 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 0)}
                               onBlur={(e) => {dateConvert(e, index, 'standardSellingCostSubForm')}}
-                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1997,7 +2354,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               onChange={e => handleInputSellingCostChange(e, index)}
                               ref={input => (inputSellingCostRef.current[1 + index * 5] = input)}
                               onKeyDown={(e) => {handleKeyDownSellingCost(e, index, 1); calculateSellingCostNetRate(index);}}
-                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingCostSubForm');
                               }}
@@ -2017,7 +2374,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               onBlur={e => {
                                 percentageFormat(e, index, 'standardSellingCostSubForm')
                               }}
-                              className="w-[40px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[40px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2031,7 +2388,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingCostSubForm');
                               }}
@@ -2048,8 +2405,232 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               onChange={e => handleInputSellingCostChange(e, index)}
                               ref={input => (inputSellingCostRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 4)}
-                              className="w-[70px] h-5 pl-1 ml-6 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 ml-6 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="text-sm flex ml-2">
+            <label htmlFor="gstApplicable" className="w-[40%]">
+              GST Applicable
+            </label>
+            <span>:</span>
+            <input
+              type="text"
+              name="gstApplicable"
+              value={stockItem.gstApplicable}
+              ref={input => (inputRefs.current[7] = input)}
+              onKeyDown={e => handleKeyDown(e, 7)}
+              onChange={handleInputChange}
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              autoComplete="off"
+            />
+          </div>
+          {gstStockItemSubFormModal && (
+            <div className="fixed top-[44px] right-[137px] bottom-0 left-0 bg-slate-300 bg-opacity-90 z-10 flex justify-center items-center">
+              <div className="bg-white w-[600px] h-[500px] border border-black">
+                <div>
+                  <div className="text-sm ml-5 mb-1 flex">
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
+                    </label>
+                    <span>:</span>
+                    <input
+                      type="text"
+                      name="allocationsOf"
+                      value={stockItem.stockItemName}
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <table className="border border-slate-400 border-collapse w-full">
+                    <thead className="text-[12px]">
+                      <tr className="border-t border-b border-slate-400">
+                        <th>Date</th>
+                        <th>HSN Code</th>
+                        <th>
+                          Percentage <span>(%)</span>
+                        </th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stockItem.gstStockItemSubForm.map((row, index) => (
+                        <tr>
+                          {/* date Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="gstDate"
+                              value={row.gstDateDisplay || ''}
+                              onChange={e => handleFormattedDateChange(e, index, 'gstDateDisplay', 'gstStockItemSubForm')}
+                              ref={input => (inputGstRef.current[0 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownGstSubForm(e, index, 0)}
+                              onBlur={(e) => {dateConvert(e, index, 'gstStockItemSubForm')}}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              
+                            />
+                          </td>
+                          {/* hsn code Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="hsnCode"
+                              value={row.hsnCode}
+                              ref={input => (inputGstRef.current[1 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownGstSubForm(e, index, 1)}
+                              onChange={e => handleInputGstChange(e, index)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              
+                            />
+                          </td>
+                          {/* percentage Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="gstPercentage"
+                              value={row.gstPercentage}
+                              ref={input => (inputGstRef.current[2 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownGstSubForm(e, index, 2)}
+                              onChange={e => handleInputGstChange(e, index)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              
+                            />
+                          </td>
+                          {/* status Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="gstStatus"
+                              value={row.gstStatus}
+                              ref={input => (inputGstRef.current[3 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownGstSubForm(e, index, 3)}
+                              onChange={e => handleInputGstChange(e, index)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="text-sm flex ml-2">
+            <label htmlFor="vatApplicable" className="w-[40%]">
+              VAT Applicable
+            </label>
+            <span>:</span>
+            <input
+              type="text"
+              name="vatApplicable"
+              value={stockItem.vatApplicable}
+              ref={input => (inputRefs.current[8] = input)}
+              onKeyDown={e => handleKeyDown(e, 8)}
+              onChange={handleInputChange}
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              autoComplete="off"
+            />
+          </div>
+          {vatStockItemSubFormModal && (
+            <div className="fixed top-[44px] right-[137px] bottom-0 left-0 bg-slate-300 z-10 opacity-90 flex justify-center items-center">
+              <div className="bg-white w-[600px] h-[500px] border border-black">
+                <div>
+                  <div className="text-sm ml-5 mt-2 mb-1 flex">
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
+                    </label>
+                    <span>:</span>
+                    <input
+                      type="text"
+                      name="allocationsOf"
+                      value={stockItem.stockItemName}
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <table className="border border-slate-400 border-collapse w-full">
+                    <thead className="text-[12px]">
+                      <tr className="border-t border-b border-slate-400">
+                        <th>Date</th>
+                        <th>VAT Code</th>
+                        <th>
+                          Percentage <span>(%)</span>
+                        </th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stockItem.vatStockItemSubForm.map((row, index) => (
+                        <tr>
+                          {/* date Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="vatDate"
+                              value={row.vatDateDisplay || ''}
+                              onChange={e => handleFormattedDateChange(e, index, 'vatDateDisplay', 'vatStockItemSubForm')}
+                              ref={input => (inputVatRef.current[0 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownVatSubForm(e, index, 0)}
+                              onBlur={(e) => {dateConvert(e, index, 'vatStockItemSubForm')}}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              
+                            />
+                          </td>
+                          {/* vat code Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="vatCode"
+                              value={row.vatCode}
+                              ref={input => (inputVatRef.current[1 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownVatSubForm(e, index, 1)}
+                              onChange={e => handleInputVatChange(e, index)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              
+                            />
+                          </td>
+                          {/* percentage Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="vatPercentage"
+                              value={row.vatPercentage}
+                              ref={input => (inputVatRef.current[2 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownVatSubForm(e, index, 2)}
+                              onChange={e => handleInputVatChange(e, index)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              
+                            />
+                          </td>
+                          {/* status Input */}
+                          <td>
+                            <input
+                              type="text"
+                              name="vatStatus"
+                              value={row.vatStatus}
+                              ref={input => (inputVatRef.current[3 + index * 4] = input)}
+                              onKeyDown={e => handleKeyDownVatSubForm(e, index, 3)}
+                              onChange={e => handleInputVatChange(e, index)}
+                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              autoComplete="off"
+                              
                             />
                           </td>
                         </tr>
@@ -2075,14 +2656,14 @@ const handleFormattedDateChange = (e, index, field, type) => {
               name="openingBalanceQuantity"
               value={stockItem.openingBalanceQuantityDisplay || ''}
               onChange={handleUnitFormattedChange}
-              ref={input => (inputRefs.current[7] = input)}
-              onKeyDown={e => {handleKeyDown(e, 7);
+              ref={input => (inputRefs.current[9] = input)}
+              onKeyDown={e => {handleKeyDown(e, 9);
                 if (e.key === 'Enter'){
-                  inputRefs.current[8].focus(); // Adjust the index based on your input structure
+                  inputRefs.current[10].focus(); // Adjust the index based on your input structure
                 }
               }}
               onBlur={(e) => unitFormat(e)}
-              className="w-[75px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[75px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
 
@@ -2092,10 +2673,10 @@ const handleFormattedDateChange = (e, index, field, type) => {
               name="openingBalanceRate"
               value={stockItem.openingBalanceRate}
               onChange={handleInputChange}
-              ref={input => (inputRefs.current[8] = input)}
-              onKeyDown={e => handleKeyDown(e, 8)}
+              ref={input => (inputRefs.current[10] = input)}
+              onKeyDown={e => handleKeyDown(e, 10)}
               onBlur={numberFormat}
-              className="w-[76px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[76px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
 
@@ -2105,9 +2686,9 @@ const handleFormattedDateChange = (e, index, field, type) => {
               name="openingBalanceUnit"
               value={stockItem.openingBalanceUnit}
               onChange={handleInputChange}
-              ref={input => (inputRefs.current[9] = input)}
-              onKeyDown={e => handleKeyDown(e, 9)}
-              className="w-[50px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              ref={input => (inputRefs.current[11] = input)}
+              onKeyDown={e => handleKeyDown(e, 11)}
+              className="w-[50px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
 
@@ -2117,10 +2698,10 @@ const handleFormattedDateChange = (e, index, field, type) => {
               name="openingBalanceValue"
               value={stockItem.openingBalanceValue}
               onChange={handleInputChange}
-              ref={input => (inputRefs.current[10] = input)}
-              onKeyDown={e => handleKeyDown(e, 10)}
+              ref={input => (inputRefs.current[12] = input)}
+              onKeyDown={e => handleKeyDown(e, 12)}
               onBlur={numberFormat}
-              className="w-[100px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+              className="w-[100px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
               readOnly
             />
@@ -2139,7 +2720,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                       type="text"
                       name="allocationsOf"
                       value={stockItem.stockItemName}
-                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -2152,7 +2733,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                       type="text"
                       name="for"
                       value={stockItem.openingBalanceQuantityDisplay}
-                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                       autoComplete="off"
                     />
                   </div>
@@ -2184,7 +2765,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                                 handleInputGodownSubFormChange(e, index);
                               }}
                               onBlur={() => setGodownFocused(false)}
-                              className="w-[130px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[130px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                             {/* godown Suggestion Dropdown */}
@@ -2231,7 +2812,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                                 handleInputGodownSubFormChange(e, index);
                               }}
                               onBlur={() => setBatchFocused(false)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                             {/* batch Suggestion Dropdown */}
@@ -2273,7 +2854,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               ref={input => (inputGodownRef.current[2 + index * 6] = input)}
                               onChange={(e) => {handleInputGodownSubFormChange(e, index)}}
                               onKeyDown={(e) => {handleKeyDownGodownSubForm(e, index, 2); calculatenetAmountForGodown(index);}}
-                              className="w-[60px] h-5 pl-1 ml-4 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[60px] h-5 pl-1 ml-4 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2287,7 +2868,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               ref={input => (inputGodownRef.current[3 + index * 6] = input)}
                               onChange={e => handleInputGodownSubFormChange(e, index)}
                               onKeyDown={e => handleKeyDownGodownSubForm(e, index, 3)}
-                              className="w-[50px] h-5 pl-1 ml-3 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[50px] h-5 pl-1 ml-3 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2301,7 +2882,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               ref={input => (inputGodownRef.current[4 + index * 6] = input)}
                               onChange={(e) => {handleInputGodownSubFormChange(e, index); calculatenetAmountForGodown(index);}}
                               onKeyDown={(e) => {handleKeyDownGodownSubForm(e, index, 4); calculatenetAmountForGodown(index);}}
-                              className="w-[70px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-[70px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               onBlur={e => {
                                 numberFormat(e, index, 'godownSubForm');
                               }}
@@ -2318,7 +2899,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               ref={input => (inputGodownRef.current[5 + index * 6] = input)}
                               readOnly
                               onKeyDown={e => handleKeyDownGodownSubForm(e, index, 5)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] text-right pr-1 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"
+                              className="w-full h-5 pl-1 font-medium text-[12px] text-right pr-1 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               onBlur={e => {
                                 numberFormat(e, index, 'godownSubForm');
                               }}
@@ -2335,15 +2916,15 @@ const handleFormattedDateChange = (e, index, field, type) => {
                   <span className='ml-1'>:</span>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" name='totalQuantity' value={stockItem.totalQuantity} ref={(input) => (totalRefs.current[0] = input)} onKeyDown={e => handleKeyDownTotal(e, 0)} className="w-[50px] h-5 pl-1 ml-4 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
+                    <input type="text" name='totalQuantity' value={stockItem.totalQuantity} ref={(input) => (totalRefs.current[0] = input)} onKeyDown={e => handleKeyDownTotal(e, 0)} className="w-[50px] h-5 pl-1 ml-4 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"  autoComplete="off" readOnly />
                   </div>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" name='totalPerUnit' value={stockItem.units} ref={(input) => (totalRefs.current[1] = input)} onKeyDown={e => handleKeyDownTotal(e, 1)} className="w-[40px] h-5 pl-1 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
+                    <input type="text" name='totalPerUnit' value={stockItem.units} ref={(input) => (totalRefs.current[1] = input)} onKeyDown={e => handleKeyDownTotal(e, 1)} className="w-[40px] h-5 pl-1 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"  autoComplete="off" readOnly />
                   </div>
                   <div>
                     <label htmlFor=""></label>
-                    <input type="text" name='totalNetAmount' value={stockItem.totalNetAmount} ref={(input) => (totalRefs.current[2] = input)} onKeyDown={e => handleKeyDownTotal(e, 2)} className="w-[110px] h-5 pl-1 ml-[163px] font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all"  autoComplete="off" readOnly />
+                    <input type="text" name='totalNetAmount' value={stockItem.totalNetAmount} ref={(input) => (totalRefs.current[2] = input)} onKeyDown={e => handleKeyDownTotal(e, 2)} className="w-[110px] h-5 pl-1 ml-[163px] font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"  autoComplete="off" readOnly />
                   </div>
                 </div>
               </div>

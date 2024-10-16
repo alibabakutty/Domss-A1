@@ -77,17 +77,17 @@ const StockGroupDisplay = () => {
           <div className='text-sm flex mt-2 ml-2'>
             <label htmlFor="stockGroupName" className='w-[40%]'>Name</label>
             <span>:</span>
-            <input type="text" name='stockGroupName' ref={(input) => (inputRefs.current[0] = input)} value={stocGroup.stockGroupName} onKeyDown={(e) => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' readOnly />
+            <input type="text" name='stockGroupName' ref={(input) => (inputRefs.current[0] = input)} value={stocGroup.stockGroupName} onKeyDown={(e) => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
           <div className='text-sm flex ml-2'>
             <label htmlFor="under" className='w-[40%]'>Under</label>
             <span>:</span>
-            <input type="text" name='under' ref={(input) => (inputRefs.current[1] = input)} value={stocGroup.under} onKeyDown={(e) => handleKeyDown(e, 1)} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' readOnly />
+            <input type="text" name='under' ref={(input) => (inputRefs.current[1] = input)} value={stocGroup.under} onKeyDown={(e) => handleKeyDown(e, 1)} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
           <div className='text-sm flex ml-2'>
             <label htmlFor="shouldQuantitiesOfItemsBeAdded" className='w-[40%]'>Should quantities of items be added</label>
             <span>:</span>
-            <input type="text" name='shouldQuantitiesOfItemsBeAdded' ref={(input) => (inputRefs.current[2] = input)} value={stocGroup.shouldQuantitiesOfItemsBeAdded} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 2)} className='w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' readOnly />
+            <input type="text" name='shouldQuantitiesOfItemsBeAdded' ref={(input) => (inputRefs.current[2] = input)} value={stocGroup.shouldQuantitiesOfItemsBeAdded} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 2)} className='w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
         </form>
         <RightSideButton />

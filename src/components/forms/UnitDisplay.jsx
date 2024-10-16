@@ -78,27 +78,27 @@ const UnitDisplay = () => {
           <div className='text-sm flex mt-2 ml-2'>
             <label htmlFor="unitTypeName" className='w-[30%]'>UOM Type</label>
             <span>:</span>
-            <input type="text" name='unitTypeName' value={unit.unitTypeName} ref={(input) => (inputRefs.current[0] = input)} onKeyDown={(e) => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' readOnly />
+            <input type="text" name='unitTypeName' value={unit.unitTypeName} ref={(input) => (inputRefs.current[0] = input)} onKeyDown={(e) => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
           <div className='flex ml-2 text-sm'>
             <label htmlFor="unitQuantityCode" className='w-[30%]'>Unit Quantity Code (UQC)</label>
             <span>:</span>
-            <input type="text" name='unitQuantityCode' value={unit.unitQuantityCode} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} onChange={handleInputChange} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' readOnly />
+            <input type="text" name='unitQuantityCode' value={unit.unitQuantityCode} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} onChange={handleInputChange} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
           <div className='flex ml-2 text-sm'>
             <label htmlFor="numberOfDecimalPlaces" className='w-[30%]'>Number of decimal places</label>
             <span>:</span>
-            <input type="text" name='numberOfDecimalPlaces' value={unit.numberOfDecimalPlaces} ref={(input) => (inputRefs.current[2] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 2)} className='w-[20px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' readOnly />
+            <input type="text" name='numberOfDecimalPlaces' value={unit.numberOfDecimalPlaces} ref={(input) => (inputRefs.current[2] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 2)} className='w-[20px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
           <div className='text-sm flex ml-2'>
             <label htmlFor="unitSymbolName" className='w-[30%]'>Printing Symbol</label>
             <span>:</span>
-            <input type="text" name='unitSymbolName' value={unit.unitSymbolName} ref={(input) => (inputRefs.current[3] = input)} onKeyDown={(e) => handleKeyDown(e, 3)} onChange={handleInputChange} className='w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' readOnly />
+            <input type="text" name='unitSymbolName' value={unit.unitSymbolName} ref={(input) => (inputRefs.current[3] = input)} onKeyDown={(e) => handleKeyDown(e, 3)} onChange={handleInputChange} className='w-[60px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
           <div className='text-sm flex ml-2'>
             <label htmlFor="formalName" className='w-[30%]'>Printing Formal Name</label>
             <span>:</span>
-            <input type="text" name='formalName' value={unit.formalName} ref={(input) => (inputRefs.current[4] = input)} onKeyDown={(e) => handleKeyDown(e, 4)} onChange={handleInputChange} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent transition-all' autoComplete='off' readOnly />
+            <input type="text" name='formalName' value={unit.formalName} ref={(input) => (inputRefs.current[4] = input)} onKeyDown={(e) => handleKeyDown(e, 4)} onChange={handleInputChange} className='w-[200px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
         </form>
         <RightSideButton />

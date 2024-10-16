@@ -92,12 +92,12 @@ const ProjectNameDisplay = () => {
           <div className='text-sm p-3 flex'>
             <label htmlFor="projectName" className='w-[30%]'>Project Name</label>
             <span>:</span>
-            <input type="text" id='projectName' name='projectName' value={projectName.projectName} ref={input => inputRefs.current[0] = input} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' readOnly />
+            <input type="text" id='projectName' name='projectName' value={projectName.projectName} ref={input => inputRefs.current[0] = input} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 border-transparent focus:border' autoComplete='off' readOnly />
           </div>
           <div className='text-sm flex pl-3'>
             <label htmlFor="projectCategoryName" className='w-[29.3%]'>Under</label>
             <span>:</span>
-            <input type="text" id='projectCategoryName' name='projectCategoryName' value={projectName.projectCategoryName} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' readOnly />
+            <input type="text" id='projectCategoryName' name='projectCategoryName' value={projectName.projectCategoryName} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 border-transparent focus:border' readOnly />
           </div>
         </form>
         <RightSideButton />

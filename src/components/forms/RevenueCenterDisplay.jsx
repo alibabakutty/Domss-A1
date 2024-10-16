@@ -100,12 +100,12 @@ const RevenueCentreDisplay = () => {
           <div className='text-sm p-3 flex'>
             <label htmlFor="revenueCenterName" className='w-[30%]'>Revenue Center Name</label>
             <span>:</span>
-            <input type="text" id='revenueCenterName' name='revenueCenterName' value={revenueCenter.revenueCenterName} ref={input => inputRefs.current[0] = input} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' readOnly />
+            <input type="text" id='revenueCenterName' name='revenueCenterName' value={revenueCenter.revenueCenterName} ref={input => inputRefs.current[0] = input} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 border-transparent focus:border' autoComplete='off' readOnly />
           </div>
           <div className='text-sm flex pl-3'>
             <label htmlFor="revenueCategoryName" className='w-[29.3%]'>Under</label>
             <span>:</span>
-            <input type="text" id='revenueCategoryName' name='revenueCategoryName' value={revenueCenter.revenueCategoryName} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' readOnly />
+            <input type="text" id='revenueCategoryName' name='revenueCategoryName' value={revenueCenter.revenueCategoryName} ref={(input) => (inputRefs.current[1] = input)} onKeyDown={(e) => handleKeyDown(e, 1)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 border-transparent focus:border' readOnly />
           </div>
         </form>
         <RightSideButton />

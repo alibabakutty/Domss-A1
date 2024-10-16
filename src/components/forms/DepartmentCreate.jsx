@@ -73,7 +73,7 @@ const DepartmentCreate = () => {
           <div className='text-sm p-3 flex'>
             <label htmlFor="departmentName" className='w-[25%]'>Department Name</label>
             <span>:</span>
-            <input type="text" id='departmentName' name='departmentName' value={department.departmentName} ref={el => (inputRefs.current[0] = el)} onKeyDown={e => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border' autoComplete='off' />
+            <input type="text" id='departmentName' name='departmentName' value={department.departmentName} ref={el => (inputRefs.current[0] = el)} onKeyDown={e => handleKeyDown(e, 0)} onChange={handleInputChange} className='w-[400px] ml-2 h-5 pl-1 font-medium text-sm uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border-transparent' autoComplete='off' />
           </div>
         </form>
         <RightSideButton />

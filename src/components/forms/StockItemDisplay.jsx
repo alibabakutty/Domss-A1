@@ -1508,7 +1508,7 @@ const StockItemDisplay = () => {
                               ref={input => (inputGodownRef.current[2 + index * 6] = input)}
                               readOnly
                               onKeyDown={(e) => {handleKeyDownGodownSubForm(e, index, 2)}}
-                              className="w-[60px] h-5 pl-1 ml-4 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[50px] h-5 pl-1 ml-4 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>

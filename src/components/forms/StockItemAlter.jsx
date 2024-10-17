@@ -2088,7 +2088,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
         <LeftSideMenu />
         <form
           action=""
-          className="border border-slate-500 w-[42.5%] h-[42vh] absolute left-[47.5%]"
+          className="border border-slate-500 w-[42.5%] h-[42vh] relative"
           onSubmit={handleSubmit}
         >
           <div className="text-sm flex mt-2 ml-2">
@@ -2144,7 +2144,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
               autoComplete="off"
             />
             {categoryFocused && filteredStockCategory.length >= 0 && (
-              <div className="w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0">
+              <div className="w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[348px] top-0">
                 <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
                   <p>List of Categories</p>
                 </div>
@@ -2190,7 +2190,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
               autoComplete="off"
             />
             {underFocused && filteredStockGroup.length >= 0 && (
-              <div className="w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0">
+              <div className="w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[348px] top-0">
                 <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
                   <p>List of Groups</p>
                 </div>
@@ -2236,7 +2236,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
               autoComplete="off"
             />
             {unitsFocused && filteredUnit.length >= 0 && (
-              <div className="w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[372px] top-0">
+              <div className="w-[40%] h-[92.6vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[348px] top-0">
                 <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
                   <p>List of Units</p>
                 </div>
@@ -2833,7 +2833,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
           {/* Conditional rendering of the subform */}
           {godownSubFormModal && (
             <div className="fixed top-[44px] right-[137px] bottom-0 left-0 bg-slate-300 bg-opacity-90 z-10 flex justify-center items-center">
-              <div className="bg-white w-[700px] h-[500px] border border-black relative">
+              <div className="bg-white w-[700px] h-[500px] border border-black">
                 <div className="">
                   <div className="text-sm ml-5 mt-2 flex">
                     <label htmlFor="allocationsOf" className="w-[21%]">
@@ -2895,7 +2895,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                             {/* godown Suggestion Dropdown */}
                             {godownFocused && filteredGodown.length > 0 && (
                               <div
-                                className="w-[30%] h-[50vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[118px] top-[70px]"
+                                className="w-[20%] h-[92.5vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[983px] top-0"
                                 onMouseDown={e => e.preventDefault()}
                               >
                                 <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
@@ -2942,7 +2942,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                             {/* batch Suggestion Dropdown */}
                             {batchFocused && filteredBatch.length > 0 && (
                               <div
-                                className="w-[30%] h-[50vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[245px] top-[70px]"
+                                className="w-[20%] h-[92.5vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[983px] top-0"
                                 onMouseDown={e => e.preventDefault()}
                               >
                                 <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
@@ -2978,7 +2978,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                               ref={input => (inputGodownRef.current[2 + index * 6] = input)}
                               onChange={(e) => {handleInputGodownSubFormChange(e, index)}}
                               onKeyDown={(e) => {handleKeyDownGodownSubForm(e, index, 2); calculatenetAmountForGodown(index);}}
-                              className="w-[60px] h-5 pl-1 ml-4 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[50px] h-5 pl-1 ml-4 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -3035,7 +3035,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                     </tbody>
                   </table>
                 </div>
-                <div className='flex absolute top-[468px] left-[275px] border border-double border-t border-slate-400 border-l-0 border-r-0'>
+                <div className='flex absolute top-[498px] left-[545px] border border-double border-t border-slate-400 border-l-0 border-r-0'>
                   <p className='text-sm mt-1'>Total</p>
                   <span className='ml-1'>:</span>
                   <div>

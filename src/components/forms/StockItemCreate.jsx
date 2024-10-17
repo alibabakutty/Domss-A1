@@ -57,6 +57,7 @@ const StockItemCreate = () => {
       },
     ],
     openingBalanceQuantity: '',
+    openingBalanceQuantityDisplay: '',
     godownSubForm: [
       {
         godownName: '',
@@ -516,58 +517,49 @@ const StockItemCreate = () => {
   const handleKeyDownSellingPrice = (e, rowIndex, colIndex) => {
     const key = e.key;
     const firstSellingPriceDate = 0;
-
+  
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
-
-      // Check if the current input is the first sellingpriceDate and ensure it has a value
+  
       if (rowIndex === 0 && colIndex === firstSellingPriceDate && e.target.value.trim() === '') {
         alert('Please enter the selling price date before proceeding');
         inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus on the empty sellingpricedate field
         inputSellingPriceRef.current[rowIndex * 5 + colIndex].setSelectionRange(0, 0);
         return;
       }
-
-      // If it's not the first row, and the sellingPriceDate is empty, confirm to close the subform
+  
       if (colIndex === firstSellingPriceDate && e.target.value.trim() === '' && rowIndex > 0) {
         const confirmationClose = window.confirm('Do you want to close this subform?');
         if (confirmationClose) {
           setStandardSellingPriceModal(false);
-          setStockItem(prev => ({ ...prev, standardSellingPrice: 'no' }));
+          setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }));
           inputRefs.current[6]?.focus();
+          inputRefs.current[6].setSelectionRange(0, 0);
           return;
         } else {
           inputSellingPriceRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus if they choose not to close
+          inputSellingPriceRef.current[rowIndex * 5 + colIndex].setSelectionRange(0, 0);
           return;
         }
       }
-
-      // Check if the current field is sellingpricestatus and its value is not empty
+  
       const isSellingPriceStatus = e.target.name === 'sellingPriceStatus';
-      const isLastRowSelingPriceStatus =
-        rowIndex === stockItem.standardSellingPriceSubForm.length - 1;
-
-      // Add a new row when Enter is pressed on the last row sellingpricestatus with a value
+      const isLastRowSelingPriceStatus = rowIndex === stockItem.standardSellingPriceSubForm.length - 1;
+  
       if (isSellingPriceStatus && e.target.value.trim() !== '' && isLastRowSelingPriceStatus) {
         addNewRowSellingPrice();
         setTimeout(() => {
           inputSellingPriceRef.current[(rowIndex + 1) * 5]?.focus();
-          inputSellingPriceRef.current[(rowIndex + 1) * 5].setSelectionRange(0, 0);
         }, 0);
         return;
       }
-
-      // Move to the next cell
+  
       const nextCell = rowIndex * 5 + colIndex + 1;
-      if (
-        inputSellingPriceRef.current[nextCell] &&
-        nextCell < inputSellingPriceRef.current.length
-      ) {
+      if (inputSellingPriceRef.current[nextCell] && nextCell < inputSellingPriceRef.current.length) {
         inputSellingPriceRef.current[nextCell]?.focus();
         inputSellingPriceRef.current[nextCell].setSelectionRange(0, 0);
       }
     } else if (key === 'Backspace') {
-      // Move focus to the previous input if the current input is empty
       if (e.target.value.trim() === '') {
         e.preventDefault();
         const prevCell = rowIndex * 5 + colIndex - 1;
@@ -578,9 +570,8 @@ const StockItemCreate = () => {
       }
     } else if (key === 'Escape') {
       setStandardSellingPriceModal(false);
-      setStockItem(prev => ({ ...prev, standardSellingPrice: 'no' }));
+      setStockItem((prev) => ({ ...prev, standardSellingPrice: 'no' }));
     } else if (key === 'a' || key === 'A') {
-      // Set the value to 'Active' if 'A' or 'a' is pressed
       if (e.target.name === 'sellingPriceStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingPriceSubForm];
@@ -588,12 +579,58 @@ const StockItemCreate = () => {
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
       }
     } else if (key === 'i' || key === 'I') {
-      // Set the value to 'inactive' if 'N' or 'n' is pressed
       if (e.target.name === 'sellingPriceStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingPriceSubForm];
-        newRow[rowIndex].sellingPriceStatus = 'inactive'; // Update the status in the row
+        newRow[rowIndex].sellingPriceStatus = 'Inactive'; // Update the status in the row
         setStockItem({ ...stockItem, standardSellingPriceSubForm: newRow });
+      }
+    } else if (key === 'ArrowUp') {
+      // Move focus to the cell above (previous row, same column)
+      const prevRow = (rowIndex - 1) * 5 + colIndex;
+      if (inputSellingPriceRef.current[prevRow] && rowIndex > 0) {
+        inputSellingPriceRef.current[prevRow].focus();
+        inputSellingPriceRef.current[prevRow].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowDown') {
+      // Move focus to the cell below (next row, same column)
+      const nextRow = (rowIndex + 1) * 5 + colIndex;
+      if (inputSellingPriceRef.current[nextRow] && rowIndex < stockItem.standardSellingPriceSubForm.length - 1) {
+        inputSellingPriceRef.current[nextRow].focus();
+        inputSellingPriceRef.current[nextRow].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowLeft') {
+      // Move focus to the cell on the left (same row, previous column)
+      e.preventDefault();
+      const prevCell = rowIndex * 5 + colIndex - 1;
+      if (inputSellingPriceRef.current[prevCell] && prevCell >= 0) {
+        inputSellingPriceRef.current[prevCell].focus();
+        inputSellingPriceRef.current[prevCell].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowRight') {
+      // Prevent default behavior of ArrowRight
+      e.preventDefault();
+  
+      // Calculate the next cell index
+      const nextCell = rowIndex * 5 + colIndex + 1;
+  
+      // Check if the next cell exists within the current row (colIndex < 4)
+      if (inputSellingPriceRef.current[nextCell] && colIndex < 4) {
+        // Focus on the next input
+        inputSellingPriceRef.current[nextCell].focus();
+      } else if (colIndex === 4 && rowIndex < stockItem.standardSellingPriceSubForm.length - 1) {
+        // Move to the first column of the next row if we are at the last column
+        const firstCellOfNextRow = (rowIndex + 1) * 5;
+        inputSellingPriceRef.current[firstCellOfNextRow]?.focus();
+        inputSellingPriceRef.current[firstCellOfNextRow].setSelectionRange(0, 0);
+      }
+    } else if (key === ' ') {
+      // Clear value when Spacebar is pressed in sellingPriceRate or sellingPricePercentage input
+      if (e.target.name === 'sellingPriceRate' || e.target.name === 'sellingPricePercentage') {
+        e.preventDefault(); // Prevent default spacebar behavior
+        const updatedRows = [...stockItem.standardSellingPriceSubForm];
+        updatedRows[rowIndex][e.target.name] = ''; // Clear the input value
+        setStockItem({ ...stockItem, standardSellingPriceSubForm: updatedRows });
       }
     }
   };
@@ -619,24 +656,26 @@ const StockItemCreate = () => {
   const handleKeyDownSellingCost = (e, rowIndex, colIndex) => {
     const key = e.key;
     const firstSellingCostDate = 0;
-
+  
     if (key === 'Enter') {
       e.preventDefault(); // Prevent default Enter key behavior
-
-      // Check if the current input is the first sellingcostDate and ensure it has a value
+  
+      // Check if the current input is the first sellingCostDate and ensure it has a value
       if (rowIndex === 0 && colIndex === firstSellingCostDate && e.target.value.trim() === '') {
         alert('The Selling Cost Date field must have a value before proceeding.');
-        inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus on the empty forexDate field
+        inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus on the empty sellingCostDate field
+        inputSellingCostRef.current[rowIndex * 5 + colIndex].setSelectionRange(0, 0);
         return;
       }
-
+  
       // If it's not the first row, and the sellingCostDate is empty, confirm to close the subform
       if (colIndex === firstSellingCostDate && e.target.value.trim() === '' && rowIndex > 0) {
         const confirmationClose = window.confirm('Do you want to close this subform?');
         if (confirmationClose) {
           setStandardSellingCostModal(false);
-          setStockItem(prev => ({ ...prev, standardSellingCost: 'no' }));
+          setStockItem((prev) => ({ ...prev, standardSellingCost: 'no' }));
           inputRefs.current[7]?.focus();
+          inputRefs.current[7].setSelectionRange(0, 0);
           return;
         } else {
           inputSellingCostRef.current[rowIndex * 5 + colIndex]?.focus(); // Refocus if they choose not to close
@@ -644,14 +683,14 @@ const StockItemCreate = () => {
           return;
         }
       }
-
-      // Check if the current field is sellingcoststatus and its value is not empty
+  
+      // Check if the current field is sellingCostStatus and its value is not empty
       const isSellingCostStatus = e.target.name === 'sellingCostStatus';
-      const isLastRowSelingCostStatus =
+      const isLastRowSellingCostStatus =
         rowIndex === stockItem.standardSellingCostSubForm.length - 1;
-
-      // Add a new row when Enter is pressed on the last row sellingpricestatus with a value
-      if (isSellingCostStatus && e.target.value.trim() !== '' && isLastRowSelingCostStatus) {
+  
+      // Add a new row when Enter is pressed on the last row sellingCostStatus with a value
+      if (isSellingCostStatus && e.target.value.trim() !== '' && isLastRowSellingCostStatus) {
         addNewRowSellingCost();
         setTimeout(() => {
           inputSellingCostRef.current[(rowIndex + 1) * 5]?.focus();
@@ -659,7 +698,7 @@ const StockItemCreate = () => {
         }, 0);
         return;
       }
-
+  
       // Move to the next cell
       const nextCell = rowIndex * 5 + colIndex + 1;
       if (inputSellingCostRef.current[nextCell] && nextCell < inputSellingCostRef.current.length) {
@@ -673,12 +712,12 @@ const StockItemCreate = () => {
         const prevCell = rowIndex * 5 + colIndex - 1;
         if (inputSellingCostRef.current[prevCell] && prevCell >= 0) {
           inputSellingCostRef.current[prevCell].focus();
-          inputSellingPriceRef.current[prevCell].setSelectionRange(0, 0);
+          inputSellingCostRef.current[prevCell].setSelectionRange(0, 0);
         }
       }
     } else if (key === 'Escape') {
       setStandardSellingCostModal(false);
-      setStockItem(prev => ({ ...prev, standardSellingCost: 'no' }));
+      setStockItem((prev) => ({ ...prev, standardSellingCost: 'no' }));
     } else if (key === 'a' || key === 'A') {
       if (e.target.name === 'sellingCostStatus') {
         e.preventDefault();
@@ -690,7 +729,50 @@ const StockItemCreate = () => {
       if (e.target.name === 'sellingCostStatus') {
         e.preventDefault();
         const newRow = [...stockItem.standardSellingCostSubForm];
-        newRow[rowIndex].sellingCostStatus = 'inactive';
+        newRow[rowIndex].sellingCostStatus = 'Inactive';
+        setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
+      }
+    } else if (key === 'ArrowUp') {
+      // Move focus to the cell above (previous row, same column)
+      const prevRow = (rowIndex - 1) * 5 + colIndex;
+      if (inputSellingCostRef.current[prevRow] && rowIndex > 0) {
+        inputSellingCostRef.current[prevRow].focus();
+        inputSellingCostRef.current[prevRow].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowDown') {
+      // Move focus to the cell below (next row, same column)
+      const nextRow = (rowIndex + 1) * 5 + colIndex;
+      if (inputSellingCostRef.current[nextRow] && rowIndex < stockItem.standardSellingCostSubForm.length - 1) {
+        inputSellingCostRef.current[nextRow].focus();
+        inputSellingCostRef.current[nextRow].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowLeft') {
+      // Move focus to the cell on the left (same row, previous column)
+      e.preventDefault();
+      const prevCell = rowIndex * 5 + colIndex - 1;
+      if (inputSellingCostRef.current[prevCell] && prevCell >= 0) {
+        inputSellingCostRef.current[prevCell].focus();
+        inputSellingCostRef.current[prevCell].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowRight') {
+      // Move focus to the cell on the right (same row, next column)
+      e.preventDefault();
+      const nextCell = rowIndex * 5 + colIndex + 1;
+      if (inputSellingCostRef.current[nextCell] && colIndex < 4) {
+        // Focus on the next input in the same row
+        inputSellingCostRef.current[nextCell].focus();
+        inputSellingCostRef.current[nextCell].setSelectionRange(0, 0);
+      } else if (colIndex === 4 && rowIndex < stockItem.standardSellingCostSubForm.length - 1) {
+        // Move to the first column of the next row if we are at the last column
+        const firstCellOfNextRow = (rowIndex + 1) * 5;
+        inputSellingCostRef.current[firstCellOfNextRow]?.focus();
+        inputSellingCostRef.current[firstCellOfNextRow]?.setSelectionRange(0, 0);
+      }
+    } else if (key === ' '){
+      if (e.target.name === 'sellingCostRate' || e.target.name === 'sellingCostPercentage'){
+        e.preventDefault();
+        const newRow = [...stockItem.standardSellingCostSubForm];
+        newRow[rowIndex][e.target.name] = '';   // make value empty
         setStockItem({ ...stockItem, standardSellingCostSubForm: newRow });
       }
     }
@@ -789,6 +871,48 @@ const StockItemCreate = () => {
         newRow[rowIndex].gstStatus = 'inactive';
         setStockItem({ ...stockItem, gstStockItemSubForm: newRow });
       }
+    } else if (key === 'ArrowUp'){
+      // Move focus to the previous row
+      const prevRow = (rowIndex - 1) * 4 + colIndex;
+      if (inputGstRef.current[prevRow] && rowIndex >= 0) {
+        inputGstRef.current[prevRow]?.focus();
+        inputGstRef.current[prevRow].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowDown'){
+      // Move focus to the cell below (next row, same column)
+      const nextRow = (rowIndex + 1) * 4 + colIndex;
+      if (inputGstRef.current[nextRow] && rowIndex < stockItem.gstStockItemSubForm.length - 1){
+        inputGstRef.current[nextRow]?.focus();
+        inputGstRef.current[nextRow].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowLeft'){
+      // Move focus to the cell to the left (previous column)
+      e.preventDefault();
+      const prevCell = rowIndex * 4 + colIndex - 1;
+      if (inputGstRef.current[prevCell] && prevCell >= 0) {
+        inputGstRef.current[prevCell]?.focus();
+        inputGstRef.current[prevCell].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowRight'){
+      // Move focus to the cell to the right (next column)
+      e.preventDefault();
+      const nextCell = rowIndex * 4 + colIndex + 1;
+      if (inputGstRef.current[nextCell] && colIndex < 3){
+        inputGstRef.current[nextCell]?.focus();
+        inputGstRef.current[nextCell].setSelectionRange(0, 0);
+      } else if (colIndex === 3 && rowIndex < stockItem.gstStockItemSubForm.length - 1){
+        // If we are at the last column, move focus to the first column of the next row
+        const firstCellOfNextRow = (rowIndex + 1) * 4;;
+        inputGstRef.current[firstCellOfNextRow]?.focus();
+        inputGstRef.current[firstCellOfNextRow].setSelectionRange(0, 0);
+      }
+    } else if (key === ' '){
+      if (e.target.name === 'gstDate' || e.target.name === 'hsnCode' || e.target.name === 'gstPercentage'){
+        e.preventDefault();
+        const newRow = [...stockItem.gstStockItemSubForm];
+        newRow[rowIndex][e.target.name] = '';
+        setStockItem({ ...stockItem, gstStockItemSubForm: newRow });
+      }
     }
   };
 
@@ -816,8 +940,7 @@ const StockItemCreate = () => {
     if (key === 'Enter') {
       e.preventDefault();
 
-      if (rowIndex === 0 && colIndex === firstVatDate && e.target.value.trim() === '') {
-        alert('The vat date field must have a value before procedding.');
+      if (rowIndex === 0 && colIndex === firstVatDate && (e.target.value.trim() === '' || e.target.value.trim() !== '')) {
         inputVatRef.current[rowIndex * 4 + colIndex]?.focus();
         inputVatRef.current[rowIndex * 4 + colIndex].setSelectionRange(0, 0);
         return;
@@ -879,6 +1002,43 @@ const StockItemCreate = () => {
         e.preventDefault();
         const newRow = [...stockItem.vatStockItemSubForm];
         newRow[rowIndex].vatStatus = 'inactive';
+        setStockItem({ ...stockItem, vatStockItemSubForm: newRow });
+      }
+    } else if (key === 'ArrowUp'){
+      const prevRow = (rowIndex - 1) * 4 + colIndex;
+      if (inputVatRef.current[prevRow] && rowIndex > 0){
+        inputVatRef.current[prevRow]?.focus();
+        inputVatRef.current[prevRow].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowDown'){
+      const nextRow = (rowIndex + 1) * 4 + colIndex;
+      if (inputVatRef.current[nextRow] && rowIndex < stockItem.vatStockItemSubForm.length - 1){
+        inputVatRef.current[nextRow]?.focus();
+        inputVatRef.current[nextRow].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowLeft'){
+      e.preventDefault();
+      const prevCell = rowIndex * 4 + colIndex - 1;
+      if (inputVatRef.current[prevCell] && prevCell >= 0){
+        inputVatRef.current[prevCell]?.focus();
+        inputVatRef.current[prevCell].setSelectionRange(0, 0);
+      }
+    } else if (key === 'ArrowRight'){
+      e.preventDefault();
+      const nextCell = rowIndex * 4 + colIndex + 1;
+      if (inputVatRef.current[nextCell] && colIndex < 3){
+        inputVatRef.current[nextCell]?.focus();
+        inputVatRef.current[nextCell].setSelectionRange(0, 0);
+      } else if (colIndex === 3 && rowIndex < stockItem.vatStockItemSubForm.length - 1){
+        const firstCellOfNextRow = (rowIndex + 1) * 4;
+        inputVatRef.current[firstCellOfNextRow]?.focus();
+        inputVatRef.current[firstCellOfNextRow].setSelectionRange(0, 0);
+      }
+    } else if (key === ' '){
+      if (e.target.name === 'vatDate' || e.target.name === 'vatCode' || e.target.name === 'vatPercentage'){
+        e.preventDefault();
+        const newRow = [...stockItem.vatStockItemSubForm];
+        newRow[rowIndex][e.target.name] = '';
         setStockItem({ ...stockItem, vatStockItemSubForm: newRow });
       }
     }
@@ -980,29 +1140,39 @@ const StockItemCreate = () => {
 
   const handleInputChange = e => {
     const { name, value } = e.target;
-
-    setStockItem(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
-
+  
+    setStockItem(prevState => {
+      let updatedState = {
+        ...prevState,
+        [name]: value,
+      };
+  
+      // Update the display for openingBalanceQuantity when units change
+      if (name === 'units') {
+        const unit = value; // Get the updated unit value
+        updatedState.openingBalanceQuantityDisplay = `${prevState.openingBalanceQuantity || ''} ${unit}`.trim();
+      }
+  
+      return updatedState;
+    });
+  
     if (name === 'under') {
       const filtered = stockGroupSuggestion.filter(group =>
-        group.stockGroupName.toLowerCase().includes(value.toLowerCase()),
+        group.stockGroupName.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredStockGroup(filtered);
       setUnderFocused(true);
       setHighlightedStockGroup(0); // Reset highlighted suggestion index
     } else if (name === 'category') {
       const filtered = stockCategorySuggestion.filter(category =>
-        category.stockCategoryName.toLowerCase().includes(value.toLowerCase()),
+        category.stockCategoryName.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredStockCategory(filtered);
       setCategoryFocused(true);
       setHighlightedStockCategory(0); // Reset highlighted suggestion index
     } else if (name === 'units') {
       const filtered = unitSuggestion.filter(unit =>
-        unit.unitSymbolName.toLowerCase().includes(value.toLowerCase()),
+        unit.unitSymbolName.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredUnit(filtered);
       setUnitsFocused(true);
@@ -1396,14 +1566,14 @@ const StockItemCreate = () => {
 
   const handleUnitFormattedChange = e => {
     const unitValue = e.target.value.trim(); // Get and trim the value from the input
-
+  
     // Use a regular expression to extract the numeric part from the formatted string
     const numericValue = unitValue.replace(/[^0-9.-]/g, ''); // Allow numbers, '.', and '-' only
-
+  
     // Update the stockItem state
     setStockItem(prevState => {
       const unit = prevState.units || ''; // Get the unit from the state if it exists
-
+  
       return {
         ...prevState,
         openingBalanceQuantity: numericValue, // Store the raw numeric value (e.g., "100")
@@ -1874,7 +2044,7 @@ const StockItemCreate = () => {
         <LeftSideMenu />
         <form
           action=""
-          className="border border-slate-500 w-[45.5%] h-[50vh] absolute left-[44.5%]"
+          className="border border-slate-500 w-[45.5%] h-[42vh] absolute left-[44.5%]"
           onSubmit={handleSubmit}
         >
           <div className="text-sm flex mt-2 ml-2">
@@ -2089,8 +2259,8 @@ const StockItemCreate = () => {
                         <th className="pl-6">
                           Percentage <span>(%)</span>
                         </th>
-                        <th className="pl-8">Net-Rate</th>
-                        <th>Status</th>
+                        <th className="pl-20">Net-Rate</th>
+                        <th className='w-[50px]'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2167,7 +2337,7 @@ const StockItemCreate = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 3)}
-                              className="w-[190px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[150px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingPriceSubForm');
                               }}
@@ -2238,8 +2408,8 @@ const StockItemCreate = () => {
                         <th className="pl-6">
                           Percentage <span>(%)</span>
                         </th>
-                        <th className="pl-8">Net-Rate</th>
-                        <th>Status</th>
+                        <th className="pl-20">Net-Rate</th>
+                        <th className='w-[50px]'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2316,7 +2486,7 @@ const StockItemCreate = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 3)}
-                              className="w-[190px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[150px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               onBlur={e => {
                                 numberFormat(e, index, 'standardSellingCostSubForm');
                               }}
@@ -2381,12 +2551,12 @@ const StockItemCreate = () => {
                   <table className="border border-slate-400 border-collapse w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th>Date</th>
-                        <th>HSN Code</th>
+                        <th className='pr-16'>Date</th>
+                        <th className='w-[60px] pr-5'>HSN Code</th>
                         <th>
                           Percentage <span>(%)</span>
                         </th>
-                        <th>Status</th>
+                        <th className='w-[50px] pr-7'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2402,7 +2572,7 @@ const StockItemCreate = () => {
                               onChange={e => handleFormattedDateChangeForGst(e, index, 'gstDate')}
                               onKeyDown={e => handleKeyDownGstSubForm(e, index, 0)}
                               onBlur={e => dateConvertForGst(e, index, 0)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2415,7 +2585,7 @@ const StockItemCreate = () => {
                               ref={input => (inputGstRef.current[1 + index * 4] = input)}
                               onChange={e => handleInputGstChange(e, index)}
                               onKeyDown={e => handleKeyDownGstSubForm(e, index, 1)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2431,7 +2601,7 @@ const StockItemCreate = () => {
                               onBlur={e => {
                                 percentageFormat(e, index, 'gstStockItemSubForm');
                               }}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[40px] h-5 pl-1 ml-24 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2444,7 +2614,7 @@ const StockItemCreate = () => {
                               ref={input => (inputGstRef.current[3 + index * 4] = input)}
                               onChange={e => handleInputGstChange(e, index)}
                               onKeyDown={e => handleKeyDownGstSubForm(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2492,12 +2662,12 @@ const StockItemCreate = () => {
                   <table className="border border-slate-400 border-collapse w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th>Date</th>
-                        <th>VAT Code</th>
+                        <th className='pr-16'>Date</th>
+                        <th className='w-[60px] pr-5'>VAT Code</th>
                         <th>
                           Percentage <span>(%)</span>
                         </th>
-                        <th>Status</th>
+                        <th className='w-[50px] pr-7'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2513,7 +2683,7 @@ const StockItemCreate = () => {
                               ref={input => (inputVatRef.current[0 + index * 4] = input)}
                               onKeyDown={e => handleKeyDownVatSubForm(e, index, 0)}
                               onBlur={e => dateConvertForVat(e, index, 0)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2526,7 +2696,7 @@ const StockItemCreate = () => {
                               ref={input => (inputVatRef.current[1 + index * 4] = input)}
                               onChange={e => handleInputVatChange(e, index)}
                               onKeyDown={e => handleKeyDownVatSubForm(e, index, 1)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2542,7 +2712,7 @@ const StockItemCreate = () => {
                               onBlur={e => {
                                 percentageFormat(e, index, 'vatStockItemSubForm');
                               }}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[40px] h-5 pl-1 ml-24 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -2555,7 +2725,7 @@ const StockItemCreate = () => {
                               ref={input => (inputVatRef.current[3 + index * 4] = input)}
                               onChange={e => handleInputVatChange(e, index)}
                               onKeyDown={e => handleKeyDownVatSubForm(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>

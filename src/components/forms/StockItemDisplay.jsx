@@ -325,7 +325,7 @@ const StockItemDisplay = () => {
     }
   
     if (prevSellingCostModal.current && !standardSellingCostModal) {
-      focusInputByName('openingBalanceQuantity');
+      focusInputByName('gstApplicable');
     }
 
     if (prevGstModal.current && !gstStockItemSubFormModal){
@@ -742,7 +742,6 @@ const StockItemDisplay = () => {
     const key = e.key;
     const totalColumns = 6; // Adjust this based on the actual number of columns
     const currentCellIndex = rowIndex * totalColumns + colIndex;
-    const totalRows = stockItem.godownSubForm.length;
 
     if (key === 'Enter' || key === 'ArrowRight') {
       e.preventDefault();
@@ -933,13 +932,13 @@ const StockItemDisplay = () => {
                   <table className="border border-slate-400 w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th className='pr-3'>Date</th>
-                        <th className='pl-8'>Rate</th>
+                        <th className=''>Date</th>
+                        <th className='pl-10'>Rate</th>
                         <th className='pl-6'>
                           Percentage <span>(%)</span>
                         </th>
-                        <th className='pl-6'>Net-Rate</th>
-                        <th className='pl-10'>Status</th>
+                        <th className='pl-20'>Net-Rate</th>
+                        <th className='w-[50px]'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -983,7 +982,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[2 + index * 5] = input)}
                               onKeyDown={(e) => {handleKeyDownSellingPrice(e, index, 2)}}
-                              className="w-[40px] h-5 pl-1 ml-11 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[40px] h-5 pl-1 ml-20 text-right font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -997,7 +996,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[150px] h-5 pl-1 font-medium text-[12px] capitalize text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               
                               autoComplete="off"
                             />
@@ -1012,7 +1011,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingPriceRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingPrice(e, index, 4)}
-                              className="w-[70px] h-5 pl-1 ml-5 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[70px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1066,8 +1065,8 @@ const StockItemDisplay = () => {
                         <th className='pl-6'>
                           Percentage <span>(%)</span>
                         </th>
-                        <th className='pl-8'>Net-Rate</th>
-                        <th className='pl-10'>Status</th>
+                        <th className='pl-20'>Net-Rate</th>
+                        <th className='w-[50px]'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1111,7 +1110,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[2 + index * 5] = input)}
                               onKeyDown={(e) => {handleKeyDownSellingCost(e, index, 2)}}
-                              className="w-[40px] h-5 pl-1 font-medium text-[12px] text-right ml-11 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[40px] h-5 pl-1 font-medium text-[12px] text-right ml-16 capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1125,7 +1124,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[3 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[150px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               
                               autoComplete="off"
                             />
@@ -1140,7 +1139,7 @@ const StockItemDisplay = () => {
                               readOnly
                               ref={input => (inputSellingCostRef.current[4 + index * 5] = input)}
                               onKeyDown={e => handleKeyDownSellingCost(e, index, 4)}
-                              className="w-[70px] h-5 pl-1 ml-7 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[70px] h-5 pl-1 ml-7 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1188,12 +1187,12 @@ const StockItemDisplay = () => {
                   <table className="border border-slate-400 border-collapse w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th>Date</th>
-                        <th>HSN Code</th>
+                        <th className='pr-16'>Date</th>
+                        <th className='w-[60px] pr-5'>HSN Code</th>
                         <th>
                           Percentage <span>(%)</span>
                         </th>
-                        <th>Status</th>
+                        <th className='w-[50px] pr-7'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1207,7 +1206,7 @@ const StockItemDisplay = () => {
                               value={row.formattedGstDate}
                               ref={input => (inputGstRef.current[0 + index * 4] = input)}
                               onKeyDown={e => handleKeyDownGstSubForm(e, index, 0)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1220,7 +1219,7 @@ const StockItemDisplay = () => {
                               value={row.hsnCode}
                               ref={input => (inputGstRef.current[1 + index * 4] = input)}
                               onKeyDown={e => handleKeyDownGstSubForm(e, index, 1)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1233,7 +1232,7 @@ const StockItemDisplay = () => {
                               value={row.gstPercentage}
                               ref={input => (inputGstRef.current[2 + index * 4] = input)}
                               onKeyDown={e => handleKeyDownGstSubForm(e, index, 2)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[40px] h-5 pl-1 ml-36 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1246,7 +1245,7 @@ const StockItemDisplay = () => {
                               value={row.gstStatus}
                               ref={input => (inputGstRef.current[3 + index * 4] = input)}
                               onKeyDown={e => handleKeyDownGstSubForm(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1295,12 +1294,12 @@ const StockItemDisplay = () => {
                   <table className="border border-slate-400 border-collapse w-full">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th>Date</th>
-                        <th>VAT Code</th>
+                        <th className='pr-16'>Date</th>
+                        <th className='w-[60px] pr-5'>VAT Code</th>
                         <th>
                           Percentage <span>(%)</span>
                         </th>
-                        <th>Status</th>
+                        <th className='w-[50px] pr-7'>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1314,7 +1313,7 @@ const StockItemDisplay = () => {
                               value={row.formattedVatDate}
                               ref={input => (inputVatRef.current[0 + index * 4] = input)}
                               onKeyDown={e => handleKeyDownVatSubForm(e, index, 0)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[90px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1327,7 +1326,7 @@ const StockItemDisplay = () => {
                               value={row.vatCode}
                               ref={input => (inputVatRef.current[1 + index * 4] = input)}
                               onKeyDown={e => handleKeyDownVatSubForm(e, index, 1)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1340,7 +1339,7 @@ const StockItemDisplay = () => {
                               value={row.vatPercentage}
                               ref={input => (inputVatRef.current[2 + index * 4] = input)}
                               onKeyDown={e => handleKeyDownVatSubForm(e, index, 2)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[40px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />
@@ -1353,7 +1352,7 @@ const StockItemDisplay = () => {
                               value={row.vatStatus}
                               ref={input => (inputVatRef.current[3 + index * 4] = input)}
                               onKeyDown={e => handleKeyDownVatSubForm(e, index, 3)}
-                              className="w-[100px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[80px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                               readOnly
                             />

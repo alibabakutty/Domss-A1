@@ -872,7 +872,7 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredStockItems.map((stockItem,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    {stockItem.stockItemName}
+                                                    {stockItem.stockItemCode} - {stockItem.stockItemName}
                                                 </li>
                                             ))}
                                         </ul>

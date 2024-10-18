@@ -25,65 +25,66 @@ const Home = () => {
                 { id: 9, name: 'Stock UOM', path: 'menu/unit'},
                 { id: 10, name: 'Stock Category', path: 'menu/stockCategory'},
                 { id: 11, name: 'Stock Group', path: 'menu/stockGroup'},
-                { id: 12, name: 'Stock Item', path: 'menu/stockItem'},
+                { id: 12, name: 'Price Category', path: 'menu/priceCategory'},
+                { id: 13, name: 'Stock Item', path: 'menu/stockItem'},
                 
             ]
          },
-        { id: 13, name: 'Supplier Master' ,
+        { id: 14, name: 'Supplier Master' ,
             subItems: [
-                { id: 14, name: 'Sundry Creditors', path: 'menu/sundryCreditor'}
+                { id: 15, name: 'Sundry Creditors', path: 'menu/sundryCreditor'}
             ]
         },
-        { id: 15, name: 'Customer Master',
+        { id: 16, name: 'Customer Master',
             subItems: [
-                { id: 16, name: 'Sundry Debtors', path: 'menu/sundryDebtor'}
+                { id: 17, name: 'Sundry Debtors', path: 'menu/sundryDebtor'}
             ]
         },
-        { id: 17, name: 'Department Master', 
+        { id: 18, name: 'Department Master', 
             subItems: [
-                { id: 18, name: 'Department Name', path: 'menu/department'}
+                { id: 19, name: 'Department Name', path: 'menu/department'}
             ]
         },
-        { id: 19, name: 'Location Master',
+        { id: 20, name: 'Location Master',
             subItems: [
-                { id: 20, name: 'Godown Name', path: 'menu/godown'}
+                { id: 21, name: 'Godown Name', path: 'menu/godown'}
             ]
         },
-        { id: 21, name: 'Head Office Category', 
+        { id: 22, name: 'Head Office Category', 
             subItems: [
-                { id: 22, name: 'Head Office', path: 'menu/headOffice'}
+                { id: 23, name: 'Head Office', path: 'menu/headOffice'}
             ]
         },
-        { id: 23, name: 'Branch Office Category',
+        { id: 24, name: 'Branch Office Category',
             subItems: [
-                { id: 24, name: 'Branch Office', path: 'menu/branchOffice'}
+                { id: 25, name: 'Branch Office', path: 'menu/branchOffice'}
             ]
         },
-        { id: 25, name: 'Revenue Category Master', 
+        { id: 26, name: 'Revenue Category Master', 
             subItems: [
-                { id: 26, name: 'Revenue Category', path: 'menu/revenueCategory'},
-                { id: 27, name: 'Revenue Center', path: 'menu/revenueCenter'},
+                { id: 27, name: 'Revenue Category', path: 'menu/revenueCategory'},
+                { id: 28, name: 'Revenue Center', path: 'menu/revenueCenter'},
             ]
         },
-        { id: 28, name: 'Cost Category Master', 
+        { id: 29, name: 'Cost Category Master', 
             subItems: [
-                { id: 29, name: 'Cost Category', path: 'menu/costCategory'},
-                { id: 30, name: 'Cost Center', path: 'menu/costCenter'},
+                { id: 30, name: 'Cost Category', path: 'menu/costCategory'},
+                { id: 31, name: 'Cost Center', path: 'menu/costCenter'},
             ]
         },
-        { id: 31, name: 'Batch Master', 
+        { id: 32, name: 'Batch Master', 
             subItems: [
-                { id: 32, name: 'Batch Master - Category', path: 'menu/batchCategory'},
-                { id: 33, name: 'Batch Master - Serial No', path: 'menu/batchSerialNumber'},
-                { id: 34, name: 'Batch Master - Color', path: 'menu/batchColor'},
-                { id: 35, name: 'Batch Master - Size', path: 'menu/batchSize'},
+                { id: 33, name: 'Batch Master - Category', path: 'menu/batchCategory'},
+                { id: 34, name: 'Batch Master - Serial No', path: 'menu/batchSerialNumber'},
+                { id: 35, name: 'Batch Master - Color', path: 'menu/batchColor'},
+                { id: 36, name: 'Batch Master - Size', path: 'menu/batchSize'},
                 
             ]
         },
-        { id: 36, name: 'Project Category Master', 
+        { id: 37, name: 'Project Category Master', 
             subItems: [
-                { id: 37, name: 'Project Category', path: 'menu/projectCategory'},
-                { id: 38, name: 'Project Name', path: 'menu/projectName'},
+                { id: 38, name: 'Project Category', path: 'menu/projectCategory'},
+                { id: 39, name: 'Project Name', path: 'menu/projectName'},
             ]
         }
     ];

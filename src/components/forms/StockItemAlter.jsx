@@ -2799,7 +2799,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
               onKeyDown={e => handleKeyDown(e, 10)}
               onBlur={numberFormat}
               readOnly
-              className="w-[76px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              className="w-[80px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
 

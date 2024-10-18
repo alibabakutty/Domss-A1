@@ -24,6 +24,7 @@ import BatchCategoryCreate from '../forms/BatchCategoryCreate'
 import BatchSerialNumberCreate from '../forms/BatchSerialNumberCreate'
 import BatchColorCreate from '../forms/BatchColorCreate'
 import BatchSizeCreate from '../forms/BatchSizeCreate'
+import PriceCategoryCreate from '../forms/PriceCategoryCreate'
 
 const CreateMasterFormRouter = () => {
   const { type } = useParams();
@@ -42,6 +43,8 @@ const CreateMasterFormRouter = () => {
         return <StockGroupCreate />
       case 'stockCategory':
         return <StockCategoryCreate />
+      case 'priceCategory':
+        return <PriceCategoryCreate />
       case 'stockItem':
         return <StockItemCreate />
       case 'unit':

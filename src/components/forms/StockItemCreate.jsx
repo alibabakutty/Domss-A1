@@ -60,14 +60,12 @@ const StockItemCreate = () => {
     ],
     batchApplicable: 'no',
     stockItemAccountingLedger: 'no',
-    accountingLedgerSubForm: [
-      {
-        accountingLedgerPurchase: '',
-        accountingLedgerSales: '',
-        accountingLedgerCreditNote: '',
-        accountingLedgerDebitNote: '',
-      },
-    ],
+    accountingLedgerSubForm: {
+      accountingLedgerPurchase: '',
+      accountingLedgerSales: '',
+      accountingLedgerCreditNote: '',
+      accountingLedgerDebitNote: '',
+    },
     openingBalanceQuantity: '',
     openingBalanceQuantityDisplay: '',
     godownSubForm: [
@@ -161,7 +159,7 @@ const StockItemCreate = () => {
       inputVatRef.current[0].setSelectionRange(0, 0);
     }
 
-    if (accountingLedgerSubFormModal && inputAccountLedgerRef.current[0]){
+    if (accountingLedgerSubFormModal && inputAccountLedgerRef.current[0]) {
       inputAccountLedgerRef.current[0].focus();
       inputAccountLedgerRef.current[0].setSelectionRange(0, 0);
     }
@@ -187,7 +185,7 @@ const StockItemCreate = () => {
     if (prevSellingCostModal.current && !standardSellingCostModal) {
       // Focus on the standard selling price input when standardsellingcostModal closes
       const sellingPriceInputIndex = inputRefs.current.findIndex(
-        ref => ref && ref.name === 'gstApplicable',
+        ref => ref && ref.name === 'stockItemMrp',
       );
       if (sellingPriceInputIndex !== -1 && inputRefs.current[sellingPriceInputIndex]) {
         inputRefs.current[sellingPriceInputIndex].focus();
@@ -197,7 +195,7 @@ const StockItemCreate = () => {
 
     if (prevGstModal.current && !gstStockItemSubFormModal) {
       const gstInputIndex = inputRefs.current.findIndex(
-        ref => ref && ref.name === 'openingBalanceQuantity',
+        ref => ref && ref.name === 'batchApplicable',
       );
       if (gstInputIndex !== -1 && inputRefs.current[gstInputIndex]) {
         inputRefs.current[gstInputIndex].focus();
@@ -215,11 +213,11 @@ const StockItemCreate = () => {
       }
     }
 
-    if (prevAccountLedgerModal.current && !accountingLedgerSubFormModal){
+    if (prevAccountLedgerModal.current && !accountingLedgerSubFormModal) {
       const accountLedgerInputIndex = inputRefs.current.findIndex(
         ref => ref && ref.name === 'openingBalanceQuantity',
       );
-      if (accountLedgerInputIndex !== -1 && inputRefs.current[accountLedgerInputIndex]){
+      if (accountLedgerInputIndex !== -1 && inputRefs.current[accountLedgerInputIndex]) {
         inputRefs.current[accountLedgerInputIndex].focus();
         inputRefs.current[accountLedgerInputIndex].setSelectionRange(0, 0);
       }
@@ -242,6 +240,7 @@ const StockItemCreate = () => {
     prevSellingCostModal.current = standardSellingCostModal;
     prevGstModal.current = gstStockItemSubFormModal;
     prevVatModal.current = vatStockItemSubFormModal;
+    prevAccountLedgerModal.current = accountingLedgerSubFormModal;
     prevGodownModal.current = godownSubFormModal;
 
     // Fetch stock categories and units concurrently
@@ -283,6 +282,7 @@ const StockItemCreate = () => {
     godownSubFormModal,
     gstStockItemSubFormModal,
     vatStockItemSubFormModal,
+    accountingLedgerSubFormModal,
   ]);
 
   const handleKeyDown = (e, index) => {
@@ -1139,6 +1139,47 @@ const StockItemCreate = () => {
     });
   };
 
+
+  const handleKeyDownAccountingSubForm = (e, index) => {
+    const key = e.key;
+
+    if (key === 'Enter'){
+      e.preventDefault();
+
+      if (e.target.value.trim() !== ''){
+        const nextField = index + 1;
+        if (nextField < inputAccountLedgerRef.current.length){
+          inputAccountLedgerRef.current[nextField].focus();
+          inputAccountLedgerRef.current[nextField].setSelectionRange(0, 0);
+        }
+        // Check if the current field is accountingledgerdebitnote and call handleBankSubFormBlur
+        if (e.target.name === 'accountingLedgerDebitNote'){
+          handleAccountingLedgerSubFormBlur();   // call your blur here
+        }
+      }
+    } else if (key === 'Backspace'){
+      if (e.target.value.trim() !== '' && index > 0){
+        e.preventDefault();
+        const prevField = index - 1;
+        if (inputAccountLedgerRef.current[prevField]){
+          inputAccountLedgerRef.current[prevField].focus();
+          inputAccountLedgerRef.current[prevField].setSelectionRange(0, 0);
+        }
+      }
+    } else if (key === 'Escape'){
+      setAccountingLedgerSubFormModal(false);
+    }
+  }
+
+  const handleAccountingLedgerSubFormBlur = () => {
+    const confirmation = window.confirm('Are you want to proceed with these accounting ledger details?');
+    if (confirmation) {
+      // Hide the subform when "ok" clicked
+      setAccountingLedgerSubFormModal(false);
+      setStockItem(prev => ({ ...prev, stockItemAccountingLedger: 'no' }));
+    }
+  };
+
   const handleKeyDownGodownSubForm = (e, rowIndex, colIndex) => {
     const key = e.key;
 
@@ -1375,6 +1416,14 @@ const StockItemCreate = () => {
     });
   };
 
+  const handleInputAccountLedgerChange = (e) => {
+    const { name, value } = e.target;
+    setStockItem(prevState => ({
+      ...prevState,
+      accountingLedgerSubForm: { ...prevState.accountingLedgerSubForm, [name]: value },
+    }))
+  }
+
   // Handle input changes for quantity Subform
   const handleInputGodownSubFormChange = (e, index) => {
     const { name, value } = e.target;
@@ -1509,80 +1558,106 @@ const StockItemCreate = () => {
     }
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Check if sundryCreditorName is filled
+  
+    // Check if stockItemName is filled
     if (!stockItem.stockItemName.trim()) {
-      alert('Please fill in the stock item name');
-      // Optionally focus on the sundryCreditorName input field
+      alert("Please fill in the stock item name");
       inputRefs.current[0].focus();
-      return; // stop the form submission
+      return;
     }
+  
     try {
-      // Sanitize stockItem values to remove commas and ensure proper formatting
+      // Sanitize stockItem values to ensure proper formatting and handle empty fields
       const sanitizedStockItem = {
         ...stockItem,
+        stockItemPrintingName: stockItem.stockItemPrintingName?.trim() || null,
+        stockItemMrp: stockItem.stockItemMrp ? parseFloat(stockItem.stockItemMrp.replace(/,/g, "")) : null,
         openingBalanceQuantity:
-          parseFloat(stockItem.openingBalanceQuantity?.replace(/,/g, '')) || 0,
-        openingBalanceRate: parseFloat(stockItem.openingBalanceRate?.replace(/,/g, '')) || 0,
-        openingBalanceValue: parseFloat(stockItem.openingBalanceValue?.replace(/,/g, '')) || 0,
-        totalQuantity: stockItem.totalQuantity?.replace(/,/g, '') || 0,
-        totalNetAmount: parseFloat(stockItem.totalNetAmount?.replace(/,/g, '')) || 0,
-        standardSellingPriceSubForm: stockItem.standardSellingPriceSubForm
-          .filter(price => price.sellingPriceDate.trim() !== '')
-          .map(price => ({
-            ...price,
-            sellingPriceRate: parseFloat(price.sellingPriceRate.replace(/,/g, '')) || 0,
-            sellingPricePercentage: parseFloat(price.sellingPricePercentage.replace(/,/g, '')) || 0,
-            sellingPriceNetRate: parseFloat(price.sellingPriceNetRate.replace(/,/g, '')) || 0,
+          stockItem.openingBalanceQuantity
+            ? parseFloat(stockItem.openingBalanceQuantity.replace(/,/g, ""))
+            : null,
+        openingBalanceRate:
+          stockItem.openingBalanceRate
+            ? parseFloat(stockItem.openingBalanceRate.replace(/,/g, ""))
+            : null,
+        openingBalanceValue:
+          stockItem.openingBalanceValue
+            ? parseFloat(stockItem.openingBalanceValue.replace(/,/g, ""))
+            : null,
+        totalQuantity:
+          stockItem.totalQuantity?.replace(/,/g, "") || 0,
+        totalNetAmount:
+          stockItem.totalNetAmount
+            ? parseFloat(stockItem.totalNetAmount.replace(/,/g, ""))
+            : null,
+            standardSellingPriceSubForm: stockItem.standardSellingPriceSubForm
+            .filter(price => price.sellingPriceDate.trim() !== '')
+            .map(price => ({
+              ...price,
+              sellingPriceRate: parseFloat(price.sellingPriceRate.replace(/,/g, '')) || 0,
+              sellingPricePercentage: parseFloat(price.sellingPricePercentage.replace(/,/g, '')) || 0,
+              sellingPriceNetRate: parseFloat(price.sellingPriceNetRate.replace(/,/g, '')) || 0,
+            })),
+          standardSellingCostSubForm: stockItem.standardSellingCostSubForm
+            .filter(cost => cost.sellingCostDate.trim() !== '')
+            .map(cost => ({
+              ...cost,
+              sellingCostRate: parseFloat(cost.sellingCostRate.replace(/,/g, '')) || 0,
+              sellingCostPercentage: parseFloat(cost.sellingCostPercentage.replace(/,/g, '')) || 0,
+              sellingCostNetRate: parseFloat(cost.sellingCostNetRate.replace(/,/g, '')) || 0,
+            })),
+          gstStockItemSubForm: stockItem.gstStockItemSubForm
+            .filter(gst => gst.gstDate && gst.gstDate.trim() !== '')
+            .map(gst => ({
+              ...gst,
+              hsnCode: isNaN(parseInt(gst.hsnCode.replace(/,/g, '')))
+                ? 0
+                : parseInt(gst.hsnCode.replace(/,/g, '')),
+              gstPercentage: isNaN(parseFloat(gst.gstPercentage.replace(/,/g, '')))
+                ? 0
+                : parseFloat(gst.gstPercentage.replace(/,/g, '')),
+            })),
+  
+          vatStockItemSubForm: stockItem.vatStockItemSubForm
+            .filter(vat => vat.vatDate && vat.vatDate.trim() !== '')
+            .map(vat => ({
+              ...vat,
+              vatCode: isNaN(parseInt(vat.vatCode.replace(/,/g, '')))
+                ? 0
+                : parseInt(vat.vatCode.replace(/,/g, '')),
+              vatPercentage: isNaN(parseFloat(vat.vatPercentage.replace(/,/g, '')))
+                ? 0
+                : parseFloat(vat.vatPercentage.replace(/,/g, '')),
+            })),
+  
+          godownSubForm: stockItem.godownSubForm.map(godown => ({
+            ...godown,
+            quantity: parseInt(godown.quantity.replace(/,/g, '')) || 0,
+            rateAmount: parseFloat(godown.rateAmount.replace(/,/g, '')) || 0,
+            netAmount: parseFloat(godown.netAmount.replace(/,/g, '')) || 0,
           })),
-        standardSellingCostSubForm: stockItem.standardSellingCostSubForm
-          .filter(cost => cost.sellingCostDate.trim() !== '')
-          .map(cost => ({
-            ...cost,
-            sellingCostRate: parseFloat(cost.sellingCostRate.replace(/,/g, '')) || 0,
-            sellingCostPercentage: parseFloat(cost.sellingCostPercentage.replace(/,/g, '')) || 0,
-            sellingCostNetRate: parseFloat(cost.sellingCostNetRate.replace(/,/g, '')) || 0,
-          })),
-        gstStockItemSubForm: stockItem.gstStockItemSubForm
-          .filter(gst => gst.gstDate && gst.gstDate.trim() !== '')
-          .map(gst => ({
-            ...gst,
-            hsnCode: isNaN(parseInt(gst.hsnCode.replace(/,/g, '')))
-              ? 0
-              : parseInt(gst.hsnCode.replace(/,/g, '')),
-            gstPercentage: isNaN(parseFloat(gst.gstPercentage.replace(/,/g, '')))
-              ? 0
-              : parseFloat(gst.gstPercentage.replace(/,/g, '')),
-          })),
-
-        vatStockItemSubForm: stockItem.vatStockItemSubForm
-          .filter(vat => vat.vatDate && vat.vatDate.trim() !== '')
-          .map(vat => ({
-            ...vat,
-            vatCode: isNaN(parseInt(vat.vatCode.replace(/,/g, '')))
-              ? 0
-              : parseInt(vat.vatCode.replace(/,/g, '')),
-            vatPercentage: isNaN(parseFloat(vat.vatPercentage.replace(/,/g, '')))
-              ? 0
-              : parseFloat(vat.vatPercentage.replace(/,/g, '')),
-          })),
-
-        godownSubForm: stockItem.godownSubForm.map(godown => ({
-          ...godown,
-          quantity: parseInt(godown.quantity.replace(/,/g, '')) || 0,
-          rateAmount: parseFloat(godown.rateAmount.replace(/,/g, '')) || 0,
-          netAmount: parseFloat(godown.netAmount.replace(/,/g, '')) || 0,
-        })),
+        accountingLedgerSubForm: {
+          accountingLedgerPurchase:
+            stockItem.accountingLedgerSubForm?.accountingLedgerPurchase || null,
+          accountingLedgerSales:
+            stockItem.accountingLedgerSubForm?.accountingLedgerSales || null,
+          accountingLedgerCreditNote:
+            stockItem.accountingLedgerSubForm?.accountingLedgerCreditNote || null,
+          accountingLedgerDebitNote:
+            stockItem.accountingLedgerSubForm?.accountingLedgerDebitNote || null,
+        },
       };
-
+  
       const response = await createStockItemMaster(sanitizedStockItem);
       console.log(response.data);
-      // After the submit
+  
+      // Reset form fields after successful submission
       setStockItem({
         stockItemCode: '',
         stockItemName: '',
+        stockItemPrintingName: '',
         under: '',
         category: '',
         units: '',
@@ -1606,6 +1681,7 @@ const StockItemCreate = () => {
             sellingCostStatus: 'active',
           },
         ],
+        stockItemMrp: '',
         gstApplicable: 'no',
         gstStockItemSubForm: [
           {
@@ -1624,7 +1700,16 @@ const StockItemCreate = () => {
             vatStatus: 'active',
           },
         ],
+        batchApplicable: 'no',
+        stockItemAccountingLedger: 'no',
+        accountingLedgerSubForm: {
+          accountingLedgerPurchase: '',
+          accountingLedgerSales: '',
+          accountingLedgerCreditNote: '',
+          accountingLedgerDebitNote: '',
+        },
         openingBalanceQuantity: '',
+        openingBalanceQuantityDisplay: '',
         godownSubForm: [
           {
             godownName: '',
@@ -1641,6 +1726,7 @@ const StockItemCreate = () => {
         openingBalanceUnit: '',
         openingBalanceValue: '',
       });
+  
       if (inputRefs.current[0]) {
         inputRefs.current[0].focus();
       }
@@ -1648,6 +1734,7 @@ const StockItemCreate = () => {
       console.error(error);
     }
   };
+  
 
   const numberFormat = (e, index = null, formType = null) => {
     const { name, value } = e.target;
@@ -2227,8 +2314,8 @@ const StockItemCreate = () => {
             <input
               type="text"
               name="stockItemPrintingName"
-              ref={input => (inputRefs.current[2] = input)}
               value={stockItem.stockItemPrintingName}
+              ref={input => (inputRefs.current[2] = input)}
               onKeyDown={e => handleKeyDown(e, 2)}
               onChange={handleInputChange}
               className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
@@ -2683,6 +2770,7 @@ const StockItemCreate = () => {
               value={stockItem.stockItemMrp}
               onKeyDown={e => handleKeyDown(e, 8)}
               onChange={handleInputChange}
+              onBlur={numberFormat}
               className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
@@ -2958,9 +3046,9 @@ const StockItemCreate = () => {
                       autoComplete="off"
                     />
                   </div>
-                  <table className='border border-slate-400 w-full'>
-                    <thead className='text-[12px]'>
-                      <tr className='border-t border-b border-slate-400'>
+                  <table className="border border-slate-400 w-full">
+                    <thead className="text-[12px]">
+                      <tr className="border-t border-b border-slate-400">
                         <th>Purchase</th>
                         <th>Sales</th>
                         <th>Credit Note</th>
@@ -2968,54 +3056,60 @@ const StockItemCreate = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {stockItem.accountingLedgerSubForm.map((row, index) => (
-                        <tr>
-                          {/* purchase input */}
-                          <td>
-                            <input
-                              type="text"
-                              name='accountingLedgerPurchase'
-                              value={row.accountingLedgerPurchase}
-                              ref={(input) => (inputAccountLedgerRef.current[0 + index * 4] = input)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
-                              autoComplete="off"
-                            />
-                          </td>
-                          {/* sales input */}
-                          <td>
-                            <input
-                              type="text"
-                              name='accountingLedgerSales'
-                              value={row.accountingLedgerSales}
-                              ref={(input) => (inputAccountLedgerRef.current[1 + index * 4] = input)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
-                              autoComplete="off"
-                            />
-                          </td>
-                          {/* credit note input */}
-                          <td>
-                            <input
-                              type="text"
-                              name='accountingLedgerCreditNote'
-                              value={row.accountingLedgerCreditNote}
-                              ref={(input) => (inputAccountLedgerRef.current[2 + index * 4] = input)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
-                              autoComplete="off"
-                            />
-                          </td>
-                          {/* debit note input */}
-                          <td>
-                            <input
-                              type="text"
-                              name='accountingLedgerDebitNote'
-                              value={row.accountingLedgerDebitNote}
-                              ref={(input) => (inputAccountLedgerRef.current[3 + index * 4] = input)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
-                              autoComplete="off"
-                            />
-                          </td>
-                        </tr>
-                      ))}
+                      <tr>
+                        {/* purchase input */}
+                        <td>
+                          <input
+                            type="text"
+                            name="accountingLedgerPurchase"
+                            value={stockItem.accountingLedgerSubForm.accountingLedgerPurchase}
+                            ref={input => (inputAccountLedgerRef.current[0] = input)}
+                            onChange={handleInputAccountLedgerChange}
+                            onKeyDown={e => handleKeyDownAccountingSubForm(e, 0)}
+                            className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            autoComplete="off"
+                          />
+                        </td>
+                        {/* sales input */}
+                        <td>
+                          <input
+                            type="text"
+                            name="accountingLedgerSales"
+                            value={stockItem.accountingLedgerSubForm.accountingLedgerSales}
+                            ref={input => (inputAccountLedgerRef.current[1] = input)}
+                            onChange={handleInputAccountLedgerChange}
+                            onKeyDown={e => handleKeyDownAccountingSubForm(e, 1)}
+                            className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            autoComplete="off"
+                          />
+                        </td>
+                        {/* credit note input */}
+                        <td>
+                          <input
+                            type="text"
+                            name="accountingLedgerCreditNote"
+                            value={stockItem.accountingLedgerSubForm.accountingLedgerCreditNote}
+                            ref={input => (inputAccountLedgerRef.current[2] = input)}
+                            onChange={handleInputAccountLedgerChange}
+                            onKeyDown={e => handleKeyDownAccountingSubForm(e, 2)}
+                            className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            autoComplete="off"
+                          />
+                        </td>
+                        {/* debit note input */}
+                        <td>
+                          <input
+                            type="text"
+                            name="accountingLedgerDebitNote"
+                            value={stockItem.accountingLedgerSubForm.accountingLedgerDebitNote}
+                            ref={input => (inputAccountLedgerRef.current[3] = input)}
+                            onChange={handleInputAccountLedgerChange}
+                            onKeyDown={e => handleKeyDownAccountingSubForm(e, 3)}
+                            className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            autoComplete="off"
+                          />
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -3058,7 +3152,7 @@ const StockItemCreate = () => {
               ref={input => (inputRefs.current[14] = input)}
               onKeyDown={e => handleKeyDown(e, 14)}
               onBlur={numberFormat}
-              className="w-[76px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              className="w-[80px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
 

@@ -6,139 +6,147 @@ export default [
         name:  "voucherTypeName"
 	},
 	{
-		id: 2,
+		id: 4,
 		value: "forexCurrencyName",
 		label: "forexCurrencyName",
         name:  "forexCurrencyName"
 	},
 	{
-		id: 3,
+		id: 6,
 		value: "groupName",
 		label: "groupName",
         name:  "groupName"
 	},
 	{
-		id: 4,
+		id: 7,
 		value: "ledgerName",
 		label: "ledgerName",
         name:  "ledgerName"
 	},
 	{
-		id: 5,
-		value: "stockGroupName",
-		label: "stockGroupName",
-        name:  "stockGroupName"
-	},
-	{
-		id: 6,
-		value: "stockCategoryName",
-		label: "stockCategoryName",
-        name:  "stockCategoryName"
-	},
-	{
-		id: 7,
-		value: "stockItemName",
-		label: "stockItemName",
-        name:  "stockItemName"
-	},
-	{
-		id: 8,
+		id: 9,
 		value: "unitName",
 		label: "unitName",
         name:  "unitName"
 	},
 	{
-		id: 9,
+		id: 10,
+		value: "stockCategoryName",
+		label: "stockCategoryName",
+        name:  "stockCategoryName"
+	},
+	{
+		id: 11,
+		value: "stockGroupName",
+		label: "stockGroupName",
+        name:  "stockGroupName"
+	},
+	
+	{
+		id: 12,
+		value: "priceCategoryName",
+		label: 'priceCategoryName',
+		name:  "priceCategoryName"
+	},
+	{
+		id: 13,
+		value: "stockItemName",
+		label: "stockItemName",
+        name:  "stockItemName"
+	},
+	
+	{
+		id: 15,
 		value: "sundryCreditorName",
 		label: "sundryCreditorName",
         name:  "sundryCreditorName"
 	},
 	{
-		id: 10,
+		id: 17,
 		value: "sundryDebtorName",
 		label: "sundryDebtorName",
         name:  "sundryDebtorName"
 	},
 	{
-		id: 11,
+		id: 19,
 		value: "departmentName",
 		label: "departmentName",
         name:  "departmentName"
 	},
 	{
-		id: 12,
+		id: 20,
 		value: "godownName",
 		label: "godownName",
         name:  "godownName"
 	},
 	{
-		id: 13,
+		id: 22,
 		value: "headOfficeName",
 		label: "headOfficeName",
         name:  "headOfficeName"
 	},
 	{
-		id: 14,
+		id: 25,
 		value: "branchOfficeName",
 		label: "branchOfficeName",
         name:  "branchOfficeName"
 	},
 	{
-		id: 15,
+		id: 27,
 		value: "revenueCategoryName",
 		label: "revenueCategoryName",
         name:  "revenueCategoryName"
 	},
 	{
-		id: 16,
+		id: 28,
 		value: "revenueCenterName",
 		label: "revenueCenterName",
         name:  "revenueCenterName"
 	},
 	{
-		id: 17,
+		id: 30,
 		value: "costCategoryName",
 		label: "costCategoryName",
         name:  "costCategoryName"
 	},
 	{
-		id: 18,
+		id: 31,
 		value: "costCenterName",
 		label: "costCenterName",
         name:  "costCenterName"
 	},
 	{
-		id: 19,
+		id: 33,
 		value: "batchCategoryName",
 		label: "batchCategoryName",
         name:  "batchCategoryName"
 	},
 	{
-		id: 20,
+		id: 34,
 		value: "batchSerialNumber",
 		label: "batchSerialNumber",
         name:  "batchSerialNumber"
 	},
 	{
-		id: 21,
+		id: 35,
 		value: "batchColorName",
 		label: "batchColorName",
         name:  "batchColorName"
 	},
 	{
-		id: 22,
+		id: 36,
 		value: "batchSizeName",
 		label: "batchSizeName",
         name:  "batchSizeName"
 	},
 	{
-		id: 23,
+		id: 38,
 		value: "projectCategoryName",
 		label: "projectCategoryName",
         name:  "projectCategoryName"
 	},
 	{
-		id: 24,
+		id: 39,
 		value: "projectName",
 		label: "projectName",
 		name:  "projectName"

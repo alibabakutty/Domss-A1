@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfRevenueCategories, listOfRevenueCenters, listOfStockCategories, listOfStockGroups, listOfStockItems, listOfUnits, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
+import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfPriceCategories, listOfRevenueCategories, listOfRevenueCenters, listOfStockCategories, listOfStockGroups, listOfStockItems, listOfUnits, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const AlterFilter = () => {
@@ -28,6 +28,7 @@ const AlterFilter = () => {
         sundryDebtor: [],
         stockGroup: [],
         stockCategory: [],
+        priceCategory: [],
         stockItem: [],
         unit: [],
     });
@@ -57,12 +58,13 @@ const AlterFilter = () => {
         sundryDebtor: 'Sundry Debtors',
         stockGroup: 'Stock Groups',
         stockCategory: 'Stock Categories',
+        priceCategory: 'Price Categories',
         stockItem: 'Stock Items',
         unit: 'Units',
       };
 
     const formatType = (str) => {
-        return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+        return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)?.toLowerCase()).join(' ');
     };
 
     useEffect(() => {
@@ -162,6 +164,10 @@ const AlterFilter = () => {
                         const response = await listOfStockCategories();
                         setSuggestions(prev => ({ ...prev, stockCategory: response.data }));
                     },
+                    priceCategory: async () => {
+                        const response = await listOfPriceCategories();
+                        setSuggestions(prev => ({ ...prev, priceCategory: response.data }));
+                    },
                     stockItem: async () => {
                         const response = await listOfStockItems();
                         setSuggestions(prev => ({ ...prev, stockItem: response.data }));
@@ -190,95 +196,99 @@ const AlterFilter = () => {
 
     // Filter the suggestions based on user input
     const filteredVoucherTypes = suggestions.voucherType.filter(voucher =>
-        voucher.voucherTypeName.toLowerCase().includes(filterInput.toLowerCase())
+        voucher.voucherTypeName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredPreDefinedVoucherTypes = suggestions.preDefinedVoucherType.filter(voucher =>
-        voucher.voucherType.toLowerCase().includes(filterInput.toLowerCase())
+        voucher.voucherType?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredCurrencies = suggestions.currency.filter(currency =>
-        currency.forexCurrencyName.toLowerCase().includes(filterInput.toLowerCase())
+        currency.forexCurrencyName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredDepartments = suggestions.department.filter(department => 
-        department.departmentName.toLowerCase().includes(filterInput.toLowerCase())
+        department.departmentName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredLocations = suggestions.godown.filter(location =>
-        location.godownName.toLowerCase().includes(filterInput.toLowerCase())
+        location.godownName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredHeadOffices = suggestions.headOffice.filter(headOffice =>
-        headOffice.headOfficeName.toLowerCase().includes(filterInput.toLowerCase())
+        headOffice.headOfficeName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredBranchOffices = suggestions.branchOffice.filter(branchOffice => 
-        branchOffice.branchOfficeName.toLowerCase().includes(filterInput.toLowerCase())
+        branchOffice.branchOfficeName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredRevenueCategories = suggestions.revenueCategory.filter(revenueCategory => 
-        revenueCategory.revenueCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+        revenueCategory.revenueCategoryName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredRevenueCenters = suggestions.revenueCenter.filter(revenueCenter => 
-        revenueCenter.revenueCenterName.toLowerCase().includes(filterInput.toLowerCase())
+        revenueCenter.revenueCenterName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredCostCategories = suggestions.costCategory.filter(costCategory =>
-        costCategory.costCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+        costCategory.costCategoryName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredCostCenters = suggestions.costCenter.filter(costCenter =>
-        costCenter.costCenterName.toLowerCase().includes(filterInput.toLowerCase())
+        costCenter.costCenterName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredBatchCategories = suggestions.batchCategory.filter(batchCategory =>
-        batchCategory.batchCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+        batchCategory.batchCategoryName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredBatchSerialNumbers = suggestions.batchSerialNumber.filter(batchSerial =>
-        batchSerial.batchSerialNumber.toLowerCase().includes(filterInput.toLowerCase())
+        batchSerial.batchSerialNumber?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredBatchColors = suggestions.batchColor.filter(batchColor =>
-        batchColor.batchColorName.toLowerCase().includes(filterInput.toLowerCase())
+        batchColor.batchColorName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredBatchSizes = suggestions.batchSize.filter(batchSize =>
-        batchSize.batchSizeName.toLowerCase().includes(filterInput.toLowerCase())
+        batchSize.batchSizeName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredProjectCategories = suggestions.projectCategory.filter(projectCategory =>
-        projectCategory.projectCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+        projectCategory.projectCategoryName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredProjectNames = suggestions.projectName.filter(project =>
-        project.projectName.toLowerCase().includes(filterInput.toLowerCase())
+        project.projectName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredSuppliers = suggestions.sundryCreditor.filter( supplier => 
-        supplier.sundryCreditorName.toLowerCase().includes(filterInput.toLowerCase())
+        supplier.sundryCreditorName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredCustomers = suggestions.sundryDebtor.filter(customer =>
-        customer.sundryDebtorName.toLowerCase().includes(filterInput.toLowerCase())
+        customer.sundryDebtorName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredStockGroups = suggestions.stockGroup.filter(group => 
-        group.stockGroupName.toLowerCase().includes(filterInput.toLowerCase())
+        group.stockGroupName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredStockCategories = suggestions.stockCategory.filter(category => 
-        category.stockCategoryName.toLowerCase().includes(filterInput.toLowerCase())
+        category.stockCategoryName?.toLowerCase().includes(filterInput?.toLowerCase())
+    );
+
+    const filteredPriceCategories = suggestions.priceCategory.filter(price => 
+        price.priceCategoryName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredStockItems = suggestions.stockItem.filter(item => 
-        item.stockItemName.toLowerCase().includes(filterInput.toLowerCase())
+        item.stockItemName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredUnits = suggestions.unit.filter(unit => 
-        unit.unitSymbolName.toLowerCase().includes(filterInput.toLowerCase())
+        unit.unitSymbolName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
      // Logic to determine if the scrollbar should be shown based on the type
@@ -324,6 +334,8 @@ const AlterFilter = () => {
         shouldShowScroll = (filteredStockGroups.length > 20);
     } else if (type === 'stockCategory'){
         shouldShowScroll = (filteredStockCategories.length > 20);
+    } else if (type === 'priceCategory'){
+        shouldShowScroll = (filteredPriceCategories.length > 20);
     } else if (type === 'stockItem'){
         shouldShowScroll = (filteredStockItems.length > 20);
     } else if (type === 'unit'){
@@ -332,7 +344,7 @@ const AlterFilter = () => {
         shouldShowScroll = false;
      }
 
-    const filteredNameValues = NameValues.filter(item => item.value.toLowerCase().includes(type.toLowerCase()));
+    const filteredNameValues = NameValues.filter(item => item.value?.toLowerCase().includes(type?.toLowerCase()));
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -377,6 +389,8 @@ const AlterFilter = () => {
                 totalItems = filteredStockGroups.length;
             } else if (type === 'stockCategory'){
                 totalItems = filteredStockCategories.length;
+            } else if (type === 'priceCategory'){
+                totalItems = filteredPriceCategories.length;
             } else if (type === 'stockItem'){
                 totalItems = filteredStockItems.length;
             } else if (type === 'unit'){
@@ -545,6 +559,13 @@ const AlterFilter = () => {
                             navigate(`/stockCategoryMasterApi/alterStockCategoryMaster/${selectedStockCategory.stockCategoryName}`);
                         }
                     }
+                } else if (type === 'priceCategory'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredPriceCategories.length){
+                        const selectedPriceCategory = filteredPriceCategories[selectedIndex - 2];
+                        if (selectedPriceCategory) {
+                            navigate(`/priceCategoryMasterApi/alterPriceCategoryMaster/${selectedPriceCategory.priceCategoryName}`);
+                        }
+                    }
                 } else if (type === 'stockItem'){
                     if (selectedIndex >= 2 && selectedIndex < 2 + filteredStockItems.length){
                         const selectedStockItem = filteredStockItems[selectedIndex - 2];
@@ -567,7 +588,7 @@ const AlterFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, filteredStockGroups, filteredStockCategories, filteredStockItems, filteredUnits, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, filteredStockGroups, filteredStockCategories, filteredPriceCategories, filteredStockItems, filteredUnits, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -864,6 +885,16 @@ const AlterFilter = () => {
                                             {filteredStockCategories.map((stockCategory,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
                                                     {stockCategory.stockCategoryName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'priceCategory' && (
+                                        <ul>
+                                            {filteredPriceCategories.map((priceCategory, index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                    {priceCategory.priceCategoryName}
                                                 </li>
                                             ))}
                                         </ul>

@@ -24,7 +24,7 @@ const ProjectCategoryDisplay = () => {
         console.log(result.data);
         setProjectCategory(result.data);
       } catch (error) {
-        
+        console.error(error);
       }
     }
 

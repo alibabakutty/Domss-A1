@@ -51,6 +51,8 @@ import StockGroupAlter from "./components/forms/StockGroupAlter"
 import StockCategoryAlter from "./components/forms/StockCategoryAlter"
 import StockItemAlter from "./components/forms/StockItemAlter"
 import UnitAlter from "./components/forms/UnitAlter"
+import PriceCategoryDisplay from "./components/forms/PriceCategoryDisplay"
+import PriceCategoryAlter from "./components/forms/PriceCategoryAlter"
 
 function App() {
   
@@ -90,6 +92,7 @@ function App() {
           <Route path="/sundryDebtorMasterApi/displaySundryDebtor/:datas" element={<SundryDebtorsDisplay />} />
           <Route path="/stockGroupMasterApi/displayStockGroup/:datas" element={<StockGroupDisplay />} />
           <Route path="/stockCategoryMasterApi/displayStockCategory/:datas" element={<StockCategoryDisplay />} />
+          <Route path="/priceCategoryMasterApi/displayPriceCategory/:datas" element = {<PriceCategoryDisplay />} />
           <Route path="/stockItemMasterApi/displayStockItem/:datas" element={<StockItemDisplay />} />
           <Route path="/unitMasterApi/displayUnit/:datas" element={<UnitDisplay />} />
 
@@ -114,6 +117,7 @@ function App() {
           <Route path="/sundryDebtorMasterApi/alterSundryDebtorMaster/:datas" element={<SundryDebtorsAlter />} />
           <Route path="/stockGroupMasterApi/alterStockGroupMaster/:datas" element={<StockGroupAlter />} />
           <Route path="/stockCategoryMasterApi/alterStockCategoryMaster/:datas" element={<StockCategoryAlter />} />
+          <Route path="/priceCategoryMasterApi/alterPriceCategoryMaster/:datas" element= {<PriceCategoryAlter />} />
           <Route path="/stockItemMasterApi/alterStockItemMaster/:datas" element={<StockItemAlter />} />
           <Route path="/unitMasterApi/alterUnitMaster/:datas" element={<UnitAlter />} />
       

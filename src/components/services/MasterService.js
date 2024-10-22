@@ -104,7 +104,7 @@ export const updateStockGroupMaster = (stockGroupName, stockGroup) => axios.put(
 export const updateStockCategoryMaster = (stockCategoryName, stockCategory) => axios.put(`${REST_API_BASE_URL}/stockCategoryMasterApi/alterStockCategoryMaster/${stockCategoryName}`, stockCategory);
 export const updateStockItemMaster = (stockItemName, stockItem) => axios.put(`${REST_API_BASE_URL}/stockItemMasterApi/alterStockItemMaster/${stockItemName}`, stockItem); 
 export const updateUnitMaster = (unitSymbolName, unit) => axios.put(`${REST_API_BASE_URL}/unitMasterApi/alterUnitMaster/${unitSymbolName}`, unit);
-export const updatePriceCategoryMaster = (priceCategoryName, priceCategory) => axios.post(`${REST_API_BASE_URL}/priceCategoryMasterApi/alterPriceCategoryMaster/${priceCategoryName}`, priceCategory);
+export const updatePriceCategoryMaster = (priceCategoryName, priceCategory) => axios.put(`${REST_API_BASE_URL}/priceCategoryMasterApi/alterPriceCategoryMaster/${priceCategoryName}`, priceCategory);
 
 // DELETE
 export const deleteVoucher = (id) => axios.delete(`${REST_API_BASE_URL}/voucherTypeMasterApi/deleteVoucher/${id}`);

@@ -570,7 +570,117 @@ const DisplayFilter = () => {
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
     };
+
+    const handleCurrnecyClick = (currency, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/currencyMasterApi/displayCurrency/${currency.forexCurrencySymbol}`)
+    }
+
+    const handleUnitClick = (unit, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/unitMasterApi/displayUnit/${unit.unitSymbolName}`)
+    }
+
+    const handleStockCategoryClick = (stockCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/stockCategoryMasterApi/displayStockCategory/${stockCategory.stockCategoryName}`);
+    }
+
+    const handleStockGroupClick = (stockGroup, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/stockGroupMasterApi/displayStockGroup/${stockGroup.stockGroupName}`);
+    }
     
+    const handlePriceCategoryClick = (priceCategory, index) => {
+        setSelectedIndex(index + 2);
+        // Navigate to the appropriate route
+        navigate(`/priceCategoryMasterApi/displayPriceCategory/${priceCategory.priceCategoryName}`);
+    }
+
+    const handleStockItemClick = (stockItem, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/stockItemMasterApi/displayStockItem/${stockItem.stockItemName}`);
+    }
+
+    const handleSundryCreditorClick = (sundryCreditor, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/sundryCreditorMasterApi/displaySundryCreditor/${sundryCreditor.sundryCreditorName}`);
+    }
+
+    const handleSundryDebtorClick = (sundryDebtor, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/sundryDebtorMasterApi/displaySundryDebtor/${sundryDebtor.sundryDebtorName}`)
+    }
+
+    const handleDepartmentClick = (department, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/departmentMasterApi/displayDepartment/${department.departmentName}`);
+    }
+
+    const handleGodownClick = (godown, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/locationMasterApi/displayGodown/${godown.godownName}`);
+    }
+
+    const handleHeadOfficeClick = (headOffice, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/headOfficeMasterApi/displayHeadOffice/${headOffice.headOfficeName}`);
+    }
+
+    const handleBranchOfficeClick = (branchOffice, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/branchOfficeMasterApi/displayBranchOffice/${branchOffice.branchOfficeName}`);
+    }
+
+    const handleRevenueCategoryClick = (revenueCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/revenueCategoryMasterApi/displayRevenueCategory/${revenueCategory.revenueCategoryName}`);
+    }
+
+    const handleRevenueCenterClick = (revenueCenter, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/revenueCenterMasterApi/displayRevenueCenter/${revenueCenter.revenueCenterName}`)
+    }
+
+    const handleCostCategoryClick = (costCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/costCategoryMasterApi/displayCostCategory/${costCategory.costCategoryName}`);
+    }
+
+    const handleCostCenterClick = (costCenter, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/costCenterMasterApi/displayCostCenter/${costCenter.costCenterName}`);
+    }
+
+    const handleBatchCategoryClick = (batchCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/batchCategoryMasterApi/displayBatchCategory/${batchCategory.batchCategoryName}`);
+    }
+
+    const handleBatchSerialNumberClick = (batchSerialNumber, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/batchSerialNumberMasterApi/displayBatchSerialNumber/${batchSerialNumber.batchSerialNumber}`);
+    }
+
+    const handleBatchColorClick = (batchColor, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/batchColorMasterApi/displayBatchColor/${batchColor.batchColorName}`);
+    }
+
+    const handleBatchSizeClick = (batchSize, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/batchSizeMasterApi/displayBatchSize/${batchSize.batchSizeName}`);
+    }
+
+    const handleProjectCategoryClick = (projectCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/projectCategoryMasterApi/displayProjectCategory/${projectCategory.projectCategoryName}`)
+    }
+
+    const handleProjectNameClick = (projectName, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/projectNameMasterApi/displayProjectName/${projectName.projectName}`);
+    }
 
     return (
         <>
@@ -655,8 +765,9 @@ const DisplayFilter = () => {
                                             {filteredCurrencies.map((currency, index) => (
                                                 <li
                                                     key={index}
-                                                    className={`text-sm capitalize font-medium pl-3 ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                    className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                     ref={el => listItemRefs.current[index + 2] = el}
+                                                    onClick={() => handleCurrnecyClick(currency, index)}
                                                 >
                                                    {currency.forexCurrencySymbol} - {currency.forexCurrencyName}
                                                 </li>
@@ -667,6 +778,7 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredDepartments.map((department,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleDepartmentClick(department, index)}
                                                 >
                                                 {department.departmentName}
                                                 </li>
@@ -676,7 +788,9 @@ const DisplayFilter = () => {
                                     {type === 'godown' && (
                                         <ul>
                                             {filteredLocations.map((location,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleGodownClick(location, index)}
+                                                >
                                                    {location.godownName}
                                                 </li>
                                             ))}
@@ -685,7 +799,9 @@ const DisplayFilter = () => {
                                     {type === 'headOffice' && (
                                         <ul>
                                             {filteredHeadOffices.map((headOffice,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleHeadOfficeClick(headOffice, index)}
+                                                >
                                                     {headOffice.headOfficeName}
                                                 </li>
                                             ))}
@@ -694,7 +810,9 @@ const DisplayFilter = () => {
                                     {type === 'branchOffice' && (
                                         <ul>
                                             {filteredBranchOffices.map((branchOffice,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBranchOfficeClick(branchOffice, index)}
+                                                >
                                                     {branchOffice.branchOfficeName}
                                                 </li>
                                             ))}
@@ -703,7 +821,9 @@ const DisplayFilter = () => {
                                     {type === 'revenueCategory' && (
                                         <ul>
                                             {filteredRevenueCategories.map((revenueCategory,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleRevenueCategoryClick(revenueCategory, index)}
+                                                >
                                                     {revenueCategory.revenueCategoryName}
                                                 </li>
                                             ))}
@@ -713,7 +833,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredRevenueCenters.map((revenueCenter,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleRevenueCenterClick(revenueCenter, index)}
+                                                >
                                                     {revenueCenter.revenueCenterName}
                                                 </li>
                                             ))}
@@ -723,7 +845,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredCostCategories.map((costCategory,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleCostCategoryClick(costCategory, index)}
+                                                >
                                                     {costCategory.costCategoryName}
                                                 </li>
                                             ))}
@@ -733,7 +857,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredCostCenters.map((costCenter,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleCostCenterClick(costCenter, index)}
+                                                >
                                                     {costCenter.costCenterName}
                                                 </li>
                                             ))}
@@ -743,7 +869,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredBatchCategories.map((batchCategory,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBatchCategoryClick(batchCategory, index)}
+                                                >
                                                     {batchCategory.batchCategoryName}
                                                 </li>
                                             ))}
@@ -753,7 +881,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredBatchSerialNumbers.map((batchSerial,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBatchSerialNumberClick(batchSerial, index)}
+                                                >
                                                     {batchSerial.batchSerialNumber}
                                                 </li>
                                             ))}
@@ -763,7 +893,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredBatchColors.map((batchColor,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBatchColorClick(batchColor, index)}
+                                                >
                                                     {batchColor.batchColorName}
                                                 </li>
                                             ))}
@@ -773,7 +905,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredBatchSizes.map((batchSize,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBatchSizeClick(batchSize, index)}
+                                                >
                                                     {batchSize.batchSizeName}
                                                 </li>
                                             ))}
@@ -783,7 +917,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredProjectCategories.map((projectCategory,index) =>(
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleProjectCategoryClick(projectCategory, index)}
+                                                >
                                                    {projectCategory.projectCategoryName}
                                                 </li>
                                             ))}
@@ -793,7 +929,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredProjectNames.map((project,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleProjectNameClick(project, index)}
+                                                >
                                                     {project.projectName}
                                                 </li>
                                             ))}
@@ -802,7 +940,9 @@ const DisplayFilter = () => {
                                     {type === 'sundryCreditor' && (
                                         <ul>
                                             {filteredSuppliers.map((supplier,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleSundryCreditorClick(sundryCreditor, index)}
+                                                >
                                                     {supplier.sundryCreditorName}
                                                 </li>
                                             ))}
@@ -811,7 +951,9 @@ const DisplayFilter = () => {
                                     {type === 'sundryDebtor' && (
                                         <ul>
                                             {filteredCustomers.map((customer,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleSundryDebtorClick(sundryDebtor, index)}
+                                                >
                                                     {customer.sundryDebtorName}
                                                 </li>
                                             ))}
@@ -820,7 +962,9 @@ const DisplayFilter = () => {
                                     {type === 'stockGroup' && (
                                         <ul>
                                             {filteredStockGroups.map((stockGroup, index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleStockGroupClick(stockGroup, index)}
+                                                >
                                                     {stockGroup.stockGroupName}
                                                 </li>
                                             ))}
@@ -829,7 +973,9 @@ const DisplayFilter = () => {
                                     {type === 'stockCategory' && (
                                         <ul>
                                             {filteredStockCategories.map((stockCategory, index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleStockCategoryClick(stockCategory, index)}
+                                                >
                                                     {stockCategory.stockCategoryName}
                                                 </li>
                                             ))}
@@ -839,7 +985,9 @@ const DisplayFilter = () => {
                                         <ul>
                                             {filteredPriceCategories.map((priceCategory, index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handlePriceCategoryClick(priceCategory, index)}
+                                                >
                                                     {priceCategory.priceCategoryName}
                                                 </li>
                                             ))}
@@ -848,7 +996,9 @@ const DisplayFilter = () => {
                                     {type === 'stockItem' && (
                                         <ul>
                                             {filteredStockItems.map((stockItem, index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleStockItemClick(stockItem, index)}
+                                                >
                                                     {stockItem.stockItemCode} - {stockItem.stockItemName}
                                                 </li>
                                             ))}
@@ -857,7 +1007,9 @@ const DisplayFilter = () => {
                                     {type === 'unit' && (
                                         <ul>
                                             {filteredUnits.map((unit, index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleUnitClick(unit, index)}
+                                                >
                                                     {unit.unitSymbolName} - {unit.formalName}
                                                 </li>
                                             ))}

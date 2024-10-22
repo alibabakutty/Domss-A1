@@ -20,6 +20,7 @@ const StockItemAlter = () => {
   const [stockItem, setStockItem] = useState({
     stockItemCode: '',
     stockItemName: '',
+    stockItemPrintingName: '',
     under: '',
     category: '',
     units: '',
@@ -27,45 +28,51 @@ const StockItemAlter = () => {
     standardSellingPriceSubForm: [
       {
         sellingPriceDate: '',
-        sellingPriceDateDisplay: '',
         sellingPriceRate: '',
         sellingPricePercentage: '',
         sellingPriceNetRate: '',
-        sellingPriceStatus: 'active',
+        sellingPriceStatus: '',
       },
     ],
     standardSellingCost: '',
     standardSellingCostSubForm: [
       {
         sellingCostDate: '',
-        sellingCostDateDisplay: '',
         sellingCostRate: '',
         sellingCostPercentage: '',
         sellingCostNetRate: '',
-        sellingCostStatus: 'active',
+        sellingCostStatus: '',
       },
     ],
+    stockItemMrp: '',
     gstApplicable: '',
     gstStockItemSubForm: [
       {
         gstDate: '',
-        gstDateDisplay: '',
         hsnCode: '',
         gstPercentage: '',
-        gstStatus: 'active',
+        gstStatus: '',
       },
     ],
     vatApplicable: '',
     vatStockItemSubForm: [
       {
         vatDate: '',
-        vatDateDisplay: '',
         vatCode: '',
         vatPercentage: '',
-        vatStatus: 'active',
+        vatStatus: '',
       },
     ],
+    batchApplicable: '',
+    stockItemAccountingLedger: '',
+    accountingLedgerSubForm: {
+      accountingLedgerPurchase: '',
+      accountingLedgerSales: '',
+      accountingLedgerCreditNote: '',
+      accountingLedgerDebitNote: '',
+    },
     openingBalanceQuantity: '',
+    openingBalanceQuantityDisplay: '',
     godownSubForm: [
       {
         godownName: '',
@@ -79,7 +86,6 @@ const StockItemAlter = () => {
     totalQuantity: '',
     totalNetAmount: '',
     openingBalanceRate: '',
-    openingBalanceRateDisplay: '',
     openingBalanceUnit: '',
     openingBalanceValue: '',
   });
@@ -108,6 +114,7 @@ const [standardSellingPriceModal, setStandardSellingPriceModal] = useState(false
 const [standardSellingCostModal, setStandardSellingCostModal] = useState(false);
 const [gstStockItemSubFormModal, setGstStockItemSubFormModal] = useState(false);
 const [vatStockItemSubFormModal, setVatStockItemSubFormModal] = useState(false);
+const [accountingLedgerSubFormModal, setAccountingLedgerSubFormModal] = useState(false);
 const [godownSubFormModal, setGodownSubFormModal] = useState(false);
 const inputRefs = useRef([]);
 const stockGroupOptionsRef = useRef(null);
@@ -119,11 +126,13 @@ const inputSellingPriceRef = useRef([]);
 const inputSellingCostRef = useRef([]);
 const inputGstRef = useRef([]);
 const inputVatRef = useRef([]);
+const inputAccountingLedgerRef = useRef([]);
 const inputGodownRef = useRef([]);
 const prevSellingPriceModal = useRef(false);
 const prevSellingCostModal = useRef(false);
 const prevGstModal = useRef(false);
 const prevVatModal = useRef(false);
+const prevAccountLedgerModal = useRef(false);
 const prevGodownModal = useRef(false);
 const totalRefs = useRef([]);
 const navigate = useNavigate();
@@ -153,6 +162,11 @@ const navigate = useNavigate();
     if (vatStockItemSubFormModal && inputVatRef.current[0]) {
       inputVatRef.current[0].focus();
       inputVatRef.current[0].setSelectionRange(0, 0);
+    }
+
+    if (accountingLedgerSubFormModal && inputAccountLedgerRef.current[0]) {
+      inputAccountLedgerRef.current[0].focus();
+      inputAccountLedgerRef.current[0].setSelectionRange(0, 0);
     }
 
     if (godownSubFormModal && inputGodownRef.current[0]) {
@@ -200,6 +214,16 @@ const navigate = useNavigate();
       }
     }
 
+    if (prevAccountLedgerModal.current && !accountingLedgerSubFormModal) {
+      const accountLedgerInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'openingBalanceQuantity',
+      );
+      if (accountLedgerInputIndex !== -1 && inputRefs.current[accountLedgerInputIndex]) {
+        inputRefs.current[accountLedgerInputIndex].focus();
+        inputRefs.current[accountLedgerInputIndex].setSelectionRange(0, 0);
+      }
+    }
+
     // Detect if the godownSubFormModal is closed
     if (prevGodownModal.current && !godownSubFormModal){
       // Focus on the standard selling price input when godownSubFormModal closes
@@ -216,6 +240,7 @@ const navigate = useNavigate();
     prevSellingCostModal.current = standardSellingCostModal;
     prevGstModal.current = gstStockItemSubFormModal;
     prevVatModal.current = vatStockItemSubFormModal;
+    prevAccountLedgerModal.current = accountingLedgerSubFormModal;
     prevGodownModal.current = godownSubFormModal;
 
     // Fetch stock categories and units concurrently
@@ -254,7 +279,7 @@ const navigate = useNavigate();
     return () => {
       // Clean up code here
     };
-  }, [standardSellingPriceModal, standardSellingCostModal, gstStockItemSubFormModal, vatStockItemSubFormModal, godownSubFormModal]);
+  }, [standardSellingPriceModal, standardSellingCostModal, gstStockItemSubFormModal, vatStockItemSubFormModal, accountingLedgerSubFormModal, godownSubFormModal]);
 
   useEffect(() => {
 

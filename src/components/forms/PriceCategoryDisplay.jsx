@@ -156,32 +156,22 @@ const PriceCategoryDisplay = () => {
 
   const handleKeyDownRetail = (e, rowIndex, colIndex) => {
     const key = e.key;
-    const firstSerialNumber = 0;
     const inputsPerRow = 6; // Number of inputs per row
   
     // Handle Enter key
     if (key === 'Enter') {
       e.preventDefault();
-  
-  
-      // If the current Serial Number is empty and it's not the first row, ask for confirmation to exit
-      if (colIndex === firstSerialNumber && e.target.value.trim() === '' && rowIndex > 0) {
-        const confirmation = window.confirm('Do you want to close this subform?');
-        if (confirmation) {
-          navigate(-1);
-        } else {
-          inputRetailRef.current[rowIndex * inputsPerRow + colIndex]?.focus();
-          inputRetailRef.current[rowIndex * inputsPerRow + colIndex].setSelectionRange(0, 0);
-          return;
-        }
-      }
-  
-      const isLastColumn = colIndex === inputsPerRow - 1; // Check if it's the last column
+
       const isLastRow = rowIndex === priceCategory.priceCategorySubForm.length - 1;
-  
-      // If on the last column (Discount) and the last row, add a new row on Enter
-      if (isLastColumn && isLastRow && e.target.value.trim() !== '') {
-       
+      const isLastColumn = colIndex === inputsPerRow - 1;
+
+      if (isLastRow && isLastColumn){
+        const userConfirmed = window.confirm('Do you want to exit?');
+        if (userConfirmed) {
+          setPriceCategorySubFormModal(false);
+          navigate(-2);
+        }
+        return;
       }
   
       // Move focus to the next cell (if it exists)
@@ -281,7 +271,7 @@ const PriceCategoryDisplay = () => {
                               value={row.productCode}
                               ref={input => (inputRetailRef.current[1 + index * 6] = input)}
                               
-                              onKeyDown={e => handleKeyDownproductCode(e, index, 1)}
+                              onKeyDown={e => handleKeyDownRetail(e, index, 1)}
                               className="w-[130px] h-5 pl-1 ml-6 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
@@ -307,9 +297,6 @@ const PriceCategoryDisplay = () => {
                               value={row.productMrp}
                               ref={input => (inputRetailRef.current[3 + index * 6] = input)}
                               onKeyDown={e => handleKeyDownRetail(e, index, 3)}
-                              onBlur={e => {
-                                numberFormat(e, index, 'priceCategorySubForm');
-                              }}
                               className="w-[80px] h-5 pl-1 ml-4 font-medium text-right text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off" readOnly
                             />

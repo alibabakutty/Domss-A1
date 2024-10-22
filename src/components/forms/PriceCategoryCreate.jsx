@@ -142,7 +142,7 @@ const PriceCategoryCreate = () => {
         const confirmation = window.confirm('Do you want to close this subform?');
         if (confirmation) {
           handleSubmit(e);
-          navigate(-1);
+          setPriceCategorySubFormModal(false);
         } else {
           inputRetailRef.current[rowIndex * inputsPerRow + colIndex]?.focus();
           inputRetailRef.current[rowIndex * inputsPerRow + colIndex].setSelectionRange(0, 0);

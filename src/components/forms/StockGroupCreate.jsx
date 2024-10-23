@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import LeftSideMenu from '../left-side-menu/LeftSideMenu'
 import RightSideButton from '../right-side-button/RightSideButton'
 import { createStockGroupMaster } from '../services/MasterService';
+import { useNavigate } from 'react-router-dom';
 
 const StockGroupCreate = () => {
 
@@ -16,6 +17,7 @@ const StockGroupCreate = () => {
   });
 
   const inputRefs = useRef([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (inputRefs.current[0]){
@@ -55,6 +57,8 @@ const StockGroupCreate = () => {
           inputRefs.current[prevField]?.setSelectionRange(0, 0);
         }
       }
+    } else if (key === 'Escape'){
+      navigate('/');
     }
   };
 

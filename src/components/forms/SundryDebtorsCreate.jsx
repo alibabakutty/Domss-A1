@@ -424,7 +424,7 @@ console.log(sundryDebtor)
       });
     } else if (key === 'Escape') {
       e.preventDefault();
-      navigate(-1);
+      navigate('/');
     }
   };  
 

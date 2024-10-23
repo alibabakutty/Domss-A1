@@ -31,7 +31,7 @@ const HeadOfficeDisplay = () => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape'){
         event.preventDefault();
-        navigate(-1);
+        navigate(-2);
       }
     };
 

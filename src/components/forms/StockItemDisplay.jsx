@@ -523,7 +523,6 @@ const StockItemDisplay = () => {
         stockItemAccountingLedger: value,
       })
     } else if (key === 'Escape') {
-      e.preventDefault();
       navigate(-1);
     }
   };

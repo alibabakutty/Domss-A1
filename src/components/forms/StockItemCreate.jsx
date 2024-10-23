@@ -380,7 +380,7 @@ const StockItemCreate = () => {
       });
     } else if (key === 'Escape') {
       e.preventDefault();
-      navigate(-1);
+      navigate('/');
     }
   };
 

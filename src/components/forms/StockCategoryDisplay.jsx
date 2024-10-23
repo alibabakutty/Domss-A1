@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import LeftSideMenu from '../left-side-menu/LeftSideMenu'
 import RightSideButton from '../right-side-button/RightSideButton'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { getSpecificStockCategoryName } from '../services/MasterService'
 
 const StockCategoryDisplay = () => {
@@ -14,6 +14,7 @@ const StockCategoryDisplay = () => {
   });
 
   const inputRefs = useRef([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (inputRefs.current[0]){
@@ -55,6 +56,8 @@ const StockCategoryDisplay = () => {
           inputRefs.current[prevField]?.setSelectionRange(0, 0);
         }
       }
+    } else if (key === 'Escape'){
+      navigate(-1);
     }
   };
 

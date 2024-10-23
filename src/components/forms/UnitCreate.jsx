@@ -57,6 +57,9 @@ const UnitCreate = () => {
           inputRefs.current[prevField].setSelectionRange(0, 0);
         }
       }
+    } else if (key === 'Escape'){
+      e.preventDefault();
+      navigate('/');
     }
   };
 

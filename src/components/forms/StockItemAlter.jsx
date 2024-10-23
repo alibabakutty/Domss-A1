@@ -126,7 +126,7 @@ const inputSellingPriceRef = useRef([]);
 const inputSellingCostRef = useRef([]);
 const inputGstRef = useRef([]);
 const inputVatRef = useRef([]);
-const inputAccountingLedgerRef = useRef([]);
+const inputAccountLedgerRef = useRef([]);
 const inputGodownRef = useRef([]);
 const prevSellingPriceModal = useRef(false);
 const prevSellingCostModal = useRef(false);
@@ -189,7 +189,7 @@ const navigate = useNavigate();
     if (prevSellingCostModal.current && !standardSellingCostModal){
       // Focus on the standard selling price input when standardsellingcostModal closes
       const sellingPriceInputIndex = inputRefs.current.findIndex(
-        ref => ref && ref.name === 'gstApplicable'
+        ref => ref && ref.name === 'stockItemMrp'
       );
       if (sellingPriceInputIndex !== -1 && inputRefs.current[sellingPriceInputIndex]){
         inputRefs.current[sellingPriceInputIndex].focus();
@@ -197,7 +197,7 @@ const navigate = useNavigate();
     }
 
     if (prevGstModal.current && !gstStockItemSubFormModal) {
-      const gstInputIndex = inputRefs.current.findIndex(ref => ref && ref.name === 'openingBalanceQuantity');
+      const gstInputIndex = inputRefs.current.findIndex(ref => ref && ref.name === 'batchApplicable');
       if (gstInputIndex !== -1 && inputRefs.current[gstInputIndex]) {
         inputRefs.current[gstInputIndex].focus();
         inputRefs.current[gstInputIndex].setSelectionRange(0, 0);
@@ -206,7 +206,7 @@ const navigate = useNavigate();
 
     if (prevVatModal.current && !vatStockItemSubFormModal) {
       const vatInputIndex = inputRefs.current.findIndex(
-        ref => ref && ref.name === 'openingBalanceQuantity',
+        ref => ref && ref.name === 'batchApplicable',
       );
       if (vatInputIndex !== -1 && inputRefs.current[vatInputIndex]) {
         inputRefs.current[vatInputIndex].focus();
@@ -331,6 +331,7 @@ const navigate = useNavigate();
           const {
             stockItemCode = '',
             stockItemName = '',
+            stockItemPrintingName = '',
             under = '',
             category = '',
             units = '',
@@ -338,10 +339,14 @@ const navigate = useNavigate();
             standardSellingPriceSubForm,
             standardSellingCost = '',
             standardSellingCostSubForm,
+            stockItemMrp = '',
             gstApplicable = '',
             gstStockItemSubForm,
             vatApplicable = '',
             vatStockItemSubForm,
+            batchApplicable = '',
+            stockItemAccountingLedger = '',
+            accountingLedgerSubForm,
             openingBalanceQuantity = '',
             godownSubForm,
             totalQuantity = '',
@@ -391,6 +396,13 @@ const navigate = useNavigate();
               vatStatus: '',
             }
           ];
+
+          let fetchedAccountingLedgerSubForm = {
+            accountingLedgerPurchase: '',
+            accountingLedgerSale: '',
+            accountingLedgerCreditNote: '',
+            accountingLedgerDebitNote: '',
+          };
 
           let fetchedGodownSubForm = [
             {
@@ -445,6 +457,15 @@ const navigate = useNavigate();
             }));
           }
 
+          if (accountingLedgerSubForm && typeof accountingLedgerSubForm === 'object'){
+            fetchedAccountingLedgerSubForm = {
+              accountingLedgerPurchase: accountingLedgerSubForm.accountingLedgerPurchase || '',
+              accountingLedgerSales: accountingLedgerSubForm.accountingLedgerSales || '',
+              accountingLedgerCreditNote: accountingLedgerSubForm.accountingLedgerCreditNote || '',
+              accountingLedgerDebitNote: accountingLedgerSubForm.accountingLedgerDebitNote || '',
+            };
+          }
+
           if (Array.isArray(godownSubForm) && godownSubForm.length > 0){
             fetchedGodownSubForm = godownSubForm.map((godown) => ({
               godownName: godown.godownName || '',
@@ -460,6 +481,7 @@ const navigate = useNavigate();
           setStockItem({
             stockItemCode,
             stockItemName,
+            stockItemPrintingName,
             under,
             category,
             units,
@@ -467,10 +489,14 @@ const navigate = useNavigate();
             standardSellingPriceSubForm: fetchedSellingPriceSubForm,
             standardSellingCost,
             standardSellingCostSubForm: fetchedSellingCostSubForm,
+            stockItemMrp: numberFormatValue(stockItemMrp),
             gstApplicable,
             gstStockItemSubForm: fetchedGstStockItemSubForm,
             vatApplicable,
             vatStockItemSubForm: fetchedVatStockItemSubForm,
+            batchApplicable,
+            stockItemAccountingLedger,
+            accountingLedgerSubForm: fetchedAccountingLedgerSubForm,
             openingBalanceQuantity,
             openingBalanceQuantityDisplay: formattedFetchedUnit,
             godownSubForm: fetchedGodownSubForm,
@@ -519,6 +545,8 @@ const navigate = useNavigate();
           setGstStockItemSubFormModal(true);
         } else if (e.target.name === 'vatApplicable' && e.target.value.trim() === 'yes'){
           setVatStockItemSubFormModal(true);
+        } else if (e.target.name === 'stockItemAccountingLedger' && e.target.value.trim() === 'yes'){
+          setAccountingLedgerSubFormModal(true);
         } else if (e.target.name === 'openingBalanceQuantity' && e.target.value.trim() !== '') {
           setGodownSubFormModal(true);
         }
@@ -560,6 +588,20 @@ const navigate = useNavigate();
         ...stockItem,
         vatApplicable: value,
       })
+    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'batchApplicable'){
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
+      setStockItem({
+        ...stockItem,
+        batchApplicable: value,
+      })
+    } else if (['y', 'n', 'Y', 'N'].includes(key) && e.target.name === 'stockItemAccountingLedger'){
+      e.preventDefault();
+      const value = key.toLowerCase() === 'y' ? 'yes' : 'no';
+      setStockItem({
+        ...stockItem,
+        stockItemAccountingLedger: value,
+      })
     } else if (key === 'Escape') {
       e.preventDefault();
       navigate(-1);
@@ -589,14 +631,14 @@ const navigate = useNavigate();
         }
     } else if (key === ' ') {
         e.preventDefault();
-        inputRefs.current[3].value = '';  // Clear the input field
+        inputRefs.current[4].value = '';  // Clear the input field
     } else if (key === 'Escape') {
         // Close the dropdown on Escape key
         setFilteredStockGroup([]);
         inputRefs.current[0].blur(); // Optionally blur the input field
     } else if (key === 'Backspace') {
         e.preventDefault();
-        const currentInputIndex = 3; // Index of the current input
+        const currentInputIndex = 4; // Index of the current input
 
         // Get the current input value
         const currentInputValue = inputRefs.current[currentInputIndex].value;
@@ -617,7 +659,7 @@ const handleKeyDownCategory = (e) => {
           // Select the highlighted suggestion for stock category
           const selectedCategory = filteredStockCategory[highlightedStockCategory];
           handleStockCategorySuggestionClick(selectedCategory); // Define this function for handling the selection
-          inputRefs.current[1].blur(); // Blur the input after selection
+          inputRefs.current[2].blur(); // Blur the input after selection
       }
   } else if (key === 'ArrowDown') {
       if (filteredStockCategory.length > 0) {
@@ -631,14 +673,14 @@ const handleKeyDownCategory = (e) => {
       }
   } else if (key === ' ') {
       e.preventDefault();
-      inputRefs.current[2].value = '';  // Clear the input field
+      inputRefs.current[3].value = '';  // Clear the input field
   } else if (key === 'Escape') {
       // Close the dropdown on Escape key
       setFilteredStockCategory([]);
-      inputRefs.current[1].blur(); // Optionally blur the input field
+      inputRefs.current[2].blur(); // Optionally blur the input field
   } else if (key === 'Backspace') {
       e.preventDefault();
-      const currentInputIndex = 2; // Adjust to the current input index for category
+      const currentInputIndex = 3; // Adjust to the current input index for category
 
       // Get the current input value
       const currentInputValue = inputRefs.current[currentInputIndex].value;
@@ -659,7 +701,7 @@ const handleKeyDownUnit = (e) => {
           // Select the highlighted suggestion for unit
           const selectedUnit = filteredUnit[highlightedUnit];
           handleUnitSuggestionClick(selectedUnit); // Define this function for handling the selection
-          inputRefs.current[4].blur(); // Blur the input after selection
+          inputRefs.current[5].blur(); // Blur the input after selection
       }
   } else if (key === 'ArrowDown') {
       if (filteredUnit.length > 0) {
@@ -673,14 +715,14 @@ const handleKeyDownUnit = (e) => {
       }
   } else if (key === ' ') {
       e.preventDefault();
-      inputRefs.current[4].value = '';  // Clear the input field
+      inputRefs.current[5].value = '';  // Clear the input field
   } else if (key === 'Escape') {
       // Close the dropdown on Escape key
       setFilteredUnit([]);
-      inputRefs.current[4].blur(); // Optionally blur the input field
+      inputRefs.current[5].blur(); // Optionally blur the input field
   } else if (key === 'Backspace') {
       e.preventDefault();
-      const currentInputIndex = 4; // Adjust this index according to your inputRefs
+      const currentInputIndex = 5; // Adjust this index according to your inputRefs
 
       // Get the current input value
       const currentInputValue = inputRefs.current[currentInputIndex].value;
@@ -1310,6 +1352,46 @@ const handleKeyDownBatch = (e, index) => {
     }
   };
 
+  const handleKeyDownAccountingSubForm = (e, index) => {
+    const key = e.key;
+
+    if (key === 'Enter'){
+      e.preventDefault();
+
+      if (e.target.value.trim() !== ''){
+        const nextField = index + 1;
+        if (nextField < inputAccountLedgerRef.current.length){
+          inputAccountLedgerRef.current[nextField].focus();
+          inputAccountLedgerRef.current[nextField].setSelectionRange(0, 0);
+        }
+        // Check if the current field is accountingledgerdebitnote and call handleBankSubFormBlur
+        if (e.target.name === 'accountingLedgerDebitNote'){
+          handleAccountingLedgerSubFormBlur();   // call your blur here
+        }
+      }
+    } else if (key === 'Backspace'){
+      if (e.target.value.trim() !== '' && index > 0){
+        e.preventDefault();
+        const prevField = index - 1;
+        if (inputAccountLedgerRef.current[prevField]){
+          inputAccountLedgerRef.current[prevField].focus();
+          inputAccountLedgerRef.current[prevField].setSelectionRange(0, 0);
+        }
+      }
+    } else if (key === 'Escape'){
+      setAccountingLedgerSubFormModal(false);
+    }
+  }
+
+  const handleAccountingLedgerSubFormBlur = () => {
+    const confirmation = window.confirm('Are you want to proceed with these accounting ledger details?');
+    if (confirmation) {
+      // Hide the subform when "ok" clicked
+      setAccountingLedgerSubFormModal(false);
+      setStockItem(prev => ({ ...prev, stockItemAccountingLedger: 'no' }));
+    }
+  };
+
   // add new row function
   const addNewRowGodown = () => {
     setStockItem(prevState => {
@@ -1562,6 +1644,14 @@ const handleKeyDownBatch = (e, index) => {
     });
   };
 
+  const handleInputAccountLedgerChange = (e) => {
+    const { name, value } = e.target;
+    setStockItem(prevState => ({
+      ...prevState,
+      accountingLedgerSubForm: { ...prevState.accountingLedgerSubForm, [name]: value },
+    }))
+  }
+
   // Handle input changes for quantity Subform
   const handleInputGodownSubFormChange = (e, index) => {
     const { name, value } = e.target;
@@ -1603,8 +1693,8 @@ const handleKeyDownBatch = (e, index) => {
     setCategoryFocused(false);
 
     // focus next input after selection
-    inputRefs.current[3].focus();
-    inputRefs.current[3].setSelectionRange(0, 0);
+    inputRefs.current[4].focus();
+    inputRefs.current[4].setSelectionRange(0, 0);
   };
 
   const handleStockGroupSuggestionClick = stockGroup => {
@@ -1615,8 +1705,8 @@ const handleKeyDownBatch = (e, index) => {
     setUnderFocused(false);
 
     // focus next input after selection
-    inputRefs.current[4].focus();
-    inputRefs.current[4].setSelectionRange(0, 0);
+    inputRefs.current[5].focus();
+    inputRefs.current[5].setSelectionRange(0, 0);
   };
 
   const handleUnitSuggestionClick = (unit) => {
@@ -1632,8 +1722,8 @@ const handleKeyDownBatch = (e, index) => {
     setUnitsFocused(false);
 
     // focus next input after selection
-    inputRefs.current[5].focus();
-    inputRefs.current[5].setSelectionRange(0, 0);
+    inputRefs.current[6].focus();
+    inputRefs.current[6].setSelectionRange(0, 0);
   };
 
   const handleGodownSuggestionClick = (selectedGodown, index) => {
@@ -1653,9 +1743,23 @@ const handleKeyDownBatch = (e, index) => {
     // Close the godown suggestion dropdown
     setGodownFocused(false);
 
-    // Optionally move focus to the next input field if needed
-    if (inputGodownRef.current[1 + index * 6]) {
+    // Conditionally set focus based on batchApplicable
+    if (stockItem.batchApplicable === 'yes') {
+      if (inputGodownRef.current[1 + index * 6]) {
+        inputGodownRef.current[1 + index * 6].focus();
+        inputGodownRef.current[1 + index * 6].setSelectionRange(0, 0);
+      }
+    } else {
+      if (inputGodownRef.current[2 + index * 6]) {
+        inputGodownRef.current[2 + index * 6].focus();
+        inputGodownRef.current[2 + index * 6].setSelectionRange(0, 0);
+      }
+    }
+
+     // Optionally move focus to the next input field if needed
+     if (inputGodownRef.current[1 + index * 6]) {
       inputGodownRef.current[1 + index * 6].focus();
+      inputGodownRef.current[1 + index * 6].setSelectionRange(0, 0);
     }
   };
 
@@ -1696,6 +1800,8 @@ const handleKeyDownBatch = (e, index) => {
       // Sanitize stockItem values to remove commas and ensure proper formatting
       const sanitizedStockItem = {
         ...stockItem,
+        stockItemPrintingName: stockItem.stockItemPrintingName?.trim() || null,
+        stockItemMrp: typeof stockItem.stockItemMrp === 'number' ? stockItem.stockItemMrp : parseFloat(stockItem.stockItemMrp.replace(/,/g, '')) || 0,
         openingBalanceQuantity: parseInt(stockItem.openingBalanceQuantity, 10) || 0,
         openingBalanceRate: parseFloat(stockItem.openingBalanceRate.replace(/,/g, '')) || 0,
         openingBalanceValue: parseFloat(stockItem.openingBalanceValue.replace(/,/g, '')) || 0,
@@ -1731,6 +1837,16 @@ const handleKeyDownBatch = (e, index) => {
           vatCode: parseInt(vat.vatCode, 10) || 0,
           vatPercentage: parseFloat(vat.vatPercentage.replace(/,/g, '')) || 0
         })),
+        accountingLedgerSubForm: {
+          accountingLedgerPurchase:
+            stockItem.accountingLedgerSubForm?.accountingLedgerPurchase || null,
+          accountingLedgerSales:
+            stockItem.accountingLedgerSubForm?.accountingLedgerSales || null,
+          accountingLedgerCreditNote:
+            stockItem.accountingLedgerSubForm?.accountingLedgerCreditNote || null,
+          accountingLedgerDebitNote:
+            stockItem.accountingLedgerSubForm?.accountingLedgerDebitNote || null,
+        },
         godownSubForm: stockItem.godownSubForm
         .filter(godown => parseInt(godown.quantity, 10) > 0)     // Only include if quantity is greater than 0
         .map((godown) => ({
@@ -2113,7 +2229,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
         <LeftSideMenu />
         <form
           action=""
-          className="border border-slate-500 w-[42.5%] h-[42vh] relative"
+          className="border border-slate-500 w-[42.5%] h-[55vh] relative"
           onSubmit={handleSubmit}
         >
           <div className="text-sm flex mt-2 ml-2">
@@ -2149,6 +2265,22 @@ const handleFormattedDateChange = (e, index, field, type) => {
             />
           </div>
           <div className="text-sm flex ml-2">
+            <label htmlFor="stockItemPrintingName" className="w-[40%]">
+              Product Printing Name
+            </label>
+            <span>:</span>
+            <input
+              type="text"
+              name="stockItemPrintingName"
+              ref={input => (inputRefs.current[2] = input)}
+              value={stockItem.stockItemPrintingName}
+              onChange={handleInputChange}
+              onKeyDown={e => handleKeyDown(e, 2)}
+              className="w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              autoComplete="off"
+            />
+          </div>
+          <div className="text-sm flex ml-2">
             <label htmlFor="category" className="w-[40%]">
               Stock Category
             </label>
@@ -2156,9 +2288,9 @@ const handleFormattedDateChange = (e, index, field, type) => {
             <input
               type="text"
               name="category"
-              ref={input => (inputRefs.current[2] = input)}
+              ref={input => (inputRefs.current[3] = input)}
               value={stockItem.category}
-              onKeyDown={e => handleKeyDownCategory(e, 2)}
+              onKeyDown={e => handleKeyDownCategory(e, 3)}
               onChange={handleInputChange}
               onFocus={e => {
                 setCategoryFocused(true);
@@ -2202,9 +2334,9 @@ const handleFormattedDateChange = (e, index, field, type) => {
             <input
               type="text"
               name="under"
-              ref={input => (inputRefs.current[3] = input)}
+              ref={input => (inputRefs.current[4] = input)}
               value={stockItem.under}
-              onKeyDown={e => handleKeyDownGroup(e, 3)}
+              onKeyDown={e => handleKeyDownGroup(e, 4)}
               onChange={handleInputChange}
               onFocus={e => {
                 setUnderFocused(true);
@@ -2248,9 +2380,9 @@ const handleFormattedDateChange = (e, index, field, type) => {
             <input
               type="text"
               name="units"
-              ref={input => (inputRefs.current[4] = input)}
+              ref={input => (inputRefs.current[5] = input)}
               value={stockItem.units}
-              onKeyDown={e => handleKeyDownUnit(e, 4)}
+              onKeyDown={e => handleKeyDownUnit(e, 5)}
               onChange={handleInputChange}
               onFocus={e => {
                 setUnitsFocused(true);
@@ -2294,9 +2426,9 @@ const handleFormattedDateChange = (e, index, field, type) => {
             <input
               type="text"
               name="standardSellingPrice"
-              ref={input => (inputRefs.current[5] = input)}
+              ref={input => (inputRefs.current[6] = input)}
               value={stockItem.standardSellingPrice}
-              onKeyDown={e => handleKeyDown(e, 5)}
+              onKeyDown={e => handleKeyDown(e, 6)}
               onChange={handleInputChange}
               className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
@@ -2430,9 +2562,9 @@ const handleFormattedDateChange = (e, index, field, type) => {
             <input
               type="text"
               name="standardSellingCost"
-              ref={input => (inputRefs.current[6] = input)}
+              ref={input => (inputRefs.current[7] = input)}
               value={stockItem.standardSellingCost}
-              onKeyDown={e => handleKeyDown(e, 6)}
+              onKeyDown={e => handleKeyDown(e, 7)}
               onChange={handleInputChange}
               className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
@@ -2559,6 +2691,22 @@ const handleFormattedDateChange = (e, index, field, type) => {
             </div>
           )}
           <div className="text-sm flex ml-2">
+            <label htmlFor="stockItemMrp" className="w-[40%]">
+              Product MRP
+            </label>
+            <span>:</span>
+            <input
+              type="text"
+              name="stockItemMrp"
+              ref={input => (inputRefs.current[8] = input)}
+              value={stockItem.stockItemMrp}
+              onKeyDown={e => handleKeyDown(e, 8)}
+              onChange={handleInputChange}
+              className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              autoComplete="off"
+            />
+          </div>
+          <div className="text-sm flex ml-2">
             <label htmlFor="gstApplicable" className="w-[40%]">
               GST Applicable
             </label>
@@ -2567,8 +2715,8 @@ const handleFormattedDateChange = (e, index, field, type) => {
               type="text"
               name="gstApplicable"
               value={stockItem.gstApplicable}
-              ref={input => (inputRefs.current[7] = input)}
-              onKeyDown={e => handleKeyDown(e, 7)}
+              ref={input => (inputRefs.current[9] = input)}
+              onKeyDown={e => handleKeyDown(e, 9)}
               onChange={handleInputChange}
               className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
@@ -2682,8 +2830,8 @@ const handleFormattedDateChange = (e, index, field, type) => {
               type="text"
               name="vatApplicable"
               value={stockItem.vatApplicable}
-              ref={input => (inputRefs.current[8] = input)}
-              onKeyDown={e => handleKeyDown(e, 8)}
+              ref={input => (inputRefs.current[10] = input)}
+              onKeyDown={e => handleKeyDown(e, 10)}
               onChange={handleInputChange}
               className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
@@ -2788,6 +2936,126 @@ const handleFormattedDateChange = (e, index, field, type) => {
               </div>
             </div>
           )}
+          <div className="text-sm flex ml-2">
+            <label htmlFor="batchApplicable" className="w-[40%]">
+              Batch Applicable
+            </label>
+            <span>:</span>
+            <input
+              type="text"
+              name="batchApplicable"
+              value={stockItem.batchApplicable}
+              ref={input => (inputRefs.current[11] = input)}
+              onKeyDown={e => handleKeyDown(e, 11)}
+              
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              autoComplete="off"
+            />
+          </div>
+          <div className="text-sm flex ml-2">
+            <label htmlFor="stockItemAccountingLedger" className="w-[40%]">
+              Product Accounting Ledger
+            </label>
+            <span>:</span>
+            <input
+              type="text"
+              name="stockItemAccountingLedger"
+              value={stockItem.stockItemAccountingLedger}
+              ref={input => (inputRefs.current[12] = input)}
+              onKeyDown={e => handleKeyDown(e, 12)}
+              onChange={handleInputChange}
+              className="w-[40px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+              autoComplete="off"
+            />
+          </div>
+          {accountingLedgerSubFormModal && (
+            <div className="fixed top-[44px] right-[137px] bottom-0 left-0 bg-slate-300 opacity-90 z-10 flex justify-center items-center">
+              <div className="bg-white w-[700px] h-[500px] border border-black">
+                <div>
+                  <div className="text-sm ml-5 mt-2 mb-1 flex">
+                    <label htmlFor="allocationsOf" className="w-[25%]">
+                      Allocations of Product
+                    </label>
+                    <span>:</span>
+                    <input
+                      type="text"
+                      name="allocationsOf"
+                      value={stockItem.stockItemName}
+                      className="w-[200px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <table className="border border-slate-400 w-full">
+                    <thead className="text-[12px]">
+                      <tr className="border-t border-b border-slate-400">
+                        <th>Purchase</th>
+                        <th>Sales</th>
+                        <th>Credit Note</th>
+                        <th>Debit Note</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        {/* purchase input */}
+                        <td>
+                          <input
+                            type="text"
+                            name="accountingLedgerPurchase"
+                            value={stockItem.accountingLedgerSubForm.accountingLedgerPurchase}
+                            ref={input => (inputAccountLedgerRef.current[0] = input)}
+                            onChange={handleInputAccountLedgerChange}
+                            onKeyDown={e => handleKeyDownAccountingSubForm(e, 0)}
+                            className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            autoComplete="off"
+                          />
+                        </td>
+                        {/* sales input */}
+                        <td>
+                          <input
+                            type="text"
+                            name="accountingLedgerSales"
+                            value={stockItem.accountingLedgerSubForm.accountingLedgerSales}
+                            ref={input => (inputAccountLedgerRef.current[1] = input)}
+                            onChange={handleInputAccountLedgerChange}
+                            onKeyDown={e => handleKeyDownAccountingSubForm(e, 1)}
+                            className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            autoComplete="off"
+                          />
+                        </td>
+                        {/* credit note input */}
+                        <td>
+                          <input
+                            type="text"
+                            name="accountingLedgerCreditNote"
+                            value={stockItem.accountingLedgerSubForm.accountingLedgerCreditNote}
+                            ref={input => (inputAccountLedgerRef.current[2] = input)}
+                            onChange={handleInputAccountLedgerChange}
+                            onKeyDown={e => handleKeyDownAccountingSubForm(e, 2)}
+                            className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            autoComplete="off"
+                          />
+                        </td>
+                        {/* debit note input */}
+                        <td>
+                          <input
+                            type="text"
+                            name="accountingLedgerDebitNote"
+                            value={stockItem.accountingLedgerSubForm.accountingLedgerDebitNote}
+                            ref={input => (inputAccountLedgerRef.current[3] = input)}
+                            onChange={handleInputAccountLedgerChange}
+                            onKeyDown={e => handleKeyDownAccountingSubForm(e, 3)}
+                            className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            autoComplete="off"
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex items-center text-sm font-bold mt-2">
             <p className="ml-[264px]">Quantity</p>
             <p className="ml-12">Rate</p>
@@ -2803,8 +3071,8 @@ const handleFormattedDateChange = (e, index, field, type) => {
               name="openingBalanceQuantity"
               value={stockItem.openingBalanceQuantityDisplay || ''}
               onChange={handleUnitFormattedChange}
-              ref={input => (inputRefs.current[9] = input)}
-              onKeyDown={e => {handleKeyDown(e, 9);
+              ref={input => (inputRefs.current[13] = input)}
+              onKeyDown={e => {handleKeyDown(e, 13);
                 if (e.key === 'Enter'){
                   inputRefs.current[10].focus(); // Adjust the index based on your input structure
                 }
@@ -2820,8 +3088,8 @@ const handleFormattedDateChange = (e, index, field, type) => {
               name="openingBalanceRate"
               value={stockItem.openingBalanceRateDisplay}
               onChange={handleInputChange}
-              ref={input => (inputRefs.current[10] = input)}
-              onKeyDown={e => handleKeyDown(e, 10)}
+              ref={input => (inputRefs.current[14] = input)}
+              onKeyDown={e => handleKeyDown(e, 14)}
               onBlur={numberFormat}
               readOnly
               className="w-[80px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
@@ -2834,8 +3102,8 @@ const handleFormattedDateChange = (e, index, field, type) => {
               name="openingBalanceUnit"
               value={stockItem.openingBalanceUnit}
               onChange={handleInputChange}
-              ref={input => (inputRefs.current[11] = input)}
-              onKeyDown={e => handleKeyDown(e, 11)}
+              ref={input => (inputRefs.current[15] = input)}
+              onKeyDown={e => handleKeyDown(e, 15)}
               readOnly
               className="w-[50px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
@@ -2847,8 +3115,8 @@ const handleFormattedDateChange = (e, index, field, type) => {
               name="openingBalanceValue"
               value={stockItem.openingBalanceValue}
               onChange={handleInputChange}
-              ref={input => (inputRefs.current[12] = input)}
-              onKeyDown={e => handleKeyDown(e, 12)}
+              ref={input => (inputRefs.current[16] = input)}
+              onKeyDown={e => handleKeyDown(e, 16)}
               onBlur={numberFormat}
               className="w-[100px] h-5 ml-2 pl-1 font-medium text-sm text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
@@ -2890,7 +3158,7 @@ const handleFormattedDateChange = (e, index, field, type) => {
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
                         <th className='pr-5'>Location</th>
-                        <th>Batch</th>
+                        {stockItem.batchApplicable === 'yes' && <th>Batch</th>}
                         <th className='pl-6'>Quantity</th>
                         <th className='pr-2'>Uom</th>
                         <th className='pl-8'>Rate</th>
@@ -2948,51 +3216,53 @@ const handleFormattedDateChange = (e, index, field, type) => {
                           </td>
 
                           {/* batch Input */}
-                          <td>
-                            <input
-                              type="text"
-                              name="batchName"
-                              value={row.batchName}
-                              ref={input => (inputGodownRef.current[1 + index * 6] = input)}
-                              onChange={e => handleInputGodownSubFormChange(e, index)}
-                              onKeyDown={e => handleKeyDownBatch(e, index)}
-                              onFocus={e => {
-                                setBatchFocused(true);
-                                handleInputGodownSubFormChange(e, index);
-                              }}
-                              onBlur={() => setBatchFocused(false)}
-                              className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
-                              autoComplete="off"
-                            />
-                            {/* batch Suggestion Dropdown */}
-                            {batchFocused && filteredBatch.length > 0 && (
-                              <div
-                                className="w-[20%] h-[92.5vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[983px] top-0"
-                                onMouseDown={e => e.preventDefault()}
-                              >
-                                <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
-                                  <p>List of Batches</p>
-                                </div>
-                                <ul
-                                  className="suggestions w-full h-[87vh] text-left text-[12px] mt-2"
-                                  ref={batchRef}
+                          {stockItem.batchApplicable === 'yes' && (
+                            <td>
+                              <input
+                                type="text"
+                                name="batchName"
+                                value={row.batchName}
+                                ref={input => (inputGodownRef.current[1 + index * 6] = input)}
+                                onChange={e => handleInputGodownSubFormChange(e, index)}
+                                onKeyDown={e => handleKeyDownBatch(e, index)}
+                                onFocus={e => {
+                                  setBatchFocused(true);
+                                  handleInputGodownSubFormChange(e, index);
+                                }}
+                                onBlur={() => setBatchFocused(false)}
+                                className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                                autoComplete="off"
+                              />
+                              {/* batch Suggestion Dropdown */}
+                              {batchFocused && filteredBatch.length > 0 && (
+                                <div
+                                  className="w-[20%] h-[92.5vh] border border-gray-500 bg-[#CAF4FF] z-10 absolute left-[983px] top-0"
+                                  onMouseDown={e => e.preventDefault()}
                                 >
-                                  {filteredBatch.map((batch, batchIndex) => (
-                                    <li
-                                      key={batchIndex}
-                                      tabIndex={0}
-                                      className={`pl-2 capitalize cursor-pointer hover:bg-yellow-200 ${
-                                        highlightedBatch === batchIndex ? 'bg-yellow-200' : ''
-                                      }`}
-                                      onClick={() => handleBatchSuggestionClick(batch, index)}
-                                    >
-                                      {batch.batchSerialNumber}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </td>
+                                  <div className="text-left bg-[#003285] text-[13.5px] text-white pl-2">
+                                    <p>List of Batches</p>
+                                  </div>
+                                  <ul
+                                    className="suggestions w-full h-[87vh] text-left text-[12px] mt-2"
+                                    ref={batchRef}
+                                  >
+                                    {filteredBatch.map((batch, batchIndex) => (
+                                      <li
+                                        key={batchIndex}
+                                        tabIndex={0}
+                                        className={`pl-2 capitalize cursor-pointer hover:bg-yellow-200 ${
+                                          highlightedBatch === batchIndex ? 'bg-yellow-200' : ''
+                                        }`}
+                                        onClick={() => handleBatchSuggestionClick(batch, index)}
+                                      >
+                                        {batch.batchSerialNumber}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </td>
+                          )}
 
                           {/* quantity Input */}
                           <td>

@@ -150,7 +150,7 @@ const PriceCategoryDisplay = () => {
         }
       }
     } else if (key === 'Escape') {
-      navigate('/');
+      navigate(-2);
     }
   };
 

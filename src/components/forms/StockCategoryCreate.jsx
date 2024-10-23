@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import LeftSideMenu from '../left-side-menu/LeftSideMenu'
 import RightSideButton from '../right-side-button/RightSideButton'
 import { createStockCategoryMaster } from '../services/MasterService';
+import { useNavigate } from 'react-router-dom';
 
 const StockCategoryCreate = () => {
 
@@ -11,6 +12,7 @@ const StockCategoryCreate = () => {
   });
 
   const inputRefs = useRef([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (inputRefs.current[0]){
@@ -49,6 +51,8 @@ const StockCategoryCreate = () => {
           inputRefs.current[prevField]?.setSelectionRange(0, 0);
         }
       }
+    } else if (key === 'Escape'){
+      navigate('/');
     }
   };
 

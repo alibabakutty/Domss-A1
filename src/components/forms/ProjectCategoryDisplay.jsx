@@ -34,7 +34,7 @@ const ProjectCategoryDisplay = () => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
         event.preventDefault();
-        navigate(-1); // Go back to the previous page
+        navigate(-2); // Go back to the previous page
       }
     };
 

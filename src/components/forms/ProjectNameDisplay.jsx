@@ -88,8 +88,8 @@ const ProjectNameDisplay = () => {
     <>
       <div className='flex'>
         <div className='bg-slate-400 w-[50%] h-[92.9vh] border border-r-blue-400'></div>
-        <form className='border border-slate-500 w-[40%] h-[15vh] absolute left-[50%]'>
-          <div className='text-sm p-3 flex'>
+        <form className='border border-slate-500 w-[40%] h-[11vh] absolute left-[50%]'>
+          <div className='text-sm pl-3 mt-2 flex'>
             <label htmlFor="projectName" className='w-[30%]'>Project Name</label>
             <span>:</span>
             <input type="text" id='projectName' name='projectName' value={projectName.projectName} ref={input => inputRefs.current[0] = input} onKeyDown={(e) => handleKeyDown(e, 0)} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 border-transparent focus:border' autoComplete='off' readOnly />

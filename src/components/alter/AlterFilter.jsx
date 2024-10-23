@@ -593,6 +593,117 @@ const AlterFilter = () => {
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
     };
+
+    const handleCurrnecyClick = (currency, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/currencyMasterApi/alterCurrencyMaster/${currency.forexCurrencySymbol}`)
+    }
+
+    const handleUnitClick = (unit, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/unitMasterApi/alterUnitMaster/${unit.unitSymbolName}`)
+    }
+
+    const handleStockCategoryClick = (stockCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/stockCategoryMasterApi/alterStockCategoryMaster/${stockCategory.stockCategoryName}`);
+    }
+
+    const handleStockGroupClick = (stockGroup, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/stockGroupMasterApi/alterStockGroupMaster/${stockGroup.stockGroupName}`);
+    }
+    
+    const handlePriceCategoryClick = (priceCategory, index) => {
+        setSelectedIndex(index + 2);
+        // Navigate to the appropriate route
+        navigate(`/priceCategoryMasterApi/alterPriceCategoryMaster/${priceCategory.priceCategoryName}`);
+    }
+
+    const handleStockItemClick = (stockItem, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/stockItemMasterApi/alterStockItemMaster/${stockItem.stockItemName}`);
+    }
+
+    const handleSundryCreditorClick = (sundryCreditor, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/sundryCreditorMasterApi/alterSundryCreditorMaster/${sundryCreditor.sundryCreditorName}`);
+    }
+
+    const handleSundryDebtorClick = (sundryDebtor, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/sundryDebtorMasterApi/alterSundryDebtorMaster/${sundryDebtor.sundryDebtorName}`)
+    }
+
+    const handleDepartmentClick = (department, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/departmentMasterApi/alterDepartmentMaster/${department.departmentName}`);
+    }
+
+    const handleGodownClick = (godown, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/locationMasterApi/alterGodownMaster/${godown.godownName}`);
+    }
+
+    const handleHeadOfficeClick = (headOffice, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/headOfficeMasterApi/alterHeadOfficeMaster/${headOffice.headOfficeName}`);
+    }
+
+    const handleBranchOfficeClick = (branchOffice, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/branchOfficeMasterApi/alterBranchOfficeMaster/${branchOffice.branchOfficeName}`);
+    }
+
+    const handleRevenueCategoryClick = (revenueCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/revenueCategoryMasterApi/alterRevenueCategoryMaster/${revenueCategory.revenueCategoryName}`);
+    }
+
+    const handleRevenueCenterClick = (revenueCenter, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/revenueCenterMasterApi/alterRevenueCenterMaster/${revenueCenter.revenueCenterName}`)
+    }
+
+    const handleCostCategoryClick = (costCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/costCategoryMasterApi/alterCostCategoryMaster/${costCategory.costCategoryName}`);
+    }
+
+    const handleCostCenterClick = (costCenter, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/costCenterMasterApi/alterCostCenterMaster/${costCenter.costCenterName}`);
+    }
+
+    const handleBatchCategoryClick = (batchCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/batchCategoryMasterApi/alterBatchCategoryMaster/${batchCategory.batchCategoryName}`);
+    }
+
+    const handleBatchSerialNumberClick = (batchSerialNumber, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/batchSerialNumberMasterApi/alterBatchSerialNumberMaster/${batchSerialNumber.batchSerialNumber}`);
+    }
+
+    const handleBatchColorClick = (batchColor, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/batchColorMasterApi/alterBatchColorMaster/${batchColor.batchColorName}`);
+    }
+
+    const handleBatchSizeClick = (batchSize, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/batchSizeMasterApi/alterBatchSizeMaster/${batchSize.batchSizeName}`);
+    }
+
+    const handleProjectCategoryClick = (projectCategory, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/projectCategoryMasterApi/alterProjectCategoryMaster/${projectCategory.projectCategoryName}`)
+    }
+
+    const handleProjectNameClick = (projectName, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/projectNameMasterApi/alterProjectNameMaster/${projectName.projectName}`);
+    }
     
 
     return (
@@ -680,10 +791,9 @@ const AlterFilter = () => {
                                                     key={index}
                                                     className={`text-sm capitalize font-medium pl-3 ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                     ref={el => listItemRefs.current[index + 2] = el}
+                                                    onClick={() => handleCurrnecyClick(currency, index)}
                                                 >
-                                                    <Link to={`/currencyMasterApi/alterCurrencyMaster/${currency.forexCurrencySymbol}`}>
-                                                        {currency.forexCurrencySymbol} - {currency.forexCurrencyName}
-                                                    </Link>
+                                                    {currency.forexCurrencySymbol} - {currency.forexCurrencyName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -691,9 +801,10 @@ const AlterFilter = () => {
                                     {type === 'department' && (
                                         <ul>
                                             {filteredDepartments.map((department,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleDepartmentClick(department, index)}
                                                 >
-                                                    <Link to={`/departmentMasterApi/alterDepartmentMaster/${department.departmentName}`}>{department.departmentName}</Link>
+                                                {department.departmentName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -701,10 +812,10 @@ const AlterFilter = () => {
                                     {type === 'godown' && (
                                         <ul>
                                             {filteredLocations.map((location,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/locationMasterApi/alterGodown/${location.godownName}`}>
-                                                        {location.godownName}
-                                                    </Link>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleGodownClick(location, index)}
+                                                >
+                                                {location.godownName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -712,10 +823,10 @@ const AlterFilter = () => {
                                     {type === 'headOffice' && (
                                         <ul>
                                             {filteredHeadOffices.map((headOffice,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/headOfficeMasterApi/alterHeadOfficeMaster/${headOffice.headOfficeName}`}>
-                                                        {headOffice.headOfficeName}
-                                                    </Link>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleHeadOfficeClick(headOffice, index)}
+                                                >
+                                                    {headOffice.headOfficeName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -723,10 +834,10 @@ const AlterFilter = () => {
                                     {type === 'branchOffice' && (
                                         <ul>
                                             {filteredBranchOffices.map((branchOffice,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/branchOfficeMasterApi/alterBranchOfficeMaster/${branchOffice.branchOfficeName}`}>
-                                                        {branchOffice.branchOfficeName}
-                                                    </Link>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBranchOfficeClick(branchOffice, index)}
+                                                >
+                                                    {branchOffice.branchOfficeName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -734,10 +845,10 @@ const AlterFilter = () => {
                                     {type === 'revenueCategory' && (
                                         <ul>
                                             {filteredRevenueCategories.map((revenueCategory,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/revenueCategoryMasterApi/alterRevenueCategoryMaster/${revenueCategory.revenueCategoryName}`}>
-                                                        {revenueCategory.revenueCategoryName}
-                                                    </Link>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleRevenueCategoryClick(revenueCategory, index)}
+                                                >
+                                                    {revenueCategory.revenueCategoryName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -745,10 +856,10 @@ const AlterFilter = () => {
                                     {type === 'revenueCenter' && (
                                         <ul>
                                             {filteredRevenueCenters.map((revenueCenter,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/revenueCenterMasterApi/alterRevenueCenterMaster/${revenueCenter.revenueCenterName}`}>
-                                                        {revenueCenter.revenueCenterName}
-                                                    </Link>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleRevenueCenterClick(revenueCenter, index)}
+                                                >
+                                                    {revenueCenter.revenueCenterName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -757,10 +868,10 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredCostCategories.map((costCategory,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/costCategoryMasterApi/alterCostCategoryMaster/${costCategory.costCategoryName}`}>
-                                                        {costCategory.costCategoryName}
-                                                    </Link>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleCostCategoryClick(costCategory, index)}
+                                                >
+                                                {costCategory.costCategoryName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -769,10 +880,10 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredCostCenters.map((costCenter,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/costCenterMasterApi/alterCostCenterMaster/${costCenter.costCenterName}`}>
-                                                        {costCenter.costCenterName}
-                                                    </Link>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleCostCenterClick(costCenter, index)}
+                                                >
+                                                {costCenter.costCenterName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -781,10 +892,10 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredBatchCategories.map((batchCategory,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/batchCategoryMasterApi/alterBatchCategoryMaster/${batchCategory.batchCategoryName}`}>
-                                                        {batchCategory.batchCategoryName}
-                                                    </Link>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBatchCategoryClick(batchCategory, index)}
+                                                >
+                                                {batchCategory.batchCategoryName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -793,10 +904,10 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredBatchSerialNumbers.map((batchSerial,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/batchSerialNumberMasterApi/alterBatchSerialNumberMaster/${batchSerial.batchSerialNumber}`}>
-                                                        {batchSerial.batchSerialNumber}
-                                                    </Link>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBatchSerialNumberClick(batchSerial, index)}
+                                                >
+                                                {batchSerial.batchSerialNumber}
                                                 </li>
                                             ))}
                                         </ul>
@@ -805,10 +916,10 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredBatchColors.map((batchColor,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/batchColorMasterApi/alterBatchColorMaster/${batchColor.batchColorName}`}>
-                                                        {batchColor.batchColorName}
-                                                    </Link>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBatchColorClick(batchColor,index)}
+                                                >
+                                                {batchColor.batchColorName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -817,10 +928,10 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredBatchSizes.map((batchSize,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/batchSizeMasterApi/alterBatchSizeMaster/${batchSize.batchSizeName}`}>
-                                                        {batchSize.batchSizeName}
-                                                    </Link>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleBatchSizeClick(batchSize,index)}
+                                                >
+                                                {batchSize.batchSizeName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -829,10 +940,10 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredProjectCategories.map((projectCategory,index) =>(
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/projectCategoryMasterApi/alterProjectCategoryMaster/${projectCategory.projectCategoryName}`}>
-                                                        {projectCategory.projectCategoryName}
-                                                    </Link>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handlePriceCategoryClick(projectCategory, index)}
+                                                >
+                                                {projectCategory.projectCategoryName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -841,10 +952,10 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredProjectNames.map((project,index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/projectNameMasterApi/alterProjectNameMaster/${project.projectName}`}>
-                                                        {project.projectName}
-                                                    </Link>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleProjectNameClick(project,index)}
+                                                >
+                                                {project.projectName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -852,10 +963,10 @@ const AlterFilter = () => {
                                     {type === 'sundryCreditor' && (
                                         <ul>
                                             {filteredSuppliers.map((supplier,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/sundryCreditorMasterApi/alterSundryCreditorMaster/${supplier.sundryCreditorName}`}>
-                                                        {supplier.sundryCreditorName}
-                                                    </Link>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleSundryCreditorClick(supplier,index)}
+                                                >
+                                                {supplier.sundryCreditorName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -863,10 +974,10 @@ const AlterFilter = () => {
                                     {type === 'sundryDebtor' && (
                                         <ul>
                                             {filteredCustomers.map((customer,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
-                                                    <Link to={`/sundryDebtorMasterApi/alterSundryDebtorMaster/${customer.sundryDebtorName}`}>
-                                                        {customer.sundryDebtorName}
-                                                    </Link>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleSundryCreditorClick(customer,index)}
+                                                >
+                                                {customer.sundryDebtorName}
                                                 </li>
                                             ))}
                                         </ul>
@@ -874,7 +985,9 @@ const AlterFilter = () => {
                                     {type === 'stockGroup' && (
                                         <ul>
                                             {filteredStockGroups.map((stockGroup,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleStockGroupClick(stockGroup,index)}
+                                                >
                                                     {stockGroup.stockGroupName}
                                                 </li>
                                             ))}
@@ -883,7 +996,9 @@ const AlterFilter = () => {
                                     {type === 'stockCategory' && (
                                         <ul>
                                             {filteredStockCategories.map((stockCategory,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleStockCategoryClick(stockCategory,index)}
+                                                >
                                                     {stockCategory.stockCategoryName}
                                                 </li>
                                             ))}
@@ -893,7 +1008,9 @@ const AlterFilter = () => {
                                         <ul>
                                             {filteredPriceCategories.map((priceCategory, index) => (
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
-                                                ref={el => listItemRefs.current[index + 2] = el}>
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handlePriceCategoryClick(priceCategory,index)}
+                                                >
                                                     {priceCategory.priceCategoryName}
                                                 </li>
                                             ))}
@@ -902,7 +1019,9 @@ const AlterFilter = () => {
                                     {type === 'stockItem' && (
                                         <ul>
                                             {filteredStockItems.map((stockItem,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleStockItemClick(stockItem,index)}
+                                                >
                                                     {stockItem.stockItemCode} - {stockItem.stockItemName}
                                                 </li>
                                             ))}
@@ -911,7 +1030,9 @@ const AlterFilter = () => {
                                     {type === 'unit' && (
                                         <ul>
                                             {filteredUnits.map((unit,index) => (
-                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}>
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`} ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleUnitClick(unit,index)}
+                                                >
                                                     {unit.unitSymbolName} - {unit.formalName}
                                                 </li>
                                             ))}

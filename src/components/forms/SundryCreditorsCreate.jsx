@@ -1415,24 +1415,24 @@ useEffect(() => {
                   <table className="border border-slate-400 w-full">
                   <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th className=" ">Date</th>
-                        <th className=" ">Bill Ref. Name</th>
-                        <th className=" ">Due Date</th>
+                        <th className={sundryCreditor.forexApplicable === 'yes' ? 'w-[100px]' : 'w-[10%]'}>Date</th>
+                        <th className={sundryCreditor.forexApplicable === 'yes' ? 'w-[180px]' : 'w-[20%] pr-5'}>Bill Ref. Name</th>
+                        <th className={sundryCreditor.forexApplicable === 'yes' ? 'w-[100px]' : 'w-[10%]'}>Due Date</th>
                         {sundryCreditor.forexApplicable !== 'no' && (
                           <>
-                            <th className="pl-5">Forex Currency Type</th>
-                            <th className="pl-5">Forex Amount</th>
-                            <th className=" ">Cr/Dr</th>
-                            <th className="pl-5">Exchange Rate</th>
-                            <th className="pl-20 ">Amount</th>
+                            <th className="w-[140px] bg-orange-400">Forex Currency Type</th>
+                            <th className="w-[90px] bg-amber-300">Forex Amount</th>
+                            <th className="w-[50px] bg-yellow-300">Cr/Dr</th>
+                            <th className="w-[90px] bg-lime-300">Exchange Rate</th>
+                            <th className="w-[120px] bg-green-300">Amount</th>
                           </>
                         )}
                         {sundryCreditor.forexApplicable !== 'yes' && (
                           <>
-                            <th className="">Amount</th>
+                            <th className="w-[150px] pr-28">Amount</th>
                           </>
                         )}
-                        <th className="w-[5%]">Cr/Dr</th>
+                        <th className={sundryCreditor.forexApplicable === 'yes' ? 'w-[10px]' : 'w-[5%]'}>Cr/Dr</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1464,7 +1464,7 @@ useEffect(() => {
                               onChange={e => handleInputForexChange(e, index)}
                               ref={input => (inputRefsForex.current[1 + index * 10] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 1 )}
-                              className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              className="w-[180px] h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1511,7 +1511,7 @@ useEffect(() => {
                                     }
                                   }}
                                   onBlur={() => setCurrencyFocused(false)}
-                                  className="w-[120px] h-5 pl-1 ml-8 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                                  className="w-[120px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off"
                                 />
                                 {/* Currency Suggestion Dropdown */}
@@ -1555,7 +1555,7 @@ useEffect(() => {
 
                               {/* Forex Amount Input */}
                               <td>
-                                <span className='ml-7'>{row.forexCurrencySymbol}</span>
+                                <span className=''>{row.forexCurrencySymbol}</span>
                                 <input
                                   type="text"
                                   id="forexAmount"
@@ -1580,14 +1580,14 @@ useEffect(() => {
                                   onChange={e => handleInputForexChange(e, index)}
                                   ref={input => (inputRefsForex.current[5 + index * 10] = input)}
                                   onKeyDown={e => handleKeyDownForex(e, index, 5)}
-                                  className="w-[30px] h-5 pl-1 pr-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                                  className="w-[30px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off"
                                 />
                               </td>
 
                               {/* Exchange Rate Input */}
                               <td>
-                                <span className='ml-8'>₹</span>
+                                <span className=''>₹</span>
                                 <input
                                   type="text"
                                   id="exchangeRate"
@@ -1604,7 +1604,7 @@ useEffect(() => {
 
                               {/* Reference Amount Input */}
                               <td>
-                                <span className='ml-7'>₹</span>
+                                <span className=''>₹</span>
                                 <input
                                   type="text"
                                   id="outwardReferenceAmount"
@@ -1631,7 +1631,7 @@ useEffect(() => {
                             <>
                               {/* Inward Amount Input */}
                               <td>
-                                <span className="ml-36">₹</span>
+                                <span className="ml-48">₹</span>
                                 <input
                                   type="text"
                                   id="inwardReferenceAmount"

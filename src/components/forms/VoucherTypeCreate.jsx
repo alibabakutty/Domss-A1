@@ -49,7 +49,7 @@ const VoucherTypeCreate = () => {
 
     if (name === 'voucherType') {
       const filtered = VoucherMenu.filter(item =>
-        item.label.toLowerCase().includes(value.toLowerCase())
+        item?.label.toLowerCase().includes(value.toLowerCase())
       );
       setVoucherTypeSuggestions(filtered);
       setVoucherTypeFocused(true);
@@ -82,7 +82,7 @@ const VoucherTypeCreate = () => {
         const selectedItem = voucherTypeSuggestions[highlightedSuggestionVoucherType];
         setVoucher(prevVoucher => ({
           ...prevVoucher,
-          voucherType: selectedItem.label,
+          voucherType: selectedItem?.label,
         }));
         setVoucherTypeFocused(false); // Hide suggestions after selection
       } else if (periodicityFocused && periodicitySuggestions.length > 0){

@@ -42,9 +42,8 @@ const SundryCreditorsCreate = () => {
     totalForexAmount: '',
     totalForexAmountCreditOrDebit: 'cr',
     totalInwardReferenceAmount: '',
-    totalInwardReferenceAmountCreditOrDebit: 'cr',
     totalOutwardReferenceAmount: '',
-    totalOutwardReferenceAmountCreditOrDebit: 'cr',
+    totalReferenceAmountCreditOrDebit: 'cr',
     forexSubForm: [
       {
         
@@ -339,11 +338,12 @@ const SundryCreditorsCreate = () => {
     const firstForexDateIndex = 0;
 
     // Helper function to parse amounts
-    const parseAmount = (value) => parseFloat(value.replace(/,/g, '').trim()) || 0;
+    const parseAmount = (value) => parseFloat(value?.replace(/,/g, '').trim()) || 0;
 
     // Ensure both quantities are parsed correctly
     const openingBalance = parseAmount(sundryCreditor.openingBalance);
     const totalOutwardReferenceAmount = parseAmount(sundryCreditor.totalOutwardReferenceAmount);
+    const totalInwardReferenceAmount = parseAmount(sundryCreditor.totalInwardReferenceAmount);
 
     if (key === 'Enter') {
         e.preventDefault(); // Prevent default Enter key behavior
@@ -359,20 +359,28 @@ const SundryCreditorsCreate = () => {
         const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
         const isLastRow = rowIndex === sundryCreditor.forexSubForm.length - 1;
 
-        // Calculate whether the opening balance matches the total outward reference amount
-        const canAddNewRow = openingBalance > totalOutwardReferenceAmount;
+        // Calculate whether the opening balance matches the total outward and inward reference amounts
+        const canAddNewRowOutward = openingBalance > totalOutwardReferenceAmount;
+        const canAddNewRowInward = openingBalance > totalInwardReferenceAmount;
 
-        // Add a new row if openingBalance is greater than totalOutwardReferenceAmount and it's the last row
+        // Separate handling for outward and inward rows
         if (isReferenceCreditOrDebit && e.target.value.trim() !== '' && isLastRow) {
-            if (canAddNewRow) {
-                addNewRow(); // Add the new row if the balance isn't yet reached
+            if (canAddNewRowInward && canAddNewRowOutward) {
+                addNewRow(); // Add the new row if both conditions are true
                 setTimeout(() => {
                     inputRefsForex.current[(rowIndex + 1) * 10]?.focus(); // Focus on the first cell of the new row
                 }, 0);
             } else {
-                // Alert when balance has been reached, and no more rows should be added
-                alert(`You've reached the opening balance amount of ${formattedBalance(openingBalance)}. No more rows can be added.`);
-                totalRefs.current[0].focus(); // Focus on the first total reference input
+                if (!canAddNewRowOutward) {
+                    // Alert when outward balance has been reached
+                    alert(`You've reached the opening balance amount of ${formattedBalance(openingBalance)}. No more outward rows can be added.`);
+                    totalRefs.current[0]?.focus(); // Focus on the first total outward reference input
+                }
+                if (!canAddNewRowInward) {
+                    // Alert when inward balance has been reached
+                    alert(`You've reached the opening balance amount of ${formattedBalance(openingBalance)}. No more inward rows can be added.`);
+                    totalRefs.current[3]?.focus(); // Focus on the fourth total inward reference input
+                }
             }
             return;
         }
@@ -382,8 +390,8 @@ const SundryCreditorsCreate = () => {
         if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
             inputRefsForex.current[nextCell]?.focus();
         } else {
-            // If the next cell is not available, move to the next row
-            totalRefs.current[0].focus();
+            // If the next cell is not available, move to the first total reference input
+            totalRefs.current[0]?.focus();
         }
     } else if (key === 'Backspace') {
         // Move focus to the previous input if the current input is empty
@@ -391,7 +399,7 @@ const SundryCreditorsCreate = () => {
             e.preventDefault();
             const prevCell = rowIndex * 10 + colIndex - 1;
             if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
-                inputRefsForex.current[prevCell].focus();
+                inputRefsForex.current[prevCell]?.focus();
                 inputRefsForex.current[prevCell].setSelectionRange(0, 0);
             }
         }
@@ -414,28 +422,28 @@ const formattedBalance = (amount) => {
 const handleKeyDownTotal = async (e, currentIndex) => {
   switch (e.key) {
     case 'Enter':
-      // Move focus to the next input field when Enter is pressed
-      if (currentIndex < totalRefs.current.length - 1) {
+      // Move focus to the next input field if Enter is pressed
+      if (e.target.name === 'totalOutwardReferenceAmount' || e.target.name === 'totalInwardReferenceAmount') {
+        // Directly focus on the input at index 4
+        totalRefs.current[4]?.focus();
+      } else if (currentIndex < totalRefs.current.length - 1) {
         totalRefs.current[currentIndex + 1]?.focus();
       }
 
       // Check if specific fields are filled and handle submission logic
-      if (
-        (e.target.name === 'totalOutwardReferenceAmountCreditOrDebit' ||
-          e.target.name === 'totalInwardReferenceAmountCreditOrDebit') &&
-        e.target.value.trim() !== ''
-      ) {
+      if (e.target.name === 'totalReferenceAmountCreditOrDebit' && e.target.value.trim() !== '') {
         e.preventDefault(); // Prevent default form submission
 
         // Parse and sanitize the amounts
-        const openingBalance = parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')) || 0;
-        const totalOutwardReferenceAmount = parseFloat(sundryCreditor.totalOutwardReferenceAmount.replace(/,/g, '')) || 0;
+        const openingBalance = parseFloat(sundryCreditor.openingBalance?.replace(/,/g, '')) || 0;
+        const totalOutwardReferenceAmount = parseFloat(sundryCreditor.totalOutwardReferenceAmount?.replace(/,/g, '')) || 0;
+        const totalInwardReferenceAmount = parseFloat(sundryCreditor.totalInwardReferenceAmount?.replace(/,/g, '')) || 0;
 
-        // Check if totalOutwardReferenceAmount matches openingBalance
-        if (openingBalance !== totalOutwardReferenceAmount) {
+        // Check if either totalOutwardReferenceAmount or totalInwardReferenceAmount matches openingBalance
+        if ((openingBalance !== totalOutwardReferenceAmount) && (openingBalance !== totalInwardReferenceAmount)) {
           // Show alert
-          alert(`The total outward reference amount (${totalOutwardReferenceAmount.toFixed(2)}) does not match the opening balance (${openingBalance.toFixed(2)}).`);
-          
+          alert(`The total outward or inward reference amount does not match the opening balance (${openingBalance.toFixed(2)}).`);
+
           // Set focus back to the first input in totalRefs after the alert
           if (totalRefs.current[0]) {
             totalRefs.current[0]?.focus();
@@ -553,8 +561,8 @@ const handleKeyDownTotal = async (e, currentIndex) => {
     }
   
     // Parse and sanitize the amounts
-    const openingBalance = parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')) || 0;
-    const totalOutwardReferenceAmount = parseFloat(sundryCreditor.totalOutwardReferenceAmount.replace(/,/g, '')) || 0;
+    const openingBalance = parseFloat(sundryCreditor?.openingBalance?.replace(/,/g, '')) || 0;
+    const totalOutwardReferenceAmount = parseFloat(sundryCreditor.totalOutwardReferenceAmount?.replace(/,/g, '')) || 0;
   
     // Check if totalOutwardReferenceAmount is equal to openingBalance
     if (openingBalance !== totalOutwardReferenceAmount) {
@@ -572,8 +580,8 @@ const handleKeyDownTotal = async (e, currentIndex) => {
       const sanitizedData = {
         ...sundryCreditor,
         openingBalance,
-        totalForexAmount: parseFloat(sundryCreditor.totalForexAmount.replace(/,/g, '')) || 0,
-        totalInwardReferenceAmount: parseFloat(sundryCreditor.totalInwardReferenceAmount.replace(/,/g, '')) || 0,
+        totalForexAmount: parseFloat(sundryCreditor.totalForexAmount?.replace(/,/g, '')) || 0,
+        totalInwardReferenceAmount: parseFloat(sundryCreditor.totalInwardReferenceAmount?.replace(/,/g, '')) || 0,
         totalOutwardReferenceAmount,
         sundryCreditorBankDetails: {
           accountName: sundryCreditor.bank?.accountName,
@@ -588,10 +596,10 @@ const handleKeyDownTotal = async (e, currentIndex) => {
           .map(forex => ({
             ...forex,
             forexCurrencySymbol: forex.forexCurrencySymbol,
-            forexAmount: parseFloat(forex.forexAmount.replace(/,/g, '')) || 0,
-            exchangeRate: parseFloat(forex.exchangeRate.replace(/,/g, '')) || 0,
-            outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount.replace(/,/g, '')) || 0,
-            inwardReferenceAmount: parseFloat(forex.inwardReferenceAmount.replace(/,/g, '')) || 0,
+            forexAmount: parseFloat(forex.forexAmount?.replace(/,/g, '')) || 0,
+            exchangeRate: parseFloat(forex.exchangeRate?.replace(/,/g, '')) || 0,
+            outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount?.replace(/,/g, '')) || 0,
+            inwardReferenceAmount: parseFloat(forex.inwardReferenceAmount?.replace(/,/g, '')) || 0,
           })),
       };
   
@@ -637,9 +645,8 @@ const handleKeyDownTotal = async (e, currentIndex) => {
         totalForexAmount: '',
         totalForexAmountCreditOrDebit: 'cr',
         totalInwardReferenceAmount: '',
-        totalInwardReferenceAmountCreditOrDebit: 'cr',
         totalOutwardReferenceAmount: '',
-        totalOutwardReferenceAmountCreditOrDebit: 'cr',
+        totalReferenceAmountCreditOrDebit: 'cr',
         forexSubForm: [
           {
             forexDate: '',
@@ -679,7 +686,7 @@ const handleKeyDownTotal = async (e, currentIndex) => {
 
   const numberFormat = (e, index) => {
     // Remove existing commas and parse the value
-    const rawValue = e.target.value.replace(/,/g, "");
+    const rawValue = e.target.value?.replace(/,/g, "");
     
     // Check if the value is a valid number
     if (isNaN(rawValue) || rawValue === "") return;
@@ -757,8 +764,8 @@ const calculateOutwardReferenceAmountForForex = (index) => {
     const updatedForexSubForm = [...prevState.forexSubForm];
 
     // Parse and clean forexAmount and exchangeRate inputs for the specific row
-    const forexAmount = parseFloat(updatedForexSubForm[index].forexAmount.replace(/,/g, '')) || 0;
-    const exchangeRate = parseFloat(updatedForexSubForm[index].exchangeRate.replace(/,/g, '')) || 0;
+    const forexAmount = parseFloat(updatedForexSubForm[index].forexAmount?.replace(/,/g, '')) || 0;
+    const exchangeRate = parseFloat(updatedForexSubForm[index].exchangeRate?.replace(/,/g, '')) || 0;
 
     // Calculate outwardReferenceAmount only if both forexAmount and exchangeRate are valid numbers
     if (forexAmount > 0 && exchangeRate > 0) {
@@ -790,14 +797,14 @@ useEffect(() => {
   // Function to calculate totalForexAmount
   const totalForexAmount = sundryCreditor.forexSubForm.reduce((total, row) => {
     // Parse and clean forexAmount inputs
-    const forexAmount = parseFloat(row.forexAmount.replace(/,/g, '')) || 0;
+    const forexAmount = parseFloat(row.forexAmount?.replace(/,/g, '')) || 0;
     return total + forexAmount;
   }, 0);
 
   // Function to calculate totalOutwardReferenceAmount
   const totalOutwardReferenceAmount = sundryCreditor.forexSubForm.reduce((total, row) => {
     // Parse and clean outwardReferenceAmount inputs
-    const outwardReferenceAmount = parseFloat(row.outwardReferenceAmount.replace(/,/g, '')) || 0;
+    const outwardReferenceAmount = parseFloat(row.outwardReferenceAmount?.replace(/,/g, '')) || 0;
     return total + outwardReferenceAmount;
   }, 0);
 
@@ -825,7 +832,7 @@ useEffect(() => {
 useEffect(() => {
   // Function to calculate totalInwardReferenceAmount
   const totalInwardReferenceAmount = sundryCreditor.forexSubForm.reduce((total, row) => {
-    const inwardReferenceAmount = parseFloat(row.inwardReferenceAmount.replace(/,/g, '')) || 0;
+    const inwardReferenceAmount = parseFloat(row.inwardReferenceAmount?.replace(/,/g, '')) || 0;
     return total + inwardReferenceAmount;
   },0);
 
@@ -1420,11 +1427,11 @@ useEffect(() => {
                         <th className={sundryCreditor.forexApplicable === 'yes' ? 'w-[100px]' : 'w-[10%]'}>Due Date</th>
                         {sundryCreditor.forexApplicable !== 'no' && (
                           <>
-                            <th className="w-[140px] bg-orange-400">Forex Currency Type</th>
-                            <th className="w-[90px] bg-amber-300">Forex Amount</th>
-                            <th className="w-[50px] bg-yellow-300">Cr/Dr</th>
-                            <th className="w-[90px] bg-lime-300">Exchange Rate</th>
-                            <th className="w-[120px] bg-green-300">Amount</th>
+                            <th className="w-[140px]">Forex Currency Type</th>
+                            <th className="w-[90px]">Forex Amount</th>
+                            <th className="w-[50px]">Cr/Dr</th>
+                            <th className="w-[90px]">Exchange Rate</th>
+                            <th className="w-[120px]">Amount</th>
                           </>
                         )}
                         {sundryCreditor.forexApplicable !== 'yes' && (
@@ -1731,7 +1738,7 @@ useEffect(() => {
                           id="totalInwardReferenceAmount"
                           name="totalInwardReferenceAmount"
                           value={sundryCreditor.totalInwardReferenceAmount}
-                          onBlur={(e) => numberFormat(e, 1)}
+                          onBlur={(e) => numberFormat(e, 2)}
                           ref={(input) => (totalRefs.current[3] = input)}
                           onKeyDown={e => handleKeyDownTotal(e, 3)}
                           className="w-[80px] h-5 mt-1 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
@@ -1741,14 +1748,14 @@ useEffect(() => {
                       )}
                       <input
                         type="text"
-                        id="totalOutwardReferenceAmountCreditOrDebit"
-                        name="totalOutwardReferenceAmountCreditOrDebit"
-                        value={sundryCreditor.totalOutwardReferenceAmountCreditOrDebit}
+                        id="totalReferenceAmountCreditOrDebit"
+                        name="totalReferenceAmountCreditOrDebit"
+                        value={sundryCreditor.totalReferenceAmountCreditOrDebit}
                         ref={(input) => (totalRefs.current[4] = input)}
                         onKeyDown={e => handleKeyDownTotal(e, 4)}
-                        onChange={handleInputForexChange}
                         className="w-[30px] h-5 pl-1 ml-2 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                         autoComplete="off"
+                        readOnly
                       />
                     </div>
                   </div>

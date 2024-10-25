@@ -462,7 +462,7 @@ const handleKeyDownTotal = async (e, currentIndex) => {
 
         // Submit the form and navigate after confirmation
         handleSubmit(e);
-        navigate(-1);
+        setForexSubFormModal(false);
         return;
       }
       break;

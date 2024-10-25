@@ -557,6 +557,7 @@ useEffect(() => {
                 }, 0);
             } else {
                 alert("Cannot add a new row because the opening balance equals the total outward amount.");
+                totalRefs.current[0].focus();
             }
             return;
         }
@@ -723,7 +724,7 @@ useEffect(() => {
               dueDate: forex.dueDate,
               forexAmount: parseFloat(forex.forexAmount),
               exchangeRate: parseFloat(forex.exchangeRate),
-              outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount),
+              outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount.replace(/,/g, '')),
               inwardReferenceAmount: parseFloat(forex.inwardReferenceAmount),
               // forexDate: new Date(forex.forexDate).toISOString().split('T')[0],    // Format forexDate to YYYY-MM-DD
               // dueDate: new Date(forex.dueDate).toISOString().split('T')[0]    // Format dueDate to YYYY-MM-DD

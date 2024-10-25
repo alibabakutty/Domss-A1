@@ -702,8 +702,8 @@ useEffect(() => {
     return {
       ...sundryCreditor,
       openingBalance: parseFloat(sundryCreditor.openingBalance.replace(/,/g, '')),
-      totalForexAmount: parseFloat(sundryCreditor.totalForexAmount),
-      totalOutwardReferenceAmount: parseFloat(sundryCreditor.totalOutwardReferenceAmount),
+      totalForexAmount: parseFloat(sundryCreditor.totalForexAmount.replace(/,/g, '')),
+      totalOutwardReferenceAmount: parseFloat(sundryCreditor.totalOutwardReferenceAmount.replace(/,/g, '')),
       sundryCreditorBankDetails: sundryCreditor.sundryCreditorBankDetails
         ? {
             accountName: sundryCreditor.sundryCreditorBankDetails.accountName || '',

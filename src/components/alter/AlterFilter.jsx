@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfPriceCategories, listOfRevenueCategories, listOfRevenueCenters, listOfStockCategories, listOfStockGroups, listOfStockItems, listOfUnits, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
+import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfGroups, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfPriceCategories, listOfRevenueCategories, listOfRevenueCenters, listOfStockCategories, listOfStockGroups, listOfStockItems, listOfUnits, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const AlterFilter = () => {
@@ -10,6 +10,7 @@ const AlterFilter = () => {
         voucherType: [],
         preDefinedVoucherType: [],
         currency: [],
+        group: [],
         department: [],
         godown: [],
         headOffice: [],
@@ -40,6 +41,7 @@ const AlterFilter = () => {
     const typeNames = {
         currency: 'Currencies',
         voucher: 'Vouchers',
+        group: 'Groups',
         department: 'Departments',
         godown: 'Locations',
         headOffice: 'Head Offices',
@@ -89,6 +91,10 @@ const AlterFilter = () => {
                     currency: async () => {
                         const response = await listOfCurrencies();
                         setSuggestions(prev => ({ ...prev, currency: response.data }));
+                    },
+                    group: async () => {
+                        const response = await listOfGroups();
+                        setSuggestions(prev => ({ ...prev, group: response.data }));
                     },
                     department: async () => {
                         const response = await listOfDepartments();
@@ -207,6 +213,10 @@ const AlterFilter = () => {
         currency.forexCurrencyName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
+    const filteredGroups = suggestions.group.filter(group => 
+        group.groupName?.toLowerCase().includes(filterInput?.toLowerCase())
+    );
+
     const filteredDepartments = suggestions.department.filter(department => 
         department.departmentName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
@@ -298,6 +308,8 @@ const AlterFilter = () => {
         shouldShowScroll = (filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length > 20);
      } else if (type === 'currency'){
         shouldShowScroll = (filteredCurrencies.length > 20);
+     } else if (type === 'group'){
+        shouldShowScroll = (filteredGroups.length > 20);
      } else if (type === 'department'){
         shouldShowScroll = (filteredDepartments.length > 20);
      } else if (type === 'godown'){
@@ -353,6 +365,8 @@ const AlterFilter = () => {
                 totalItems = filteredCurrencies.length;
             } else if (type === 'voucher') {
                 totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length;
+            } else if (type === 'group'){
+                totalItems = filteredGroups.length;
             } else if (type === 'department'){
                 totalItems = filteredDepartments.length;
             } else if (type === 'godown'){
@@ -431,6 +445,13 @@ const AlterFilter = () => {
                         const selectedCurrency = filteredCurrencies[selectedIndex - 2];
                         if (selectedCurrency) {
                             navigate(`/currencyMasterApi/alterCurrencyMaster/${selectedCurrency.forexCurrencySymbol}`);
+                        }
+                    }
+                } else if (type === 'group'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredGroups.length){
+                        const selectedGroup = filteredGroups[selectedIndex - 2];
+                        if (selectedGroup) {
+                            navigate(`/groupMasterApi/alterGroupMaster/${selectedGroup.groupName}`);
                         }
                     }
                 } else if (type === 'department'){
@@ -588,7 +609,7 @@ const AlterFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, filteredStockGroups, filteredStockCategories, filteredPriceCategories, filteredStockItems, filteredUnits, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredGroups, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, filteredStockGroups, filteredStockCategories, filteredPriceCategories, filteredStockItems, filteredUnits, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -597,7 +618,12 @@ const AlterFilter = () => {
     const handleCurrnecyClick = (currency, index) => {
         setSelectedIndex(index + 2);
         navigate(`/currencyMasterApi/alterCurrencyMaster/${currency.forexCurrencySymbol}`)
-    }
+    };
+
+    const handleGroupClick = (group, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/groupMasterApi/alterGroupMaster/${group.groupName}`);
+    };
 
     const handleUnitClick = (unit, index) => {
         setSelectedIndex(index + 2);
@@ -798,6 +824,18 @@ const AlterFilter = () => {
                                             ))}
                                         </ul>
                                     )}
+                                    {type === 'group' && (
+                                        <ul>
+                                            {filteredGroups.map((group, index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleGroupClick(group, index)}
+                                                >
+                                                    {group.groupName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
                                     {type === 'department' && (
                                         <ul>
                                             {filteredDepartments.map((department,index) => (
@@ -941,7 +979,7 @@ const AlterFilter = () => {
                                             {filteredProjectCategories.map((projectCategory,index) =>(
                                                 <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
                                                 ref={el => listItemRefs.current[index + 2] = el}
-                                                onClick={() => handlePriceCategoryClick(projectCategory, index)}
+                                                onClick={() => handleProjectCategoryClick(projectCategory, index)}
                                                 >
                                                 {projectCategory.projectCategoryName}
                                                 </li>

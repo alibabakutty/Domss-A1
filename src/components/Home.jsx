@@ -16,7 +16,7 @@ const Home = () => {
         },
         { id: 5, name: 'Accounting Info Master', 
             subItems: [
-                { id: 6, name: 'Account Group', path: 'menu/groupName' },
+                { id: 6, name: 'Account Group', path: 'menu/group' },
                 { id: 7, name: 'Account Ledger', path: 'menu/ledger' }
             ] 
         },

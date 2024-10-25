@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
 import LeftSideMenu from '../left-side-menu/LeftSideMenu'
 import RightSideButton from '../right-side-button/RightSideButton'
-import { useNavigate } from 'react-router-dom';
-import { createGroupMaster } from '../services/MasterService';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getSpecificGroupName } from '../services/MasterService';
 
-const GroupCreate = () => {
+const GroupDisplay = () => {
+
+  const { datas } = useParams();
 
   const [group, setGroup] = useState({
     groupName: '',
@@ -18,6 +20,17 @@ const GroupCreate = () => {
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
     }
+
+    const loadGroups = async () => {
+        try {
+            const result = await getSpecificGroupName(datas);
+            console.log(result.data);
+            setGroup(result.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    loadGroups();
   }, []);
 
   const handleKeyDown = (e, index) => {
@@ -36,7 +49,7 @@ const GroupCreate = () => {
           // Show confirmation dialog only if revenueCategoryName is filled
           const userConfirmed = window.confirm('Do you want to confirm this submit?');
           if (userConfirmed) {
-            handleSubmit(e);
+            navigate(-1);
           } else {
             (e).preventDefault();
           }
@@ -52,49 +65,23 @@ const GroupCreate = () => {
         }
       }
     } else if (key === 'Escape'){
-      navigate('/');
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const {name, value} = e.target;
-    setGroup((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
-  };
-
-  const handleSubmit = async (e) => {
-    (e).preventDefault();
-    try {
-      const response = await createGroupMaster(group);
-      console.log(response.data);
-      // After the submit
-      setGroup({
-        groupName: '',
-        under: 'capital account'
-      });
-      if (inputRefs.current[0]){
-        inputRefs.current[0].focus();
-      }
-    } catch (error) {
-      console.error(error);
+      navigate(-1);
     }
   };
   return (
     <>
       <div className='flex'>
         <LeftSideMenu />
-        <form action="" className='border border-slate-500 w-[45.5%] h-[12vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
+        <form action="" className='border border-slate-500 w-[42.5%] h-[12vh] absolute left-[47.5%]'>
           <div className='text-sm flex mt-2 ml-2 mb-1'>
             <label htmlFor="groupName" className='w-[15%]'>Name</label>
             <span>:</span>
-            <input type="text" name='groupName' ref={(input) => (inputRefs.current[0] = input)} onKeyDown={(e) => handleKeyDown(e, 0)} value={group.groupName} onChange={handleInputChange} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' />
+            <input type="text" name='groupName' ref={(input) => (inputRefs.current[0] = input)} onKeyDown={(e) => handleKeyDown(e, 0)} value={group.groupName}  className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
           <div className='text-sm flex ml-2'>
             <label htmlFor="under" className='w-[15%]'>Under</label>
             <span>:</span>
-            <input type="text" name='under' ref={(input) => (inputRefs.current[1] = input)} onChange={handleInputChange} onKeyDown={(e) => handleKeyDown(e, 1)} value={group.under} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' />
+            <input type="text" name='under' ref={(input) => (inputRefs.current[1] = input)}  onKeyDown={(e) => handleKeyDown(e, 1)} value={group.under} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
         </form>
         <RightSideButton />
@@ -103,4 +90,4 @@ const GroupCreate = () => {
   )
 }
 
-export default GroupCreate
+export default GroupDisplay

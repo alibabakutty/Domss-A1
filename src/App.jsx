@@ -53,6 +53,8 @@ import StockItemAlter from "./components/forms/StockItemAlter"
 import UnitAlter from "./components/forms/UnitAlter"
 import PriceCategoryDisplay from "./components/forms/PriceCategoryDisplay"
 import PriceCategoryAlter from "./components/forms/PriceCategoryAlter"
+import GroupDisplay from "./components/forms/GroupDisplay"
+import GroupAlter from "./components/forms/GroupAlter"
 
 function App() {
   
@@ -74,6 +76,7 @@ function App() {
           <Route path="/voucherTypeMasterApi/display/:datas" element={<VoucherTypeDisplay />} />
           <Route path="/preDefinedVoucherTypeApi/displayPreDefinedVoucher/:datas" element={<VoucherTypeDisplay />} />
           <Route path="/currencyMasterApi/displayCurrency/:datas" element={<CurrencyDisplay />} />
+          <Route path="groupMasterApi/displayGroup/:datas" element={<GroupDisplay />} />
           <Route path="/departmentMasterApi/displayDepartment/:datas" element={<DepartmentDisplay />} />
           <Route path="/locationMasterApi/displayGodown/:datas" element={<LocationDisplay />} />
           <Route path="headOfficeMasterApi/displayHeadOffice/:datas" element={<HeadOfficeDisplay />} />
@@ -99,6 +102,7 @@ function App() {
           //ALTER
           <Route path="/voucherTypeMasterApi/alterVoucherTypeMaster/:datas" element={<VoucherTypeAlter />} />
           <Route path="/currencyMasterApi/alterCurrencyMaster/:datas" element={<CurrencyAlter />} />
+          <Route path="/groupMasterApi/alterGroupMaster/:datas" element={<GroupAlter />} />
           <Route path="/departmentMasterApi/alterDepartmentMaster/:datas" element={<DepartmentAlter />} />
           <Route path="/locationMasterApi/alterGodown/:datas" element={<LocationAlter />} />
           <Route path="/headOfficeMasterApi/alterHeadOfficeMaster/:datas" element={<HeadOfficeAlter />} />

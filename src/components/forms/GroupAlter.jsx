@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import LeftSideMenu from '../left-side-menu/LeftSideMenu'
 import RightSideButton from '../right-side-button/RightSideButton'
-import { useNavigate } from 'react-router-dom';
-import { createGroupMaster } from '../services/MasterService';
+import { useNavigate, useParams } from 'react-router-dom';
+import { createGroupMaster, getSpecificGroupName, updateGroupMaster } from '../services/MasterService';
 
-const GroupCreate = () => {
+const GroupAlter = () => {
+
+  const { datas } = useParams();
 
   const [group, setGroup] = useState({
     groupName: '',
-    under: 'capital account'
+    under: ''
   });
 
   const inputRefs = useRef([]);
@@ -18,6 +20,17 @@ const GroupCreate = () => {
     if (inputRefs.current[0]){
       inputRefs.current[0].focus();
     }
+
+    const loadGroups = async () => {
+        try {
+            const response = await getSpecificGroupName(datas);
+            console.log(response.data);
+            setGroup(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    loadGroups();
   }, []);
 
   const handleKeyDown = (e, index) => {
@@ -52,7 +65,7 @@ const GroupCreate = () => {
         }
       }
     } else if (key === 'Escape'){
-      navigate('/');
+      navigate(-1);
     }
   };
 
@@ -67,16 +80,9 @@ const GroupCreate = () => {
   const handleSubmit = async (e) => {
     (e).preventDefault();
     try {
-      const response = await createGroupMaster(group);
+      const response = await updateGroupMaster(datas, group);
       console.log(response.data);
-      // After the submit
-      setGroup({
-        groupName: '',
-        under: 'capital account'
-      });
-      if (inputRefs.current[0]){
-        inputRefs.current[0].focus();
-      }
+      navigate(-1);
     } catch (error) {
       console.error(error);
     }
@@ -85,7 +91,7 @@ const GroupCreate = () => {
     <>
       <div className='flex'>
         <LeftSideMenu />
-        <form action="" className='border border-slate-500 w-[45.5%] h-[12vh] absolute left-[44.5%]' onSubmit={handleSubmit}>
+        <form action="" className='border border-slate-500 w-[42.5%] h-[12vh] absolute left-[47.5%]' onSubmit={handleSubmit}>
           <div className='text-sm flex mt-2 ml-2 mb-1'>
             <label htmlFor="groupName" className='w-[15%]'>Name</label>
             <span>:</span>
@@ -103,4 +109,4 @@ const GroupCreate = () => {
   )
 }
 
-export default GroupCreate
+export default GroupAlter

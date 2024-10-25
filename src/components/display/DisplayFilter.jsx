@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import RightSideButton from '../right-side-button/RightSideButton';
 import { useEffect, useRef, useState } from 'react';
-import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfPriceCategories, listOfRevenueCategories, listOfRevenueCenters, listOfStockCategories, listOfStockGroups, listOfStockItems, listOfUnits, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
+import { listOfBatchColorNames, listOfBatchSerialNumbers, listOfBatchSizes, listOfBranchOffices, listOfCostCategories, listOfCurrencies, listOfDepartments, listOfGroups, listOfHeadOffices, listOfLocations, listOfPreDefinedVouchers, listOfPriceCategories, listOfRevenueCategories, listOfRevenueCenters, listOfStockCategories, listOfStockGroups, listOfStockItems, listOfUnits, listOfVouchers, listsOfBatchCategories, listsOfCostCenters, listsOfProjectCategories, listsOfProjectNames, listsOfSundryCreditors, listsOfSundryDebtors } from '../services/MasterService';
 import NameValues from '../../assets/NameValues';
 
 const DisplayFilter = () => {
@@ -10,6 +10,7 @@ const DisplayFilter = () => {
         voucherType: [],
         preDefinedVoucherType: [],
         currency: [],
+        group: [],
         department: [],
         godown: [],
         headOffice: [],
@@ -40,6 +41,7 @@ const DisplayFilter = () => {
     const typeNames = {
         currency: 'Currencies',
         voucher: 'Vouchers',
+        group: 'Groups',
         department: 'Departments',
         godownn: 'Locations',
         headOffice: 'Head Offices',
@@ -89,6 +91,10 @@ const DisplayFilter = () => {
                     currency: async () => {
                         const response = await listOfCurrencies();
                         setSuggestions(prev => ({ ...prev, currency: response.data }));
+                    },
+                    group: async () => {
+                        const response = await listOfGroups();
+                        setSuggestions(prev => ({ ...prev, group: response.data }));
                     },
                     department: async () => {
                         const response = await listOfDepartments();
@@ -176,6 +182,7 @@ const DisplayFilter = () => {
                         const response = await listOfUnits();
                         setSuggestions(prev => ({ ...prev, unit: response.data }));
                     },
+                    
                 };
 
                 if (fetchFunctions[type]) {
@@ -205,6 +212,10 @@ const DisplayFilter = () => {
 
     const filteredCurrencies = suggestions.currency.filter(currency =>
         currency.forexCurrencyName?.toLowerCase().includes(filterInput?.toLowerCase())
+    );
+
+    const filteredGroups = suggestions.group.filter(group => 
+        group.groupName?.toLowerCase().includes(filterInput?.toLowerCase())
     );
 
     const filteredDepartments = suggestions.department.filter(department => 
@@ -296,6 +307,7 @@ const DisplayFilter = () => {
     const countMap = {
       voucher: filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length,
       currency: filteredCurrencies.length,
+      group: filteredGroups.length,
       department: filteredDepartments.length,
       godown: filteredLocations.length,
       headOffice: filteredHeadOffices.length,
@@ -330,6 +342,8 @@ const DisplayFilter = () => {
                 totalItems = filteredCurrencies.length;
             } else if (type === 'voucher') {
                 totalItems = filteredVoucherTypes.length + filteredPreDefinedVoucherTypes.length;
+            } else if (type === 'group'){
+                totalItems = filteredGroups.length;
             } else if (type === 'department'){
                 totalItems = filteredDepartments.length;
             } else if (type === 'godown'){
@@ -408,6 +422,13 @@ const DisplayFilter = () => {
                         const selectedCurrency = filteredCurrencies[selectedIndex - 2];
                         if (selectedCurrency) {
                             navigate(`/currencyMasterApi/displayCurrency/${selectedCurrency.forexCurrencySymbol}`);
+                        }
+                    }
+                } else if (type === 'group'){
+                    if (selectedIndex >= 2 && selectedIndex < 2 + filteredGroups.length){
+                        const selectedGroup = filteredGroups[selectedIndex - 2];
+                        if (selectedGroup) {
+                            navigate(`/groupMasterApi/displayGroup/${selectedGroup.groupName}`);
                         }
                     }
                 } else if (type === 'department'){
@@ -565,7 +586,7 @@ const DisplayFilter = () => {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, filteredStockGroups, filteredStockCategories, filteredPriceCategories, filteredStockItems, filteredUnits, navigate, type]);
+    }, [selectedIndex, filteredVoucherTypes, filteredPreDefinedVoucherTypes, filteredCurrencies, filteredGroups, filteredDepartments, filteredLocations, filteredHeadOffices, filteredBranchOffices, filteredRevenueCategories, filteredRevenueCenters, filteredCostCategories, filteredCostCenters, filteredBatchCategories, filteredBatchSerialNumbers, filteredBatchColors, filteredBatchSizes, filteredProjectCategories, filteredProjectNames, filteredSuppliers, filteredCustomers, filteredStockGroups, filteredStockCategories, filteredPriceCategories, filteredStockItems, filteredUnits, navigate, type]);
 
     function capitalizeWords(str) {
         return str.replace(/\b\w/g, char => char.toUpperCase());
@@ -574,6 +595,11 @@ const DisplayFilter = () => {
     const handleCurrnecyClick = (currency, index) => {
         setSelectedIndex(index + 2);
         navigate(`/currencyMasterApi/displayCurrency/${currency.forexCurrencySymbol}`)
+    };
+
+    const handleGroupClick = (group, index) => {
+        setSelectedIndex(index + 2);
+        navigate(`/groupMasterApi/displayGroup/${group.groupName}`);
     }
 
     const handleUnitClick = (unit, index) => {
@@ -770,6 +796,18 @@ const DisplayFilter = () => {
                                                     onClick={() => handleCurrnecyClick(currency, index)}
                                                 >
                                                    {currency.forexCurrencySymbol} - {currency.forexCurrencyName}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                    {type === 'group' && (
+                                        <ul>
+                                            {filteredGroups.map((group,index) => (
+                                                <li key={index} className={`text-sm capitalize font-medium pl-3 cursor-pointer ${selectedIndex === index + 2 ? 'bg-yellow-200' : ''}`}
+                                                ref={el => listItemRefs.current[index + 2] = el}
+                                                onClick={() => handleGroupClick(group, index)}
+                                                >
+                                                    {group.groupName}
                                                 </li>
                                             ))}
                                         </ul>

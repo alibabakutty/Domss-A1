@@ -13,7 +13,7 @@ export default [
 	},
 	{
 		id: 6,
-		value: "groupName",
+		value: "",
 		label: "groupName",
         name:  "groupName"
 	},

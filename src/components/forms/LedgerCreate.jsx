@@ -132,92 +132,92 @@ const LedgerCreate = () => {
                     <span>:</span>
                     <input type="text" id='odLimit' name='odLimit' ref={(input) => (inputRefs.current[11] = input)} onKeyDown={(e) => handleKeyDown(e, 11)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
                   </div>
-                  <div className='input-ldgr flex ml-2' id='headUnder'>
+                  {/* <div className='input-ldgr flex ml-2' id='headUnder'>
                     <h2 className='headUnder underline font-semibold mt-1'>Statutory Details</h2>
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="includeInAssessableValueCalculation" className='w-[55%]'>Include in Assesable value calculation</label>
                     <span>:</span>
                     <input type="text" id='includeInAssessableValueCalculation' name='includeInAssessableValueCalculation' ref={(input) => (inputRefs.current[12] = input)} onKeyDown={(e) => handleKeyDown(e, 12)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="gstApplicability" className='w-[55%]'>GST Applicability</label>
                     <span>:</span>
                     <input type="text" id='gstApplicability' name='gstApplicability' ref={(input) => (inputRefs.current[13] = input)} onKeyDown={(e) => handleKeyDown(e, 13)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='headUnderOne input-ldgr flex ml-2' id='headUnderOne'>
+                  </div> */}
+                  {/* <div className='headUnderOne input-ldgr flex ml-2' id='headUnderOne'>
                     <h2 className='headUnderOne underline font-semibold'>HSN/SAC & Related Details</h2>
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="hsnOrSacAndRelatedDetails" className='w-[55%]'>HSN/SAC Details</label>
                     <span>:</span>
                     <input type="text" id='hsnOrSacAndRelatedDetails' name='hsnOrSacAndRelatedDetails' ref={(input) => (inputRefs.current[14] = input)} onKeyDown={(e) => handleKeyDown(e, 14)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="sourceOfDetails" className='w-[55%]'>Source of Details</label>
                     <span>:</span>
                     <input type="text" id='sourceOfDetails' name='sourceOfDetails' ref={(input) => (inputRefs.current[15] = input)} onKeyDown={(e) => handleKeyDown(e, 15)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="hsnOrSac" className='w-[55%]'>HSN/SAC</label>
                     <span>:</span>
                     <input type="text" id='hsnOrSac' name='hsnOrSac' ref={(input) => (inputRefs.current[16] = input)} onKeyDown={(e) => handleKeyDown(e, 16)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="hsnOrSacDescription" className='w-[55%]'>Description</label>
                     <span>:</span>
                     <input type="text" id='hsnOrSacDescription' name='hsnOrSacDescription' ref={(input) => (inputRefs.current[17] = input)} onKeyDown={(e) => handleKeyDown(e, 17)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="classification" className='w-[55%]'>Classification</label>
                     <span>:</span>
                     <input type="text" id='classification' name='classification' ref={(input) => (inputRefs.current[18] = input)} onKeyDown={(e) => handleKeyDown(e, 18)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex headUnderTwo ml-2' id='headUnderTwo'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex headUnderTwo ml-2' id='headUnderTwo'>
                     <h2 className='headUnderTwo underline font-semibold'>GST Rate & Related Details</h2>
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="gstRateDetails" className='w-[55%]'>GST Rate Details</label>
                     <span>:</span>
                     <input type="text" id='gstRateDetails' name='gstRateDetails' ref={(input) => (inputRefs.current[19] = input)} onKeyDown={(e) => handleKeyDown(e, 19)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="sourceOfDetailsGst" className='w-[55%]'>Source of Details</label>
                     <span>:</span>
                     <input type="text" id='sourceOfDetailsGst' name='sourceOfDetailsGst'ref={(input) => (inputRefs.current[20] = input)} onKeyDown={(e) => handleKeyDown(e, 20)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="taxabilityType" className='w-[55%]'>Taxability Type</label>
                     <span>:</span>
                     <input type="text" id='taxabilityType' name='taxabilityType' ref={(input) => (inputRefs.current[21] = input)} onKeyDown={(e) => handleKeyDown(e, 21)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="natureOfTransaction" className='w-[55%]'>Nature of Transaction</label>
                     <span>:</span>
                     <input type="text" id='natureOfTransaction' name='natureOfTransaction' ref={(input) => (inputRefs.current[22] = input)} onKeyDown={(e) => handleKeyDown(e, 22)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="igstRate" className='w-[55%]'>IGST Rate</label>
                     <span>:</span>
                     <input type="text" id='igstRate' name='igstRate' ref={(input) => (inputRefs.current[23] = input)} onKeyDown={(e) => handleKeyDown(e, 23)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="cgstRate" className='w-[55%]'>CGST Rate</label>
                     <span>:</span>
                     <input type="text" id='cgstRate' name='cgstRate' ref={(input) => (inputRefs.current[24] = input)}
                     onKeyDown={(e) => handleKeyDown(e, 24)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="utgstRate" className='w-[55%]'>SGST/UTGST Rate</label>
                     <span>:</span>
                     <input type="text" id='utgstRate' name='utgstRate' ref={(input) => (inputRefs.current[25] = input)}
                     onKeyDown={(e) => handleKeyDown(e, 25)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
-                  <div className='input-ldgr flex ml-2'>
+                  </div> */}
+                  {/* <div className='input-ldgr flex ml-2'>
                     <label htmlFor="typeOfSupply" className='w-[55%]'>Type of Supply</label>
                     <span>:</span>
                     <input type="text" id='typeOfSupply' name='typeOfSupply' ref={(input) => (inputRefs.current[26] = input)} onKeyDown={(e) => handleKeyDown(e, 26)} className='ml-2 h-5 capitalize font-medium pl-1 text-sm focus:bg-yellow-200 w-1/3 focus:border focus:border-blue-500 focus:outline-none' />
-                  </div>
+                  </div> */}
                   <div className='headUnderThree input-ldgr ml-2' id='headUnderThree'>
                     <h2 className='headUnderThree underline font-semibold mt-4 mb-2'>Bank Account Details</h2>
                   </div>

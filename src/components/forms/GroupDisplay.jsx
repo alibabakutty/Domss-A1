@@ -10,7 +10,11 @@ const GroupDisplay = () => {
 
   const [group, setGroup] = useState({
     groupName: '',
-    under: 'capital account'
+    under: '',
+    behavesLikeSubLedger: '',
+    nettDebitOrCreditBalance: '',
+    usedForCalculation: '',
+    methodToAllocateForPurchaseInvoice: ''
   });
 
   const inputRefs = useRef([]);
@@ -45,18 +49,18 @@ const GroupDisplay = () => {
         if (nextField < inputRefs.current.length){
           inputRefs.current[nextField]?.focus();
           inputRefs.current[nextField]?.setSelectionRange(0, 0);
-        } else if (e.target.name === 'under'){
-          // Show confirmation dialog only if revenueCategoryName is filled
-          const userConfirmed = window.confirm('Do you want to confirm this submit?');
+        } else if (e.target.name === 'methodToAllocateForPurchaseInvoice'){
+          // Show confirmation dialog only if methodtoallocateforpurchaseinvoice is filled
+          const userConfirmed = window.confirm('Do you want to exist this form?')
           if (userConfirmed) {
             navigate(-1);
           } else {
-            (e).preventDefault();
+            e.preventDefault();
           }
         }
       }
     } else if (key === 'Backspace'){
-      if (e.target.value.trim() === '' && index > 0){
+      if (e.target.value.trim() !== '' && index > 0){
         (e).preventDefault();
         const prevField = index - 1;
         if (inputRefs.current[prevField]){
@@ -72,16 +76,36 @@ const GroupDisplay = () => {
     <>
       <div className='flex'>
         <LeftSideMenu />
-        <form action="" className='border border-slate-500 w-[42.5%] h-[12vh] absolute left-[47.5%]'>
+        <form action="" className='border border-slate-500 w-[42.5%] h-[32vh] absolute left-[47.5%]'>
           <div className='text-sm flex mt-2 ml-2 mb-1'>
-            <label htmlFor="groupName" className='w-[15%]'>Name</label>
+            <label htmlFor="groupName" className='w-[45%]'>Name</label>
             <span>:</span>
             <input type="text" name='groupName' ref={(input) => (inputRefs.current[0] = input)} onKeyDown={(e) => handleKeyDown(e, 0)} value={group.groupName}  className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
           <div className='text-sm flex ml-2'>
-            <label htmlFor="under" className='w-[15%]'>Under</label>
+            <label htmlFor="under" className='w-[45%]'>Under</label>
             <span>:</span>
             <input type="text" name='under' ref={(input) => (inputRefs.current[1] = input)}  onKeyDown={(e) => handleKeyDown(e, 1)} value={group.under} className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
+          </div>
+          <div className='text-sm flex mt-2 ml-2 mb-1'>
+            <label htmlFor="behavesLikeSubLedger" className='w-[45%]'>Group behaves like a sub-ledger</label>
+            <span>:</span>
+            <input type="text" name='behavesLikeSubLedger' ref={(input) => (inputRefs.current[2] = input)} onKeyDown={(e) => handleKeyDown(e, 2)} value={group.behavesLikeSubLedger}  className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
+          </div>
+          <div className='text-sm flex mt-2 ml-2 mb-1'>
+            <label htmlFor="nettDebitOrCreditBalance" className='w-[45%]'>Nett Debit/Credit Balances for Reporting</label>
+            <span>:</span>
+            <input type="text" name='nettDebitOrCreditBalance' ref={(input) => (inputRefs.current[3] = input)} onKeyDown={(e) => handleKeyDown(e, 3)} value={group.nettDebitOrCreditBalance}  className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
+          </div>
+          <div className='text-sm flex mt-2 ml-2 mb-1'>
+            <label htmlFor="usedForCalculation" className='w-[45%]'>Used for Calculation</label>
+            <span>:</span>
+            <input type="text" name='usedForCalculation' ref={(input) => (inputRefs.current[4] = input)} onKeyDown={(e) => handleKeyDown(e, 4)} value={group.usedForCalculation}  className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
+          </div>
+          <div className='text-sm flex mt-2 ml-2 mb-1'>
+            <label htmlFor="methodToAllocateForPurchaseInvoice" className='w-[45%]'>Method to allocate when used in purchase invoice</label>
+            <span>:</span>
+            <input type="text" name='methodToAllocateForPurchaseInvoice' ref={(input) => (inputRefs.current[5] = input)} onKeyDown={(e) => handleKeyDown(e, 5)} value={group.methodToAllocateForPurchaseInvoice}  className='w-[300px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent' autoComplete='off' readOnly />
           </div>
         </form>
         <RightSideButton />

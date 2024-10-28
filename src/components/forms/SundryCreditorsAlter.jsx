@@ -582,6 +582,13 @@ useEffect(() => {
         setCurrencyFocused(false);
     } else if (key === 'Escape') {
         setForexSubFormModal(false);
+    } else if (key === ' '){
+      if (e.target.name === 'forexAmount' || e.target.name === 'exchangeRate'){
+        e.preventDefault();
+        const newRow = [...sundryCreditor.sundryCreditorForexDetails];
+        newRow[rowIndex][e.target.name] = ' ';
+        setSundryCreditor({ ...sundryCreditor, sundryCreditorForexDetails: newRow });
+      }
     }
 };
 

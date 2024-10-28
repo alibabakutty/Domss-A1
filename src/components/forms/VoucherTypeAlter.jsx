@@ -25,7 +25,7 @@ const VoucherTypeAlter = () => {
     });
     
   const [voucherTypeFocused, setVoucherTypeFocused] = useState(false);
-  const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState(0);
+  const [highlightedSuggestionVoucherType, setHighlightedSuggestionVoucherType] = useState();
   const [voucherTypeSuggestions, setVoucherTypeSuggestions] = useState(VoucherMenu);
   const [periodicityFocused, setPeriodicityFocused] = useState(false);
   const [highlightedSuggestionPeriodicity, setHighlightedSuggestionPeriodicity] = useState(0);

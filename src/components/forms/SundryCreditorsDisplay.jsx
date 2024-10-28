@@ -339,51 +339,80 @@ const SundryCreditorsDisplay = () => {
     const key = e.key;
     const firstForexDateIndex = 0;
     const lastRowIndex = sundryCreditor.forexSubForm.length - 1; // Last row index in the table
-    const lastColIndex = 9; // Assuming the last column index is 9 (adjust this if different)
+    const lastColIndex = 9; // Assuming the last column index is 9 (adjust if different)
   
+    // Determine the current cell index based on rowIndex and colIndex
+    const currentCell = rowIndex * 10 + colIndex;
+
     if (key === 'Enter') {
-      e.preventDefault(); // Prevent default Enter key behavior
-  
-      // Check if the current input is the first forexDate and ensure it has a value
-      if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === '') {
-        alert('The forexDate field must have a value before proceeding.');
-        inputRefsForex.current[rowIndex * 10 + colIndex]?.focus(); // Refocus on the empty forexDate field
-        return;
-      }
-  
-      // Check if the current field is referenceCreditOrDebit, last row, and last column
-      const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
-      const isLastCell = rowIndex === lastRowIndex && colIndex === lastColIndex;
-  
-      // If it's the last cell and the referenceCreditOrDebit field, move focus to totalForexAmount
-      if (isReferenceCreditOrDebit && isLastCell) {
-        if (totalRefs.current[0]) {
-          totalRefs.current[0].focus(); // Focus on totalForexAmount input
+        e.preventDefault(); // Prevent default Enter key behavior
+
+        // Check if the current input is the first forexDate and ensure it has a value
+        if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === '') {
+            alert('The forexDate field must have a value before proceeding.');
+            inputRefsForex.current[currentCell]?.focus(); // Refocus on the empty forexDate field
+            return;
         }
-        return;
-      }
-  
-      // Move to the next cell
-      const nextCell = rowIndex * 10 + colIndex + 1;
-      if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
-        inputRefsForex.current[nextCell]?.focus();
-      }
+
+        // Check if the current field is referenceCreditOrDebit, last row, and last column
+        const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
+        const isLastCell = rowIndex === lastRowIndex && colIndex === lastColIndex;
+
+        // If it's the last cell and the referenceCreditOrDebit field, move focus to totalForexAmount
+        if (isReferenceCreditOrDebit && isLastCell) {
+            if (totalRefs.current[0]) {
+                totalRefs.current[0].focus(); // Focus on totalForexAmount input
+            }
+            return;
+        }
+
+        // Move to the next cell
+        const nextCell = currentCell + 1;
+        if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
+            inputRefsForex.current[nextCell]?.focus();
+        }
     } else if (key === 'Backspace') {
-      // Move focus to the previous input if the current input is empty
-      if (e.target.value.trim() === '') {
-        e.preventDefault();
-        const prevCell = rowIndex * 10 + colIndex - 1;
-        if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
-          inputRefsForex.current[prevCell].focus();
-          inputRefsForex.current[prevCell].setSelectionRange(0, 0); // Set cursor position at the start
+        // Move focus to the previous input if the current input is empty
+        if (e.target.value.trim() === '') {
+            e.preventDefault();
+            const prevCell = currentCell - 1;
+            if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
+                inputRefsForex.current[prevCell].focus();
+                inputRefsForex.current[prevCell].setSelectionRange(0, 0); // Set cursor position at the start
+            }
         }
-      }
-    } else if (key === 'Tab') {
-      e.preventDefault(); // Prevent default tabbing behavior
+    } else if (key === 'ArrowLeft') {
+        // Move focus to the previous input
+        e.preventDefault();
+        const prevCell = currentCell - 1;
+        if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
+            inputRefsForex.current[prevCell].focus();
+        }
+    } else if (key === 'ArrowRight') {
+        // Move focus to the next input
+        e.preventDefault();
+        const nextCell = currentCell + 1;
+        if (nextCell < inputRefsForex.current.length && inputRefsForex.current[nextCell]) {
+            inputRefsForex.current[nextCell].focus();
+        }
+    } else if (key === 'ArrowDown') {
+        // Move to the input directly below in the next row
+        e.preventDefault();
+        const nextRowCell = (rowIndex + 1) * 10 + colIndex;
+        if (nextRowCell < inputRefsForex.current.length) {
+            inputRefsForex.current[nextRowCell]?.focus();
+        }
+    } else if (key === 'ArrowUp') {
+        // Move to the input directly above in the previous row
+        e.preventDefault();
+        const prevRowCell = (rowIndex - 1) * 10 + colIndex;
+        if (prevRowCell >= 0 && inputRefsForex.current[prevRowCell]) {
+            inputRefsForex.current[prevRowCell]?.focus();
+        }
     } else if (key === 'Escape') {
-      setForexSubFormModal(false); // Close the modal when Escape is pressed
+        setForexSubFormModal(false); // Close the modal when Escape is pressed
     }
-  };    
+};      
 
   const handleKeyDownTotal = async (e, currentIndex) => {
     switch (e.key) {

@@ -49,13 +49,11 @@ const VoucherTypeDisplay = () => {
           
         }
       }
-
-      
     
     loadVoucherTypeName();
     
     loadPreDefinedVoucherTypeName();
-  }, []);
+  }, [datas]);
 
   const pulseCursor = input => {
     const value = input.value;

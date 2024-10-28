@@ -1,11 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react'
-import RightSideButton from '../right-side-button/RightSideButton'
+import React, { useEffect, useRef, useState } from 'react';
+import RightSideButton from '../right-side-button/RightSideButton';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getSpecificSundryDebtorName, listOfCurrencies, updateSundryDebtorMaster } from '../services/MasterService';
+import {
+  getSpecificSundryDebtorName,
+  listOfCurrencies,
+  updateSundryDebtorMaster,
+} from '../services/MasterService';
 import LeftSideMenu from '../left-side-menu/LeftSideMenu';
 
 const SundryDebtorsAlter = () => {
-
   const { datas } = useParams();
 
   const [sundryDebtor, setSundryDebtor] = useState({
@@ -14,7 +17,7 @@ const SundryDebtorsAlter = () => {
     forexApplicable: '',
     billWiseStatus: '',
     provideBankDetails: '',
-    bank: {
+    sundryDebtorBankDetails: {
       accountName: '',
       accountNumber: '',
       bankName: '',
@@ -40,25 +43,25 @@ const SundryDebtorsAlter = () => {
     landlineNumber: '',
     emailId: '',
     dateForOpening: '',
-    openingBalance: 0.00,
+    openingBalance: '',
     creditOrDebit: '',
     forexCurrencySymbol: '',
-    totalForexAmount: 0.00,
-    totalInwardReferenceAmount: 0.00,
-    totalOutwardReferenceAmount: 0.00,
-    forexSubForm: [
+    totalForexAmount: '',
+    totalInwardReferenceAmount: '',
+    totalOutwardReferenceAmount: '',
+    sundryDebtorForexDetails: [
       {
-        
         forexDate: '',
         referenceName: '',
         dueDate: '',
         forexCurrencyType: '',
         forexCurrencySymbol: '',
-        forexAmount: 0.00,
-        exchangeRate: 0.00,
-        outwardReferenceAmount: 0.00,
-        inwardReferenceAmount: 0.00,
-        referenceCreditOrDebit: ''
+        forexAmount: '',
+        forexCreditOrDebit: '',
+        exchangeRate: '',
+        outwardReferenceAmount: '',
+        inwardReferenceAmount: '',
+        referenceCreditOrDebit: '',
       },
     ],
   });
@@ -72,117 +75,80 @@ const SundryDebtorsAlter = () => {
   const inputRefs = useRef([]);
   const inputRefsBank = useRef([]);
   const inputRefsForex = useRef([]);
-  const prevBankSubFormModal = useRef(false);  // Tracks the previous state of bankSubFormModal
+  const prevBankSubFormModal = useRef(false); // Tracks the previous state of bankSubFormModal
   const optionsRef = useRef(null);
+  const totalRefs = useRef([]);
   const navigate = useNavigate();
-  const [isValid, setIsValid] = useState(true);
 
-  useEffect(() =>{
-    if (inputRefs.current[0]){
+  useEffect(() => {
+    if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
 
-    if (bankSubFormModal && inputRefsBank.current[0]){
+    if (bankSubFormModal && inputRefsBank.current[0]) {
       inputRefsBank.current[0].focus();
     }
 
     // If forexSubFormModal is active, focus the first input in that form
-    if (forexSubFormModal && inputRefsForex.current[0]){
+    if (forexSubFormModal && inputRefsForex.current[0]) {
       inputRefsForex.current[0].focus();
     }
 
-        // If forexSubFormModal is active, focus the first input in that form
-        if (forexSubFormModal && inputRefsForex.current[0]){
-          inputRefsForex.current[0].focus();
-        }
+    // If forexSubFormModal is active, focus the first input in that form
+    if (forexSubFormModal && inputRefsForex.current[0]) {
+      inputRefsForex.current[0].focus();
+    }
 
-        // Fetch the list of currencies
-        listOfCurrencies()
-        .then(response => {
-          console.log(response.data);
-          setCurrencySuggestion(response.data);
-        })
-        .catch(error =>
-          console.error('Error fetching currencies:',error)
-        )
+    // Fetch the list of currencies
+    listOfCurrencies()
+      .then(response => {
+        console.log(response.data);
+        setCurrencySuggestion(response.data);
+      })
+      .catch(error => console.error('Error fetching currencies:', error));
 
-        // Detect if the bankSubFormModal is closed
-        if (prevBankSubFormModal.current && !bankSubFormModal){
-          // Focus on the addressOne input when bankSubFormModal closes
-          const addressOneInputIndex = inputRefs.current.findIndex(
-            ref => ref && ref.name === 'addressOne'
-          );
-          if (addressOneInputIndex !== -1 && inputRefs.current[addressOneInputIndex]){
-            inputRefs.current[addressOneInputIndex].focus();
-          }
-        }
+    // Detect if the bankSubFormModal is closed
+    if (prevBankSubFormModal.current && !bankSubFormModal) {
+      // Focus on the addressOne input when bankSubFormModal closes
+      const addressOneInputIndex = inputRefs.current.findIndex(
+        ref => ref && ref.name === 'addressOne',
+      );
+      if (addressOneInputIndex !== -1 && inputRefs.current[addressOneInputIndex]) {
+        inputRefs.current[addressOneInputIndex].focus();
+      }
+    }
 
-        // Update the previous state value
-      prevBankSubFormModal.current = bankSubFormModal;
-
-  },[bankSubFormModal, forexSubFormModal]);
+    // Update the previous state value
+    prevBankSubFormModal.current = bankSubFormModal;
+  }, [bankSubFormModal, forexSubFormModal]);
 
   useEffect(() => {
     // Utility function to format dates from YYYY-MM-DD to DD-MMM-YYYY
     const formatDateForDisplay = (date) => {
       if (!date) return '';
-    
-      const [year, month, day] = date.split('-'); // Change to '-' for typical date format
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      
+  
+      const [year, month, day] = date.split('-');
+      const monthNames = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      ];
+  
       return `${day.padStart(2, '0')}-${monthNames[parseInt(month, 10) - 1]}-${year}`;
     };
-    
-
+  
     const loadSuppliers = async () => {
       try {
         const result = await getSpecificSundryDebtorName(datas);
-        console.log('API-Response',result.data);
-        
-        const {
-          sundryDebtorName= '',
-          underGroup = '',
-          forexApplicable = '',
-          billWiseStatus = '',
-          provideBankDetails = '',
-          sundryDebtorBankDetails,
-          addressOne = '',
-          addressTwo = '',
-          addressThree = '',
-          addressFour = '',
-          addressFive = '',
-          landMarkOrArea = '',
-          state = '',
-          country = '',
-          pincode = '',
-          panOrItNumber = '',
-          gstinOrUinNumber = '',
-          msmeNumber = '',
-          contactPersonName = '',
-          mobileNumber = '',
-          landlineNumber = '',
-          emailId = '',
-          dateForOpening = '',
-          openingBalance = '',
-          creditOrDebit = '',
-          forexCurrencySymbol = '',    // Fetch the top-level forexCurrencySymbol
-          totalForexAmount = '',
-          totalInwardReferenceAmount = '',
-          totalOutwardReferenceAmount = '',
-          sundryDebtorForexDetails
-        } = result.data;
-
-        let fetchedBank = {
-          accountName: '',
-          accountNumber: '',
-          bankName: '',
-          branchName: '',
-          ifscCode: '',
-          accountType: '',
-          swiftCode: '',
-        };
-
-        let fetchedForexSubForm = [
+        console.log('API-Response', result.data);
+  
+        const data = result.data;
+  
+        // Format forex details if available
+        const formattedForexDetails = data.sundryDebtorForexDetails?.map((forexDetail) => ({
+          ...forexDetail,
+          formattedForexDate: formatDateForDisplay(forexDetail.forexDate),
+          formattedDueDate: formatDateForDisplay(forexDetail.dueDate),
+        })) || [
           {
             forexDate: '',
             referenceName: '',
@@ -190,298 +156,203 @@ const SundryDebtorsAlter = () => {
             forexCurrencyType: '',
             forexCurrencySymbol: '',
             forexAmount: '',
+            forexCreditOrDebit: '',
             exchangeRate: '',
             outwardReferenceAmount: '',
             inwardReferenceAmount: '',
-            referenceCreditOrDebit: ''
+            referenceCreditOrDebit: '',
           }
         ];
 
-        if (sundryDebtorBankDetails && typeof sundryDebtorBankDetails === 'object'){
-          fetchedBank = {
-            accountName: sundryDebtorBankDetails.accountName || '',
-            accountNumber: sundryDebtorBankDetails.accountNumber || '',
-            bankName: sundryDebtorBankDetails.bankName || '',
-            branchName: sundryDebtorBankDetails.branchName || '',
-            ifscCode: sundryDebtorBankDetails.ifscCode || '',
-            accountType: sundryDebtorBankDetails.accountType || '',
-            swiftCode: sundryDebtorBankDetails.swiftCode || '',
-          };
-        }
-
-        // Set default forexCurrencySymbol to avoid undefined error
-        let frontForexSymbol = '';
-
-        if (Array.isArray(sundryDebtorForexDetails) && sundryDebtorForexDetails.length > 0){
-          fetchedForexSubForm = sundryDebtorForexDetails.map((forex) => ({
-            forexDate: forex.forexDate || '',
-            formattedForexDate: formatDateForDisplay(forex.forexDate),   // Format forexDate for display
-            referenceName: forex.referenceName || '',
-            dueDate: forex.dueDate || '',
-            formattedDueDate: formatDateForDisplay(forex.dueDate),   // Format dueDate for display
-            forexCurrencyType: forex.forexCurrencyType || '',
-            forexCurrencySymbol: forex.forexCurrencySymbol || '',
-            forexAmount: forex.forexAmount || '',
-            exchangeRate: forex.exchangeRate || '',
-            outwardReferenceAmount: forex.outwardReferenceAmount || '',
-            inwardReferenceAmount: forex.inwardReferenceAmount || '',
-            referenceCreditOrDebit: forex.referenceCreditOrDebit || '',
-          }));
-
-          // Debugging: check if fetched forex form has correct symbols
-          console.log('Fetched Forex Subform',fetchedForexSubForm);
-
-          // Assuming you want to set the first forexCurrencySymbol globally
-          frontForexSymbol = fetchedForexSubForm[0].forexCurrencySymbol || '';
-          console.log(frontForexSymbol);
-        }
-
+        // Extract forexCurrencySymbol from the first forexDetail entry (if available)
+        const frontforexCurrencySymbol = data.sundryDebtorForexDetails?.[0]?.forexCurrencySymbol || '';
+  
         // Set the state with the updated values
         setSundryDebtor({
-          sundryDebtorName,
-          underGroup,
-          forexApplicable,
-          billWiseStatus,
-          provideBankDetails,
-          bank: fetchedBank,
-          addressOne,
-          addressTwo,
-          addressThree,
-          addressFour,
-          addressFive,
-          landMarkOrArea,
-          state,
-          country,
-          pincode,
-          panOrItNumber,
-          gstinOrUinNumber,
-          msmeNumber,
-          contactPersonName,
-          mobileNumber,
-          landlineNumber,
-          emailId,
-          dateForOpening,
-          openingBalance,
-          creditOrDebit,
-          forexCurrencySymbol: frontForexSymbol,
-          totalForexAmount,
-          totalInwardReferenceAmount,
-          totalOutwardReferenceAmount,
-          forexSubForm: fetchedForexSubForm,
+          sundryDebtorName: data.sundryDebtorName || '',
+          underGroup: data.underGroup || '',
+          forexApplicable: data.forexApplicable || '',
+          billWiseStatus: data.billWiseStatus || '',
+          provideBankDetails: data.provideBankDetails || '',
+          sundryDebtorBankDetails: data.sundryDebtorBankDetails || {},
+          addressOne: data.addressOne || '',
+          addressTwo: data.addressTwo || '',
+          addressThree: data.addressThree || '',
+          addressFour: data.addressFour || '',
+          addressFive: data.addressFive || '',
+          landMarkOrArea: data.landMarkOrArea || '',
+          state: data.state || '',
+          country: data.country || '',
+          pincode: data.pincode || '',
+          panOrItNumber: data.panOrItNumber || '',
+          gstinOrUinNumber: data.gstinOrUinNumber || '',
+          msmeNumber: data.msmeNumber || '',
+          contactPersonName: data.contactPersonName || '',
+          mobileNumber: data.mobileNumber || '',
+          landlineNumber: data.landlineNumber || '',
+          emailId: data.emailId || '',
+          dateForOpening: data.dateForOpening || '',
+          openingBalance: formatIndianNumber(data.openingBalance) || '',
+          creditOrDebit: data.creditOrDebit || '',
+          forexCurrencySymbol: frontforexCurrencySymbol || data.forexCurrencySymbol || '',
+          totalForexAmount: data.totalForexAmount || '',
+          totalInwardReferenceAmount: data.totalInwardReferenceAmount || '',
+          totalOutwardReferenceAmount: data.totalOutwardReferenceAmount || '',
+          sundryDebtorForexDetails: formattedForexDetails,
         });
       } catch (error) {
         console.error(error);
-      };
+      }
     };
-
+  
     loadSuppliers();
   }, [datas]);
 
-   // Handling input changes in sundryDebtor form
- const handleInputChange = (e) => {
-  const { name, value } = (e).target;
-    setSundryDebtor((prev)=>{
-      return {
-        ...prev, 
-        [name]: value,
-      };
-    })
-};
-  
+  // Handling input changes in sundryDebtor form
+  const handleInputChange = e => {
+    const { name, value } = e.target;
+    setSundryDebtor(prev => {
+      return { ...prev, [name]: value };
+    });
+  };
 
   const handleInputBankChange = e => {
     const { name, value } = e.target;
     setSundryDebtor(prevState => ({
       ...prevState,
-      bank: { ...prevState.bank, [name]: value },
+      sundryDebtorBankDetails: { ...prevState.sundryDebtorBankDetails, [name]: value },
     }));
   };
 
-  const calculateOutwardTotals = () => {
-    let totalForexAmount = 0;
-    let totalOutwardReferenceAmount = 0;
-    let rowIndexToClear = -1; // Variable to keep track of the row that exceeds the limit
-  
+  // Function to calculate outward reference amount for a specific forex subform entry
+const calculateOutwardReferenceAmountForForex = (index) => {
+  setSundryDebtor((prevState) => {
+    const updatedForexDetails = [...prevState.sundryDebtorForexDetails];
+
+    // Ensure forexAmount and exchangeRate are valid before calculations
+    const forexAmount = parseFloat((updatedForexDetails[index].forexAmount || '0').toString().replace(/,/g, '')) || 0;
+    const exchangeRate = parseFloat((updatedForexDetails[index].exchangeRate || '0').toString().replace(/,/g, '')) || 0;
+
+    if (forexAmount > 0 && exchangeRate > 0) {
+      const outwardReferenceAmount = forexAmount * exchangeRate;
+
+      // Format outwardReferenceAmount
+      updatedForexDetails[index].outwardReferenceAmount = new Intl.NumberFormat('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(outwardReferenceAmount);
+    } else {
+      // Clear the field if input is invalid
+      updatedForexDetails[index].outwardReferenceAmount = '';
+    }
+
+    // Update state with modified forex details
+    return {
+      ...prevState,
+      sundryDebtorForexDetails: updatedForexDetails,
+    };
+  });
+};
+
+useEffect(() => {
+  // Ensure forexDetails are available and properly structured
+  if (sundryDebtor.sundryDebtorForexDetails && Array.isArray(sundryDebtor.sundryDebtorForexDetails)) {
+    // Calculate totalForexAmount
+    const totalForexAmount = sundryDebtor.sundryDebtorForexDetails.reduce((total, entry) => {
+      const forexAmount = parseFloat((entry.forexAmount || '0').toString().replace(/,/g, '')) || 0;
+      return total + forexAmount;
+    }, 0);
+
+    // Calculate totalOutwardReferenceAmount
+    const totalOutwardReferenceAmount = sundryDebtor.sundryDebtorForexDetails.reduce((total, entry) => {
+      const outwardReferenceAmount = parseFloat((entry.outwardReferenceAmount || '0').toString().replace(/,/g, '')) || 0;
+      return total + outwardReferenceAmount;
+    }, 0);
+
+    // Format totals
+    const formattedTotalForexAmount = new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(totalForexAmount);
+
+    const formattedTotalOutwardReferenceAmount = new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(totalOutwardReferenceAmount);
+
+    // Update sundryDebtor state with new totals if changed
     setSundryDebtor((prevState) => {
-      // Parse openingBalance as a float, removing commas
-      const openingBalance = parseFloat(prevState.openingBalance) || 0;
-  
-      const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
-        // Parse forexAmount and exchangeRate as floats, removing commas
-        const forexAmount = parseFloat(row.forexAmount) || 0;
-        const exchangeRate = parseFloat(row.exchangeRate) || 0; 
-  
-        // Calculate outwardReferenceAmount
-        const outwardReferenceAmount = (forexAmount * exchangeRate).toFixed(2);
-  
-        // Accumulate totals
-        totalForexAmount += forexAmount;
-        totalOutwardReferenceAmount += parseFloat(outwardReferenceAmount);
-  
-        // Check if totalOutwardReferenceAmount exceeds openingBalance
-        if (totalOutwardReferenceAmount > openingBalance && rowIndexToClear === -1) {
-          rowIndexToClear = index; // Store the index of the row that caused the excess
-        }
-  
-        // Return the updated row with outwardReferenceAmount
+      if (
+        prevState.totalForexAmount !== formattedTotalForexAmount ||
+        prevState.totalOutwardReferenceAmount !== formattedTotalOutwardReferenceAmount
+      ) {
         return {
-          ...row,
-          outwardReferenceAmount: outwardReferenceAmount.toLocaleString('en-IN', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }),
+          ...prevState,
+          totalForexAmount: formattedTotalForexAmount,
+          totalOutwardReferenceAmount: formattedTotalOutwardReferenceAmount,
         };
-      });
-  
-      // Check if totalOutwardReferenceAmount exceeds the openingBalance
-      if (totalOutwardReferenceAmount > openingBalance) {
-        const remainingAmount = (openingBalance - (totalOutwardReferenceAmount - updatedForexSubForm[rowIndexToClear].outwardReferenceAmount)).toLocaleString('en-IN', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-  
-        // Display alert for exceeding balance
-        window.alert(`The total amount exceeds the opening balance! Remaining amount: ₹${remainingAmount}`);
-  
-        // Clear the forexAmount and outwardReferenceAmount of the row that caused the excess
-        if (rowIndexToClear !== -1) {
-          updatedForexSubForm[rowIndexToClear].forexAmount = '0'; // Reset forexAmount to zero
-          updatedForexSubForm[rowIndexToClear].outwardReferenceAmount = '0'; // Reset outwardReferenceAmount to zero
-  
-          // Set focus to the problematic forexAmount input
-          inputRefsForex.current[rowIndexToClear * 9]?.focus(); // Adjust index based on layout
-        }
-
-        setIsValid(false);   // Set isValid to false if the condition fails
-      } else if (totalOutwardReferenceAmount < openingBalance) {
-          const neededAmount = (openingBalance - totalOutwardReferenceAmount).toLocaleString('en-IN', {
-            minimumFractionDigits: 2, maximumFractionDigits: 2
-          });
-
-          // Display alert for needing additional amount
-          window.alert(`The total amount is less than the opening balance! Needed amount: ₹${neededAmount} `);
-          setIsValid(false);   // Set isValid to false if the condition fails
-        } else {
-          setIsValid(true);   // Set isValid to true if the condition is met
-        }
-  
-      // Format totals to 2 decimal places
-      const formattedTotalForexAmount = totalForexAmount.toFixed(2).toLocaleString('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-      const formattedtotalOutwardReferenceAmount = totalOutwardReferenceAmount.toFixed(2).toLocaleString('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-  
-      // Log calculated totals for debugging
-      console.log('Calculated Totals:', {
-        totalForexAmount: formattedTotalForexAmount,
-        totalOutwardReferenceAmount: formattedtotalOutwardReferenceAmount,
-      });
-  
-      // Return the updated state with updated totals and forexSubForm
-      return {
-        ...prevState,
-        forexSubForm: updatedForexSubForm, // Update forexSubForm rows
-        totalForexAmount: formattedTotalForexAmount, // Update totalForexAmount
-        totalOutwardReferenceAmount: formattedtotalOutwardReferenceAmount, // Update totalOutwardReferenceAmount
-      };
-    });
-  };       
-  
-  const calculateInwardTotals = () => {
-    let totalInwardReferenceAmount = 0;
-    let rowIndexToClear = -1; // Variable to keep track of the row index that exceeds the limit
-  
-    setSundryDebtor((prevState) => {
-      // Parse openingBalance as a float, removing commas
-      const openingBalance = parseFloat(prevState.openingBalance) || 0;
-  
-      const updatedForexSubForm = prevState.forexSubForm.map((row, index) => {
-        // Parse inwardReferenceAmount as a float, removing commas
-        const inwardReferenceAmount = parseFloat(row.inwardReferenceAmount) || 0;
-  
-        // Accumulate the inward reference amount
-        totalInwardReferenceAmount += inwardReferenceAmount;
-  
-        // Check if the totalInwardReferenceAmount exceeds the openingBalance
-        if (totalInwardReferenceAmount > openingBalance && rowIndexToClear === -1) {
-          rowIndexToClear = index; // Store the index of the row that caused the excess
-        }
-  
-        // Return the row unchanged as no additional modifications are required
-        return row;
-      });
-  
-      // Ensure the total amount does not exceed the opening balance
-      if (totalInwardReferenceAmount > openingBalance) {
-        const remainingAmount = (openingBalance - (totalInwardReferenceAmount - updatedForexSubForm[rowIndexToClear].inwardReferenceAmount)).toLocaleString('en-IN', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-  
-        // Display alert with the remaining balance
-        window.alert(`The total inward reference amount exceeds the opening balance! Remaining amount: ₹${remainingAmount}`);
-  
-        // Clear the inwardReferenceAmount of the row that caused the excess
-        if (rowIndexToClear !== -1) {
-          updatedForexSubForm[rowIndexToClear].inwardReferenceAmount = '0'; // Reset the inwardReferenceAmount to zero
-        }
-  
-        // Set focus to the row input that caused the issue
-        inputRefsForex.current[rowIndexToClear * 9]?.focus();
       }
-  
-      // Format the total inward reference amount
-      const formattedTotalInwardReferenceAmount = totalInwardReferenceAmount.toLocaleString('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      });
-  
-      // Return the updated state
-      return {
-        ...prevState,
-        forexSubForm: updatedForexSubForm,
-        totalInwardReferenceAmount: formattedTotalInwardReferenceAmount, // Update total inward reference amount
-      };
+      return prevState;
     });
-  }; 
+  }
+}, [sundryDebtor.sundryDebtorForexDetails]);   
+
+  useEffect(() => {
+    // Check if sundryDebtor.forexSubForm is defined and an array
+    const totalInwardReferenceAmount = Array.isArray(sundryDebtor.forexSubForm)
+      ? sundryDebtor.forexSubForm.reduce((total, row) => {
+          const inwardReferenceAmount = parseFloat(row.inwardReferenceAmount?.replace(/,/g, '')) || 0;
+          return total + inwardReferenceAmount;
+        }, 0)
+      : 0;
+  
+    // Format the totalInwardReferenceAmount with commas and two decimal places
+    const formattedTotalInwardReferenceAmount = new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(totalInwardReferenceAmount);
+  
+    // Update the sundryDebtor state with the calculated totalInwardReferenceAmount
+    setSundryDebtor((prevState) => ({
+      ...prevState,
+      totalInwardReferenceAmount: formattedTotalInwardReferenceAmount,
+    }));
+  
+    console.log(totalInwardReferenceAmount);
+  }, [sundryDebtor.forexSubForm]);  
 
   const handleInputForexChange = (e, index) => {
     const { name, value } = e.target;
-  
-    setSundryDebtor((prevState) => {
-      let updatedForexSubForm = [...prevState.forexSubForm];
-  
+
+    setSundryDebtor(prevState => {
+      let updatedForexSubForm = [...prevState.sundryDebtorForexDetails];
+
       // Update the current row's input field
       updatedForexSubForm[index] = {
         ...updatedForexSubForm[index],
         [name]: value,
       };
-  
+
       // Apply filtering for forexCurrencyType in the first row
       if (name === 'forexCurrencyType' && index === 0) {
-        const filtered = currencySuggestion.filter((currency) =>
-          currency.forexCurrencyName.toLowerCase().includes(value.toLowerCase())
+        const filtered = currencySuggestion.filter(currency =>
+          currency.forexCurrencyName.toLowerCase().includes(value.toLowerCase()),
         );
         setFilteredSuggestion(filtered);
         setCurrencyFocused(true);
         setHighlightedSuggestionCurrency(0);
       }
-  
       // Propagate forexCurrencyType and forexCurrencySymbol from the first row to all other rows
       if (name === 'forexCurrencyType' && index === 0) {
         const selectedCurrency = currencySuggestion.find(
-          (currency) => currency.forexCurrencyName.toLowerCase() === value.toLowerCase()
+          currency => currency.forexCurrencyName.toLowerCase() === value.toLowerCase(),
         );
-  
+
         const currencySymbol = selectedCurrency ? selectedCurrency.forexCurrencySymbol : '';
-  
+
         updatedForexSubForm = updatedForexSubForm.map((row, i) => {
           if (i === 0) return row; // Skip the first row
-  
+
           return {
             ...row,
             forexCurrencyType: value, // Propagate forexCurrencyType
@@ -489,57 +360,32 @@ const SundryDebtorsAlter = () => {
           };
         });
       }
-  
-      // Propagate exchangeRate from the first row to empty rows only
-      if (name === 'exchangeRate' && index === 0) {
-        const defaultExchangeRate = value; // Use the provided value for the first row
 
-        // Map through all rows to update only the rows where exchangeRate is empty
-        updatedForexSubForm = updatedForexSubForm.map((row, i) => {
-          if (i === 0) return { ...row, exchangeRate: defaultExchangeRate }; // Update the first row
-          if (row.exchangeRate === '') { 
-            return {
-              ...row,
-              exchangeRate: defaultExchangeRate, // Only update if the exchangeRate is empty
-            };
-          }
-          return row; // Leave rows with existing exchangeRate values unchanged
-        });
-      }
-  
       // Propagate creditorDebit to referenceCreditorDebit for all rows
       if (name === 'creditOrDebit') {
-        updatedForexSubForm = updatedForexSubForm.map((row) => ({
+        updatedForexSubForm = updatedForexSubForm.map(row => ({
           ...row,
           referenceCreditorDebit: value, // Set referenceCreditorDebit from creditorDebit
         }));
       }
-  
-      // Recalculate totals after updating the forexSubForm
-      calculateOutwardTotals();
-  
-      // Call calculateInwardTotals after updating the inwardReferenceAmount if that field is changed
-      if (name === 'inwardReferenceAmount') {
-        calculateInwardTotals();
-      }
-  
+
       return {
         ...prevState,
-        forexSubForm: updatedForexSubForm,
+        sundryDebtorForexDetails: updatedForexSubForm,
       };
     });
-  };  
+  };
 
   const handleKeyDown = (e, index) => {
     const key = e.key;
-  
+
     if (key === 'Enter') {
       e.preventDefault(); // Prevents the default form submission behavior
-  
+
       // If the current input has a non-empty value
       if (e.target.value.trim() !== '') {
         const nextField = index + 1; // Determine the next field index
-  
+
         // Focus on the next field if it exists
         if (nextField < inputRefs.current.length) {
           inputRefs.current[nextField]?.focus();
@@ -553,7 +399,7 @@ const SundryDebtorsAlter = () => {
         }
 
         // Specific handling for 'provideBankDetails' input
-        if (e.target.name === 'provideBankDetails' &&  e.target.value.trim() === 'yes') {
+        if (e.target.name === 'provideBankDetails' && e.target.value.trim() === 'yes') {
           setBankSubFormModal(true);
         }
       }
@@ -591,162 +437,207 @@ const SundryDebtorsAlter = () => {
       e.preventDefault();
       const value = key.toLowerCase() === 'c' ? 'cr' : 'dr';
       setSundryDebtor(prevState => {
-        const updatedForexSubForm = prevState.forexSubForm.map(row => ({
+        const updatedForexSubForm = prevState.sundryDebtorForexDetails.map(row => ({
           ...row,
           referenceCreditOrDebit: value, // Update referenceCreditOrDebit in all rows
         }));
-  
+
         return {
           ...prevState,
           creditOrDebit: value,
-          forexSubForm: updatedForexSubForm,
+          sundryDebtorForexDetails: updatedForexSubForm,
         };
       });
     } else if (key === 'Escape') {
       e.preventDefault();
       navigate(-1);
     }
-  };  
+  };
 
   const handleKeyDownBank = (e, index) => {
     const key = e.key;
 
-    if (key === 'Enter'){
+    if (key === 'Enter') {
       e.preventDefault();
 
-      if (e.target.value.trim() !== ''){
+      if (e.target.value.trim() !== '') {
         const nextField = index + 1;
 
-        if (nextField < inputRefsBank.current.length){
+        if (nextField < inputRefsBank.current.length) {
           inputRefsBank.current[nextField].focus();
           inputRefsBank.current[nextField].setSelectionRange(0, 0);
         }
 
         // Check if the current field is swiftCode and call handleBankSubFormBlur
-        if (e.target.name === 'swiftCode'){
+        if (e.target.name === 'swiftCode') {
           handleBankSubFormBlur(); // Call your blur handler here
         }
       }
-    } else if (key === 'Backspace'){
-
-      if (e.target.value.trim() === '' && index > 0){
+    } else if (key === 'Backspace') {
+      if (e.target.value.trim() === '' && index > 0) {
         e.preventDefault();
 
         const prevField = index - 1;
-        if (inputRefsBank.current[prevField]){
+        if (inputRefsBank.current[prevField]) {
           inputRefsBank.current[prevField].focus();
           inputRefsBank.current[prevField].setSelectionRange(0, 0);
         }
       }
-    } else if (key === 'Escape'){
+    } else if (key === 'Escape') {
       setBankSubFormModal(false);
     }
   };
 
   // Function to add a new row to the forexSubForm with conditional referenceCreditOrDebit value
   const addNewRow = () => {
-    setSundryDebtor((prevState) => {
+    setSundryDebtor(prevState => {
       // Define the structure of a new row with conditional referenceCreditOrDebit based on creditOrDebit value
       const newRow = {
         forexDate: '',
         referenceName: '',
         dueDate: '',
-        forexCurrencyType: prevState.forexSubForm[0]?.forexCurrencyType || '',
-        forexCurrencySymbol: prevState.forexSubForm[0]?.forexCurrencySymbol || '',
+        forexCurrencyType: prevState.sundryDebtorForexDetails[0]?.forexCurrencyType || '',
+        forexCurrencySymbol: prevState.sundryDebtorForexDetails[0]?.forexCurrencySymbol || '',
         forexAmount: '',
-        exchangeRate: prevState.forexSubForm[0]?.exchangeRate || '',
+        forexCreditOrDebit: prevState.creditOrDebit || '',
+        exchangeRate: '',
         outwardReferenceAmount: '',
         inwardReferenceAmount: '',
         // Set referenceCreditOrDebit based on the value of creditOrDebit
         referenceCreditOrDebit: prevState.creditOrDebit || '',
       };
-  
+
       return {
         ...prevState,
-        forexSubForm: [...prevState.forexSubForm, newRow],
+        sundryDebtorForexDetails: [...prevState.sundryDebtorForexDetails, newRow],
       };
     });
-  };  
+  };
 
-  const handleKeyDownForex = (e, rowIndex, colIndex) => {
+  const handleKeyDownForex = async (e, rowIndex, colIndex) => {
     const key = e.key;
     const firstForexDateIndex = 0;
-  
-    if (key === 'Enter') {
-      e.preventDefault();
-  
-      // Check if the current input is the first forexDate and ensure it has a value
-      if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === '') {
-        alert('The forexDate field must have a value before proceeding.');
-        inputRefsForex.current[rowIndex * 9 + colIndex]?.focus();
-        return;
-      }
-  
-      // Check if the current field is forexDate and its value is empty to trigger submit logic
-      if (e.target.name === 'forexDate' && e.target.value.trim() === '') {
-        const confirmSubmit = window.confirm('Do you want to proceed with submit?');
-        if (confirmSubmit) {
-          handleSubmit(e);
-          setForexSubFormModal(false);
-        } else {
-          inputRefsForex.current[rowIndex * 9 + colIndex]?.focus();
-        }
-        return;
-      }
-  
-      // Check if Enter key is pressed on the referenceCreditOrDebit field with a completed value
-      const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
-      const isLastRow = rowIndex === sundryDebtor.forexSubForm.length - 1;
-  
-      // Add a new row when Enter is pressed on the last row referenceCreditOrDebit with a value
-      if (isReferenceCreditOrDebit && e.target.value.trim() !== '' && isLastRow) {
-        addNewRow();
-        setTimeout(() => {
-          inputRefsForex.current[(rowIndex + 1) * 9]?.focus();
-        }, 0);
-        return;
-      }
-  
-      // Move to the next cell
-      const nextCell = rowIndex * 9 + colIndex + 1;
-      if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
-        inputRefsForex.current[nextCell]?.focus();
-      }
-    } else if (key === 'Backspace') {
-      // Move focus to the previous input if the current input is empty
-      if (e.target.value.trim() === '') {
-        e.preventDefault();
-        const prevCell = rowIndex * 9 + colIndex - 1;
-        if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
-          inputRefsForex.current[prevCell].focus();
-          inputRefsForex.current[prevCell].setSelectionRange(0, 0);
-        }
-      }
-    } else if (key === " "){
-      (e).preventDefault();
 
-      // Set the input value to 0.00 when spacebar is pressed on forexAmount or exchangeRate fields
-      if (['forexAmount', 'exchangeRate', 'inwardReferenceAmount'].includes(e.target.name)){
-        const updatedForexSubForm = [...sundryDebtor.forexSubForm];
-        updatedForexSubForm[rowIndex][e.target.name] = 0.00;
-        setSundryDebtor(prevState => ({
-          ...prevState,
-          forexSubForm: updatedForexSubForm,
-        }));
-        e.target.value = 0.00;   // Update the input value in the UI
-      }
+    if (key === 'Enter') {
+        e.preventDefault(); // Prevent default Enter key behavior
+
+        // Check if the current input is the first forexDate and ensure it has a value
+        if (rowIndex === 0 && colIndex === firstForexDateIndex && e.target.value.trim() === '') {
+            alert('The forexDate field must have a value before proceeding.');
+            inputRefsForex.current[rowIndex * 10 + colIndex]?.focus(); // Refocus on the empty forexDate field
+            return;
+        }
+
+        // Check if the current field is forexDate and its value is empty
+        if (e.target.name === 'forexDate') {
+            if (e.target.value.trim() === '') {
+                // Focus on totalForexAmount input if forexDate is empty
+                if (totalRefs.current[0]) {
+                    totalRefs.current[0].focus(); // Focus on totalForexAmount input
+                }
+                return; // Exit the function
+            }
+        }
+
+        // Check if the current field is referenceCreditOrDebit and its value is not empty
+        const isReferenceCreditOrDebit = e.target.name === 'referenceCreditOrDebit';
+        const isLastRow = rowIndex === sundryDebtor.sundryDebtorForexDetails.length - 1;
+
+        // Get openingBalance and totalOutwardReferenceAmount values
+        const openingBalance = sundryDebtor.openingBalance;
+        const totalOutwardAmount = sundryDebtor.totalOutwardReferenceAmount;
+
+        // Add a new row when Enter is pressed on the last row referenceCreditOrDebit with a value
+        if (isReferenceCreditOrDebit && e.target.value.trim() !== '' && isLastRow) {
+            // Ensure openingBalance is not equal to totalOutwardReferenceAmount before adding a new row
+            if (openingBalance !== totalOutwardAmount) {
+                addNewRow();
+                setTimeout(() => {
+                    inputRefsForex.current[(rowIndex + 1) * 10]?.focus(); // Focus on the first cell of the new row
+                }, 0);
+            } else {
+                alert("Cannot add a new row because the opening balance equals the total outward amount.");
+                totalRefs.current[0].focus();
+            }
+            return;
+        }
+
+        // Move to the next cell
+        const nextCell = rowIndex * 10 + colIndex + 1;
+        if (inputRefsForex.current[nextCell] && nextCell < inputRefsForex.current.length) {
+            inputRefsForex.current[nextCell]?.focus();
+        }
+    } else if (key === 'Backspace') {
+        // Move focus to the previous input if the current input is empty
+        if (e.target.value.trim() === '') {
+            e.preventDefault();
+            const prevCell = rowIndex * 10 + colIndex - 1;
+            if (prevCell >= 0 && inputRefsForex.current[prevCell]) {
+                inputRefsForex.current[prevCell].focus();
+                inputRefsForex.current[prevCell].setSelectionRange(0, 0);
+            }
+        }
     } else if (key === 'Tab') {
-      e.preventDefault();
-      setCurrencyFocused(false);
-    } else if (key === 'Escape'){
-      setForexSubFormModal(false);
+        e.preventDefault();
+        setCurrencyFocused(false);
+    } else if (key === 'Escape') {
+        setForexSubFormModal(false);
+    } else if (key === ' '){
+      if (e.target.name === 'forexAmount' || e.target.name === 'exchangeRate'){
+        e.preventDefault();
+        const newRow = [...sundryDebtor.sundryDebtorForexDetails];
+        newRow[rowIndex][e.target.name] = ' ';
+        setSundryDebtor({ ...sundryDebtor, sundryDebtorForexDetails: newRow });
+      }
     }
-  };  
+};
+
+  const handleKeyDownTotal = async (e, currentIndex) => {
+    switch (e.key) {
+      case 'Enter':
+        // Move focus to the next input field when Enter is pressed
+        if (currentIndex < totalRefs.current.length - 1) {
+          totalRefs.current[currentIndex + 1].focus();
+        }
+
+        // Check if specific fields are empty and handle submission logic
+        if (
+          (e.target.name === 'totalOutwardReferenceAmountCreditOrDebit' ||
+            e.target.name === 'totalInwardReferenceAmountCreditOrDebit') &&
+          e.target.value.trim() !== ''
+        ) {
+          e.preventDefault(); // Prevent form submission if the field is empty
+          const confirmSubmit = window.confirm('Do you want to proceed with submit?');
+
+          if (confirmSubmit) {
+            await handleSubmit(e);
+            setForexSubFormModal(false); // Close the modal
+          } else {
+            // Return focus to the current input if the user cancels
+            if (totalRefs.current[currentIndex]) {
+              totalRefs.current[currentIndex].focus();
+            }
+          }
+          return;
+        }
+        break;
+
+      case 'Backspace':
+        // Move focus to the previous input if Backspace is pressed and the current input is empty
+        if (e.target.value.trim() === '' && currentIndex > 0) {
+          totalRefs.current[currentIndex - 1].focus();
+        }
+        break;
+
+      default:
+        break;
+    }
+  };
 
   const handleSuggestionClick = (suggestion, index) => {
     setSundryDebtor(prevState => {
       // Clone the existing forexSubForm array
-      const updatedForexSubForm = [...prevState.forexSubForm];
+      const updatedForexSubForm = [...prevState.sundryDebtorForexDetails];
 
       // Update the selected forexCurrencyType and forexCurrencySymbol
       updatedForexSubForm[index] = {
@@ -755,7 +646,7 @@ const SundryDebtorsAlter = () => {
         forexCurrencySymbol: suggestion.forexCurrencySymbol, // Assuming this field exists in the suggestion object
       };
 
-      return { ...prevState, forexSubForm: updatedForexSubForm };
+      return { ...prevState, sundryDebtorForexDetails: updatedForexSubForm };
     });
 
     // Close the suggestion dropdown after selecting
@@ -766,17 +657,20 @@ const SundryDebtorsAlter = () => {
     const key = e.key;
 
     // Prevent default behavior for Enter key and execute custom logic
-    if (key === 'Enter'){
-      (e).preventDefault();
+    if (key === 'Enter') {
+      e.preventDefault();
 
       // Check if any suggestion is highlighted
-      if (highlightedSuggestionCurrency >= 0 && highlightedSuggestionCurrency < filteredSuggestion.length){
+      if (
+        highlightedSuggestionCurrency >= 0 &&
+        highlightedSuggestionCurrency < filteredSuggestion.length
+      ) {
         // Select the highlighted suggestion
         const selectedCurrency = filteredSuggestion[highlightedSuggestionCurrency];
-        
+
         // Update the forexCurrencyType in the forexSubForm
         setSundryDebtor(prevState => {
-          const updatedForexSubForm = [...prevState.forexSubForm];
+          const updatedForexSubForm = [...prevState.sundryDebtorForexDetails];
 
           // Update the specific row
           updatedForexSubForm[index] = {
@@ -785,79 +679,80 @@ const SundryDebtorsAlter = () => {
             forexCurrencySymbol: selectedCurrency.forexCurrencySymbol, // Assuming this field exists in the
           };
 
-          return { ...prevState, forexSubForm: updatedForexSubForm };
+          return { ...prevState, sundryDebtorForexDetails: updatedForexSubForm };
         });
 
         setCurrencyFocused(false);
 
         // Set focus to the forexAmount input
-        inputRefsForex.current[4 + index * 9]?.focus();
+        inputRefsForex.current[4 + index * 10]?.focus();
       } else {
         setCurrencyFocused(false);
       }
-    } else if (key === 'ArrowDown' && currencyFocused){
+    } else if (key === 'ArrowDown' && currencyFocused) {
       e.preventDefault();
       setHighlightedSuggestionCurrency(prevIndex =>
-        prevIndex === filteredSuggestion.length - 1 ? 0 : prevIndex + 1
+        prevIndex === filteredSuggestion.length - 1 ? 0 : prevIndex + 1,
       );
-    } else if (key === 'ArrowUp'){
+    } else if (key === 'ArrowUp') {
       e.preventDefault();
       setHighlightedSuggestionCurrency(prevIndex =>
-        prevIndex === 0 ? filteredSuggestion.length - 1 : prevIndex - 1
+        prevIndex === 0 ? filteredSuggestion.length - 1 : prevIndex - 1,
       );
-    } else if (key === 'Tab'){
+    } else if (key === 'Tab') {
       e.preventDefault();
       setCurrencyFocused(false);
     }
-  }
+  };
 
-  const prepareDataForBackend = (sundryDebtor) => {
+  const prepareDataForBackend = sundryDebtor => {
     return {
       ...sundryDebtor,
-      openingBalance: parseFloat(sundryDebtor.openingBalance),
-      totalForexAmount: parseFloat(sundryDebtor.totalForexAmount),
-      totalOutwardReferenceAmount: parseFloat(sundryDebtor.totalOutwardReferenceAmount),
-      sundryDebtorBankDetails: sundryDebtor.bank ? {
-        accountName: sundryDebtor.bank.accountName || '',
-        accountNumber: parseInt(sundryDebtor.bank.accountNumber, 10),  // Ensure numeric values
-        bankName: sundryDebtor.bank.bankName || '',
-        branchName: sundryDebtor.bank.branchName || '',
-        ifscCode: sundryDebtor.bank.ifscCode || '',
-        accountType: sundryDebtor.bank.accountType || '',
-        swiftCode: sundryDebtor.bank.swiftCode || '',
-      } : {},
-      sundryDebtorForexDetails: Array.isArray(sundryDebtor.forexSubForm)
-        ? sundryDebtor.forexSubForm
+      openingBalance: parseFloat(sundryDebtor.openingBalance.replace(/,/g, '')),
+      totalForexAmount: parseFloat(sundryDebtor.totalForexAmount.replace(/,/g, '')),
+      totalOutwardReferenceAmount: parseFloat(sundryDebtor.totalOutwardReferenceAmount.replace(/,/g, '')),
+      sundryDebtorBankDetails: sundryDebtor.sundryDebtorBankDetails
+        ? {
+            accountName: sundryDebtor.sundryDebtorBankDetails.accountName || '',
+            accountNumber: parseInt(sundryDebtor.sundryDebtorBankDetails.accountNumber, 10), // Ensure numeric values
+            bankName: sundryDebtor.sundryDebtorBankDetails.bankName || '',
+            branchName: sundryDebtor.sundryDebtorBankDetails.branchName || '',
+            ifscCode: sundryDebtor.sundryDebtorBankDetails.ifscCode || '',
+            accountType: sundryDebtor.sundryDebtorBankDetails.accountType || '',
+            swiftCode: sundryDebtor.sundryDebtorBankDetails.swiftCode || '',
+          }
+        : {},
+      sundryDebtorForexDetails: Array.isArray(sundryDebtor.sundryDebtorForexDetails)
+        ? sundryDebtor.sundryDebtorForexDetails
             .filter(forex => forex.forexDate.trim() !== '')
             .map(forex => ({
               ...forex,
+              forexDate: forex.forexDate,
+              dueDate: forex.dueDate,
               forexAmount: parseFloat(forex.forexAmount),
               exchangeRate: parseFloat(forex.exchangeRate),
-              outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount),
+              outwardReferenceAmount: parseFloat(forex.outwardReferenceAmount.replace(/,/g, '')),
               inwardReferenceAmount: parseFloat(forex.inwardReferenceAmount),
+              // forexDate: new Date(forex.forexDate).toISOString().split('T')[0],    // Format forexDate to YYYY-MM-DD
+              // dueDate: new Date(forex.dueDate).toISOString().split('T')[0]    // Format dueDate to YYYY-MM-DD
             }))
         : [],
     };
-  };    
+  };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
-    // Check if the form is valid before submitting
-    if (!isValid){
-      alert('Please correct the totals before submitting the form!');
-      return;   // Stop the form submission
-    }
-
     // Check if sundryDebtorName is filled
-    if (!sundryDebtor.sundryDebtorName.trim()){
+    if (!sundryDebtor.sundryDebtorName.trim()) {
       alert('Sundry Creditor Name is required!');
       // Optionally focus on the sundryDebtorName input field
-      if (inputRefs.current[0]){
+      if (inputRefs.current[0]) {
         inputRefs.current[0].focus();
       }
-      return;  // stop the form submission
+      return; // stop the form submission
     }
+
     try {
       // Prepare data for backend
       const sanitizedData = prepareDataForBackend(sundryDebtor);
@@ -870,9 +765,7 @@ const SundryDebtorsAlter = () => {
       console.log('Response:', response.data);
 
       // Focus on the first input field
-      if (inputRefs.current && inputRefs.current[0]) {
-        inputRefs.current[0].focus();
-      }
+      navigate(-1);
     } catch (error) {
       console.error('Error submitting data:', error);
     }
@@ -889,16 +782,38 @@ const SundryDebtorsAlter = () => {
   };
 
   // Utility function to format numbers in Indian decimal format
-  const formatIndianNumber = (value) => {
-    // Convert the value to a number, handle edge cases for NaN or empty strings
-    const numberValue = Number(value);
-    if (isNaN(numberValue)) return value; // Return as is if not a valid number
-    
+const formatIndianNumber = (value) => {
+  // Convert the value to a number, handle edge cases for NaN or empty strings
+  const numberValue = 
+    typeof value === 'number' 
+      ? value 
+      : typeof value === 'string' 
+      ? parseFloat(value.replace(/,/g, '')) 
+      : NaN;
+
+  if (isNaN(numberValue)) return '';
+
+  // Format the number in Indian format with two decimal places
+  return new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numberValue);
+};
+
+  const NumberFormat = (item) => {
+    const numberValue = typeof item === 'number' ? item: parseFloat(item.replace(/,/g, ''));
+
+    if (isNaN(numberValue)) return '';
+
     // Format the number in Indian format with two decimal places
-    return new Intl.NumberFormat('en-IN', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+    const formattedNumber = new Intl.NumberFormat('en-IN', {
+      minimumFractionDigits: 2, maximumFractionDigits: 2,
     }).format(numberValue);
+
+    setSundryDebtor((prev) => ({
+      ...prev,
+      openingBalance: formattedNumber
+    }))
   };
 
   const dateConvert = (e, index) => {
@@ -914,55 +829,70 @@ const SundryDebtorsAlter = () => {
       day = day.padStart(2, '0');
       month = month.padStart(2, '0');
 
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const monthNames = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
       const monthIndex = parseInt(month) - 1;
       const formattedDisplayDate = `${day}-${monthNames[monthIndex]}-${year}`;
       const convertedDate = `${year}-${month}-${day}`;
 
       setSundryDebtor(prevState => {
-        const updatedForexSubForm = [...prevState.forexSubForm];
+        const updatedForexSubForm = [...prevState.sundryDebtorForexDetails];
         updatedForexSubForm[index] = {
           ...updatedForexSubForm[index],
           [fieldName]: convertedDate, // Save the converted date (YYYY-MM-DD format)
-          [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: formattedDisplayDate // Save the formatted date (DD-MMM-YYYY format)
+          [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]:
+            formattedDisplayDate, // Save the formatted date (DD-MMM-YYYY format)
         };
         return {
           ...prevState,
-          forexSubForm: updatedForexSubForm
+          sundryDebtorForexDetails: updatedForexSubForm,
         };
       });
     }
   };
 
-
   const handleFormattedDateChange = (e, index, fieldName) => {
     const dateValue = e.target.value;
-    
+
     // Update the sundryDebtor state for the specific row and field (forexDate or dueDate)
     setSundryDebtor(prevState => {
-      const updatedForexSubForm = [...prevState.forexSubForm];
+      const updatedForexSubForm = [...prevState.sundryDebtorForexDetails];
+      // Update the specific date field at the specific index
       updatedForexSubForm[index] = {
         ...updatedForexSubForm[index],
-        [`formatted${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}`]: dateValue
+        [fieldName]: dateValue, // Update the actual field (forexDate or dueDate)
       };
       return {
         ...prevState,
-        forexSubForm: updatedForexSubForm
+        sundryDebtorForexDetails: updatedForexSubForm,
       };
     });
   };
-  
+
   return (
     <>
       <div className="flex">
         <LeftSideMenu />
         <form
           action=""
-          className="border border-slate-500 w-[48.5%] h-[92.7vh]" onSubmit={handleSubmit}
+          className="border border-slate-500 w-[48.5%] h-[92.7vh]"
+          onSubmit={handleSubmit}
         >
           <div className="text-sm pl-1 mb-1 flex mt-3">
             <label htmlFor="sundryDebtorName" className="w-[33.8%] ml-2">
-              Sundry Debtor's Name
+              Sundry Creditor's Name
             </label>
             <span>:</span>
             <input
@@ -977,7 +907,7 @@ const SundryDebtorsAlter = () => {
               autoComplete="off"
             />
           </div>
-          <div className='flex'>
+          <div className="flex">
             <div className="text-sm pl-1 mb-1">
               <label htmlFor="underGroup" className="mr-[183px] ml-2">
                 Under
@@ -1060,7 +990,7 @@ const SundryDebtorsAlter = () => {
                     type="text"
                     id="accountName"
                     name="accountName"
-                    value={sundryDebtor.bank.accountName}
+                    value={sundryDebtor.sundryDebtorBankDetails.accountName}
                     ref={input => (inputRefsBank.current[0] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 0)}
@@ -1077,7 +1007,7 @@ const SundryDebtorsAlter = () => {
                     type="text"
                     id="accountNumber"
                     name="accountNumber"
-                    value={sundryDebtor.bank.accountNumber}
+                    value={sundryDebtor.sundryDebtorBankDetails.accountNumber}
                     ref={input => (inputRefsBank.current[1] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 1)}
@@ -1094,7 +1024,7 @@ const SundryDebtorsAlter = () => {
                     type="text"
                     id="bankName"
                     name="bankName"
-                    value={sundryDebtor.bank.bankName}
+                    value={sundryDebtor.sundryDebtorBankDetails.bankName}
                     ref={input => (inputRefsBank.current[2] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 2)}
@@ -1111,7 +1041,7 @@ const SundryDebtorsAlter = () => {
                     type="text"
                     id="branchName"
                     name="branchName"
-                    value={sundryDebtor.bank.branchName}
+                    value={sundryDebtor.sundryDebtorBankDetails.branchName}
                     ref={input => (inputRefsBank.current[3] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 3)}
@@ -1128,7 +1058,7 @@ const SundryDebtorsAlter = () => {
                     type="text"
                     id="ifscCode"
                     name="ifscCode"
-                    value={sundryDebtor.bank.ifscCode}
+                    value={sundryDebtor.sundryDebtorBankDetails.ifscCode}
                     ref={input => (inputRefsBank.current[4] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 4)}
@@ -1145,7 +1075,7 @@ const SundryDebtorsAlter = () => {
                     type="text"
                     id="accountType"
                     name="accountType"
-                    value={sundryDebtor.bank.accountType}
+                    value={sundryDebtor.sundryDebtorBankDetails.accountType}
                     ref={input => (inputRefsBank.current[5] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 5)}
@@ -1162,7 +1092,7 @@ const SundryDebtorsAlter = () => {
                     type="text"
                     id="swiftCode"
                     name="swiftCode"
-                    value={sundryDebtor.bank.swiftCode}
+                    value={sundryDebtor.sundryDebtorBankDetails.swiftCode}
                     ref={input => (inputRefsBank.current[6] = input)}
                     onChange={handleInputBankChange}
                     onKeyDown={e => handleKeyDownBank(e, 6)}
@@ -1457,10 +1387,10 @@ const SundryDebtorsAlter = () => {
               type="text"
               id="openingBalance"
               name="openingBalance"
-              value={formatIndianNumber(sundryDebtor.openingBalance)}
+              value={sundryDebtor.openingBalance}
               ref={input => (inputRefs.current[20] = input)}
               onChange={handleInputChange}
-              onBlur={formatIndianNumber}
+              onBlur={(e) => NumberFormat(e.target.value)}
               onKeyDown={e => handleKeyDown(e, 20)}
               className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm text-right uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
@@ -1491,14 +1421,14 @@ const SundryDebtorsAlter = () => {
               value={formatIndianNumber(sundryDebtor.totalForexAmount)}
               onBlur={formatIndianNumber}
               className="w-[100px] ml-2 h-5 pl-1 font-medium text-sm text-right uppercase focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
-              autoComplete="off" readOnly
+              autoComplete="off"
+              readOnly
             />
             <input
               type="text"
               id="creditOrDebit"
               name="creditOrDebit"
               value={sundryDebtor.creditOrDebit}
-              
               className="w-[50px] ml-2 h-5 pl-1 font-medium text-sm capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
               autoComplete="off"
             />
@@ -1527,7 +1457,7 @@ const SundryDebtorsAlter = () => {
                       Upto
                     </label>
                     <span>:</span>
-                    <span className='ml-1'>₹</span>
+                    <span className="ml-1">₹</span>
                     <input
                       type="text"
                       id="uptoOpeningBalanceAmount"
@@ -1548,28 +1478,29 @@ const SundryDebtorsAlter = () => {
                   <table className="border-collapse border border-slate-400 w-full table-fixed">
                     <thead className="text-[12px]">
                       <tr className="border-t border-b border-slate-400">
-                        <th className="w-[10%]">Date</th>
-                        <th className="w-[25%]">Bill Ref. Name</th>
-                        <th className="w-[10%]">Due Date</th>
+                        <th className="w-[13%]">Date</th>
+                        <th className="w-[35%]">Bill Ref. Name</th>
+                        <th className="w-[13%]">Due Date</th>
                         {sundryDebtor.forexApplicable !== 'no' && (
                           <>
                             <th className="w-[25%]">Forex Currency Type</th>
-                            <th className="w-[15%]">Forex Amount</th>
-                            <th className="w-[15%]">Exchange Rate</th>
-                            <th className="w-[25%]">Amount</th>
+                            <th className="w-[20%]">Forex Amount</th>
+                            <th className="w-[5%]">Cr/Dr</th>
+                            <th className="w-[20%]">Exchange Rate</th>
+                            <th className="w-[20%]">Amount</th>
                           </>
                         )}
                         {sundryDebtor.forexApplicable !== 'yes' && (
                           <>
-                            <th className='w-[35%]'>Amount</th>
+                            <th className="w-[20%]">Amount</th>
                           </>
                         )}
                         <th className="w-[5%]">Cr/Dr</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {sundryDebtor.forexSubForm.map((row, index) => (
-                        <tr key={index} className='leading-4'>
+                      {sundryDebtor.sundryDebtorForexDetails.map((row, index) => (
+                        <tr key={index} className="leading-4">
                           {/* Forex Date Input */}
                           <td>
                             <input
@@ -1577,10 +1508,12 @@ const SundryDebtorsAlter = () => {
                               id="forexDate"
                               name="forexDate"
                               value={row.formattedForexDate}
-                              onChange={(e) => handleFormattedDateChange(e, index, 'forexDate')}
-                              ref={input => (inputRefsForex.current[0 + index * 9] = input)}
+                              onChange={e => handleFormattedDateChange(e, index, 'forexDate')}
+                              ref={input => (inputRefsForex.current[0 + index * 10] = input)}
                               onKeyDown={e => handleKeyDownForex(e, index, 0)}
-                              onBlur={(e) => {dateConvert(e, index)}}
+                              onBlur={e => {
+                                dateConvert(e, index);
+                              }}
                               className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
@@ -1594,8 +1527,8 @@ const SundryDebtorsAlter = () => {
                               name="referenceName"
                               value={row.referenceName}
                               onChange={e => handleInputForexChange(e, index)}
-                              ref={input => (inputRefsForex.current[1 + index * 9] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, index, 1 )}
+                              ref={input => (inputRefsForex.current[1 + index * 10] = input)}
+                              onKeyDown={e => handleKeyDownForex(e, index, 1)}
                               className="w-[180px] h-5 pl-1 ml-5 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
@@ -1608,15 +1541,17 @@ const SundryDebtorsAlter = () => {
                               id="dueDate"
                               name="dueDate"
                               value={row.formattedDueDate}
-                              onChange={(e) => handleFormattedDateChange(e, index, 'dueDate')}
-                              ref={input => (inputRefsForex.current[2 + index * 9] = input)}
+                              onChange={e => handleFormattedDateChange(e, index, 'dueDate')}
+                              ref={input => (inputRefsForex.current[2 + index * 10] = input)}
                               onKeyDown={e => {
-                                handleKeyDownForex(e, index, 2)
-                                if(e.key === 'Enter' && sundryDebtor.forexApplicable === 'no'){
-                                  inputRefsForex.current[index * 9 + 7].focus()
+                                handleKeyDownForex(e, index, 2);
+                                if (e.key === 'Enter' && sundryDebtor.forexApplicable === 'no') {
+                                  inputRefsForex.current[index * 10 + 7].focus();
                                 }
                               }}
-                              onBlur={(e) => {dateConvert(e, index)}}
+                              onBlur={e => {
+                                dateConvert(e, index);
+                              }}
                               className="w-full h-5 pl-1 font-medium text-[12px] capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
@@ -1632,18 +1567,18 @@ const SundryDebtorsAlter = () => {
                                   id="forexCurrencyType"
                                   name="forexCurrencyType"
                                   value={row.forexCurrencyType}
-                                  ref={input => (inputRefsForex.current[3 + index * 9] = input)}
+                                  ref={input => (inputRefsForex.current[3 + index * 10] = input)}
                                   onChange={e => handleInputForexChange(e, index)}
                                   onKeyDown={e => handleKeyDownCurrency(e, index)}
                                   onFocus={e => {
                                     // Set focus only for the first row
-                                    if (index === 0){
+                                    if (index === 0) {
                                       setCurrencyFocused(true);
                                       handleInputForexChange(e, index);
                                     }
                                   }}
                                   onBlur={() => setCurrencyFocused(false)}
-                                  className="w-[160px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                                  className="w-[140px] h-5 pl-1 font-medium text-[12px] uppercase text-right focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off"
                                 />
                                 {/* Currency Suggestion Dropdown */}
@@ -1667,14 +1602,14 @@ const SundryDebtorsAlter = () => {
                                           }`}
                                           onClick={() => handleSuggestionClick(currency, index)}
                                           onMouseDown={e => e.preventDefault()}
-                                          onKeyDown={(e) => {
+                                          onKeyDown={e => {
                                             if (e.key === 'Enter') {
                                               e.preventDefault();
                                               handleSuggestionClick(currency, index);
                                             }
                                           }}
                                           onMouseEnter={() => {
-                                            setHighlightedSuggestionCurrency(suggestionIndex)
+                                            setHighlightedSuggestionCurrency(suggestionIndex);
                                           }}
                                         >
                                           {currency.forexCurrencyName}
@@ -1687,33 +1622,52 @@ const SundryDebtorsAlter = () => {
 
                               {/* Forex Amount Input */}
                               <td>
-                                <span className='ml-7'>{row.forexCurrencySymbol}</span>
+                                <span className="ml-8">{row.forexCurrencySymbol}</span>
                                 <input
                                   type="text"
                                   id="forexAmount"
                                   name="forexAmount"
-                                  value={formatIndianNumber(row.forexAmount || 0.00)}
+                                  value={formatIndianNumber(row.forexAmount || 0.0)}
                                   onChange={e => handleInputForexChange(e, index)}
-                                  ref={input => (inputRefsForex.current[4 + index * 9] = input)}
-                                  onKeyDown={e => handleKeyDownForex(e, index, 4)}
-                                  onBlur={(e) => {formatIndianNumber(e, index)}} 
-                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                                  ref={input => (inputRefsForex.current[4 + index * 10] = input)}
+                                  onKeyDown={e => {handleKeyDownForex(e, index, 4); calculateOutwardReferenceAmountForForex(index);}}
+                                  onBlur={e => {
+                                    formatIndianNumber(e, index);
+                                  }}
+                                  className="w-[70px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                                  autoComplete="off"
+                                />
+                              </td>
+
+                              {/* Reference Credit Or Debit Input */}
+                              <td>
+                                <input
+                                  type="text"
+                                  id="forexCreditOrDebit"
+                                  name="forexCreditOrDebit"
+                                  value={row.forexCreditOrDebit}
+                                  onChange={e => handleInputForexChange(e, index)}
+                                  ref={input => (inputRefsForex.current[5 + index * 10] = input)}
+                                  onKeyDown={e => handleKeyDownForex(e, index, 5)}
+                                  className="w-[30px] h-5 pl-1 pr-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off"
                                 />
                               </td>
 
                               {/* Exchange Rate Input */}
                               <td>
-                                <span className='ml-8'>₹</span>
+                                <span className="ml-8">₹</span>
                                 <input
                                   type="text"
                                   id="exchangeRate"
                                   name="exchangeRate"
-                                  value={formatIndianNumber(row.exchangeRate || 0.00)}
+                                  value={formatIndianNumber(row.exchangeRate || 0.0)}
                                   onChange={e => handleInputForexChange(e, index)}
-                                  ref={input => (inputRefsForex.current[5 + index * 9] = input)}
-                                  onKeyDown={e => handleKeyDownForex(e, index, 5)}
-                                  onBlur={(e) => {formatIndianNumber(e, index)}}
+                                  ref={input => (inputRefsForex.current[6 + index * 10] = input)}
+                                  onKeyDown={e => {handleKeyDownForex(e, index, 6); calculateOutwardReferenceAmountForForex(index);}}
+                                  onBlur={e => {
+                                    formatIndianNumber(e, index);
+                                  }}
                                   className="w-[50px] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off"
                                 />
@@ -1721,22 +1675,24 @@ const SundryDebtorsAlter = () => {
 
                               {/* Reference Amount Input */}
                               <td>
-                                <span className='ml-16'>₹</span>
+                                <span className="ml-10">₹</span>
                                 <input
                                   type="text"
                                   id="outwardReferenceAmount"
                                   name="outwardReferenceAmount"
                                   value={formatIndianNumber(row.outwardReferenceAmount)}
                                   onChange={e => handleInputForexChange(e, index)}
-                                  ref={input => (inputRefsForex.current[6 + index * 9] = input)}
-                                  onKeyDown={e => 
-                                    {handleKeyDownForex(e, index, 6)
-                                    if(e.key === 'Enter'){
-                                      inputRefsForex.current[index * 9 + 8]?.focus()
+                                  ref={input => (inputRefsForex.current[7 + index * 10] = input)}
+                                  onKeyDown={e => {
+                                    handleKeyDownForex(e, index, 7);
+                                    if (e.key === 'Enter') {
+                                      inputRefsForex.current[index * 10 + 9]?.focus();
                                     }
                                   }}
-                                  onBlur={(e) => {formatIndianNumber(e, index)}}
-                                  className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                                  onBlur={e => {
+                                    formatIndianNumber(e, index);
+                                  }}
+                                  className="w-[50%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off"
                                 />
                               </td>
@@ -1753,12 +1709,12 @@ const SundryDebtorsAlter = () => {
                                   type="text"
                                   id="inwardReferenceAmount"
                                   name="inwardReferenceAmount"
-                                  value={formatIndianNumber(row.inwardReferenceAmount)}
-                                  onChange={(e) => handleInputForexChange(e, index)}
-                                  ref={(input) => (inputRefsForex.current[7 + index * 9] = input)}
-                                  onKeyDown={(e) => handleKeyDownForex(e, index,7)}
-                                  onBlur={(e) => {
-                                    formatIndianNumber(e, index);
+                                  value={row.inwardReferenceAmount}
+                                  onChange={e => handleInputForexChange(e, index)}
+                                  ref={input => (inputRefsForex.current[8 + index * 10] = input)}
+                                  onKeyDown={e => handleKeyDownForex(e, index, 8)}
+                                  onBlur={e => {
+                                    formatIndianNumber(e.target.value);
                                   }}
                                   className="w-[40%] h-5 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                                   autoComplete="off"
@@ -1775,9 +1731,9 @@ const SundryDebtorsAlter = () => {
                               name="referenceCreditOrDebit"
                               value={row.referenceCreditOrDebit}
                               onChange={e => handleInputForexChange(e, index)}
-                              ref={input => (inputRefsForex.current[8 + index * 9] = input)}
-                              onKeyDown={e => handleKeyDownForex(e, index, 8)}
-                              className="w-[30px] h-5 pl-1 pr-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                              ref={input => (inputRefsForex.current[9 + index * 10] = input)}
+                              onKeyDown={e => handleKeyDownForex(e, index, 9)}
+                              className="w-[30px] h-5 pl-1 pr-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                               autoComplete="off"
                             />
                           </td>
@@ -1785,29 +1741,43 @@ const SundryDebtorsAlter = () => {
                       ))}
                     </tbody>
                   </table>
-                  
+
                   {sundryDebtor.forexApplicable !== 'no' && (
                     <>
                       <div className=" mt-4">
-                        <div className="w-[350px] h-[20px] flex absolute left-[610px] top-[500px] border border-t-black border-transparent">
+                        <div className="w-[350px] h-[20px] flex absolute left-[690px] top-[500px] border border-t-black border-transparent">
                           <label htmlFor="totalForexAmount" className="text-[12px] mr-1 mt-1">
                             Total
                           </label>
-                          <span className="text-sm mt-1">($)</span>
-                          <span className="absolute top-0 left-[60px] bottom-0">:</span>
+                          <span className="text-sm mt-1">({sundryDebtor.forexCurrencySymbol})</span>
+                          <span className="absolute top-0 left-[50px] bottom-0">:</span>
                           <input
                             type="text"
                             id="totalForexAmount"
                             name="totalForexAmount"
                             value={formatIndianNumber(sundryDebtor.totalForexAmount)}
-                            onBlur={(e) => formatIndianNumber(e, 0)}
-                            className="w-[100px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            ref={input => (totalRefs.current[0] = input)}
+                            onKeyDown={e => handleKeyDownTotal(e, 0)}
+                            className="w-[60px] h-5 pl-1 mt-1 ml-3 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                             autoComplete="off"
-                            readOnly
+                          />
+                          <input
+                            type="text"
+                            id="totalForexAmountCreditOrDebit"
+                            name="totalForexAmountCreditOrDebit"
+                            value={sundryDebtor.creditOrDebit}
+                            onChange={handleInputChange}
+                            ref={input => (totalRefs.current[1] = input)}
+                            onKeyDown={e => handleKeyDownTotal(e, 1)}
+                            className="w-[30px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            autoComplete="off"
                           />
                         </div>
-                        <div className="w-[167px] flex absolute left-[900px] top-[500px] border border-t-black border-transparent">
-                          <label htmlFor="totalOutwardReferenceAmount" className="text-[12px] mr-1 mt-1">
+                        <div className="w-[167px] flex absolute left-[950px] top-[500px] border border-t-black border-transparent">
+                          <label
+                            htmlFor="totalOutwardReferenceAmount"
+                            className="text-[12px] mr-1 mt-1"
+                          >
                             Total
                           </label>
                           <span className="text-sm mt-1">(₹)</span>
@@ -1817,8 +1787,10 @@ const SundryDebtorsAlter = () => {
                             id="totalOutwardReferenceAmount"
                             name="totalOutwardReferenceAmount"
                             value={formatIndianNumber(sundryDebtor.totalOutwardReferenceAmount)}
-                            onBlur={(e) => formatIndianNumber(e, 1)}
-                            className="w-[120px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            onBlur={e => formatIndianNumber(e, 1)}
+                            ref={input => (totalRefs.current[2] = input)}
+                            onKeyDown={e => handleKeyDownTotal(e, 2)}
+                            className="w-[80px] h-5 pl-1 mt-1 ml-5 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                             autoComplete="off"
                             readOnly
                           />
@@ -1826,10 +1798,12 @@ const SundryDebtorsAlter = () => {
                             type="text"
                             id="totalOutwardReferenceAmountCreditOrDebit"
                             name="totalOutwardReferenceAmountCreditOrDebit"
-                            value={sundryDebtor.forexSubForm.totalOutwardReferenceAmountCreditOrDebit}
-                            onChange={handleInputForexChange}
-                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                            value={sundryDebtor.creditOrDebit}
+                            ref={input => (totalRefs.current[3] = input)}
+                            onKeyDown={e => handleKeyDownTotal(e, 3)}
+                            className="w-[30px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
                             autoComplete="off"
+                            readOnly
                           />
                         </div>
                       </div>
@@ -1837,28 +1811,35 @@ const SundryDebtorsAlter = () => {
                   )}
                   {sundryDebtor.forexApplicable !== 'yes' && (
                     <>
-                      <div className='w-[126px] flex absolute left-[900px] top-[500px] text-sm border border-t-black border-transparent'>
-                        <label htmlFor="" className='mt-1'>Total</label>
-                        <span className='mt-1'>:</span>
-                        <span className='ml-1 mt-1'>₹</span>
+                      <div className="w-[126px] flex absolute left-[900px] top-[500px] text-sm border border-t-black border-transparent">
+                        <label htmlFor="" className="mt-1">
+                          Total
+                        </label>
+                        <span className="mt-1">:</span>
+                        <span className="ml-1 mt-1">₹</span>
                         <input
-                            type="text"
-                            id="totalInwardReferenceAmount"
-                            name="totalInwardReferenceAmount"
-                            value={formatIndianNumber(sundryDebtor.totalInwardReferenceAmount)}
-                            onBlur={(e) => formatIndianNumber(e, 1)}
-                            className="w-[80px] h-5 mt-1 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
-                            autoComplete="off"
-                            readOnly
-                          />
-                          <input
-                            type="text"
-                            id="totalInwardReferenceAmountCreditOrDebit"
-                            name="totalInwardReferenceAmountCreditOrDebit"
-                            value={sundryDebtor.forexSubForm.totalInwardReferenceAmountCreditOrDebit}
-                            className="w-[30px] h-5 pl-1 ml-2 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
-                            autoComplete="off"
-                          />
+                          type="text"
+                          id="totalInwardReferenceAmount"
+                          name="totalInwardReferenceAmount"
+                          value={formatIndianNumber(sundryDebtor.totalInwardReferenceAmount)}
+                          onBlur={e => formatIndianNumber(e, 1)}
+                          ref={input => (totalRefs.current[4] = input)}
+                          onKeyDown={e => handleKeyDownTotal(e, 4)}
+                          className="w-[80px] h-5 mt-1 pl-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                          autoComplete="off"
+                          readOnly
+                        />
+                        <input
+                          type="text"
+                          id="totalInwardReferenceAmountCreditOrDebit"
+                          name="totalInwardReferenceAmountCreditOrDebit"
+                          value={sundryDebtor.creditOrDebit}
+                          ref={input => (totalRefs.current[5] = input)}
+                          onKeyDown={e => handleKeyDownTotal(e, 5)}
+                          className="w-[30px] h-5 pl-1 mt-1 font-medium text-[12px] text-right capitalize focus:bg-yellow-200 focus:outline-none focus:border-blue-500 focus:border border border-transparent"
+                          autoComplete="off"
+                          readOnly
+                        />
                       </div>
                     </>
                   )}
@@ -1870,7 +1851,7 @@ const SundryDebtorsAlter = () => {
         <RightSideButton />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default SundryDebtorsAlter
+export default SundryDebtorsAlter;
